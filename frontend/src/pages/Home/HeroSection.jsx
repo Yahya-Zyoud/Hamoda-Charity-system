@@ -1,20 +1,11 @@
 import { useState, useEffect } from "react";
-import { Heart, ArrowLeft, PlayCircle, ArrowDown } from "lucide-react";
+import { Heart, ArrowLeft, PlayCircle, ArrowDown, Leaf, Users, Globe2, HeartHandshake } from "lucide-react";
 
-const circleImages = [
-  { bg: "from-green-200 via-green-100 to-teal-100", emoji: "🌱", label: "نمو مستدام", x: "left-[3%]", y: "top-[6%]", size: "w-44 h-44", delay: "0s" },
-  { bg: "from-teal-200 via-blue-100 to-cyan-100", emoji: "👴👵", label: "رعاية المسنين", x: "right-[2%]", y: "top-[8%]", size: "w-52 h-52", delay: "0.5s" },
-  { bg: "from-emerald-200 via-green-100 to-lime-100", emoji: "🌍", label: "مجتمع أفضل", x: "left-[8%]", y: "bottom-[15%]", size: "w-36 h-36", delay: "1s" },
-
-  { 
-    bg: "from-blue-200 via-indigo-100 to-sky-100",
-    emoji: "🤝",
-    label: "دعم مستمر",
-    x: "right-[6%]",
-    y: "bottom-[6%]",
-    size: "w-40 h-40",
-    delay: "1.3s"
-  },
+const circleIconsData = [
+  { bg: "from-green-200 via-green-100 to-teal-100", icon: Leaf, label: "نمو مستدام", x: "left-[3%]", y: "top-[6%]", size: "w-44 h-44", delay: "0s", color: "text-green-700" },
+  { bg: "from-teal-200 via-blue-100 to-cyan-100", icon: Users, label: "رعاية المسنين", x: "right-[2%]", y: "top-[8%]", size: "w-52 h-52", delay: "0.5s", color: "text-teal-700" },
+  { bg: "from-emerald-200 via-green-100 to-lime-100", icon: Globe2, label: "مجتمع أفضل", x: "left-[8%]", y: "bottom-[15%]", size: "w-36 h-36", delay: "1s", color: "text-emerald-700" },
+  { bg: "from-blue-200 via-indigo-100 to-sky-100", icon: HeartHandshake, label: "دعم مستمر", x: "right-[6%]", y: "bottom-[6%]", size: "w-40 h-40", delay: "1.3s", color: "text-blue-700" },
 ];
 
 export default function HeroSection() {
@@ -36,21 +27,20 @@ export default function HeroSection() {
 
       <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px]" />
 
-      {
-      circleImages.map((circle, i) => (
-
+      {circleIconsData.map((circle, i) => {
+        const IconComponent = circle.icon;
+        return (
         <div
           key={i}
           className={`absolute ${circle.x} ${circle.y} ${circle.size} rounded-full bg-gradient-to-br ${circle.bg} shadow-2xl border-4 border-white/60 flex flex-col items-center justify-center animate-float cursor-pointer hover:scale-110 transition-transform duration-500 z-20`}
           style={{ animationDelay: circle.delay }}
         >
-          <span className="text-4xl mb-1">{circle.emoji}</span>
+          <IconComponent className={`w-10 h-10 mb-2 ${circle.color}`} strokeWidth={1.5} />
           <span className="text-xs font-bold text-green-800 text-center px-2">
             {circle.label}
           </span>
-
         </div>
-      ))}
+      )})}
 
       <div
         className={`relative z-30 text-center max-w-3xl px-6 transition-all duration-700 ${
@@ -97,6 +87,7 @@ export default function HeroSection() {
           <span className="text-sm text-gray-600">اكتشف المزيد</span>
           <ArrowDown className="w-6 h-6 text-green-600 animate-bounce" />
         </div>
+        
       </div>
 
     </section>
