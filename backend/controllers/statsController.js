@@ -1,38 +1,31 @@
-const stats = [
-  {
-    id: 1,
-    icon: "Users",
-    value: 5000,
-    suffix: "+",
-    label: "مستفيد",
-    sublabel: "من مختلف المناطق",
-  },
-  {
-    id: 2,
-    icon: "FolderKanban",
-    value: 120,
-    suffix: "+",
-    label: "مشروع منجز",
-    sublabel: "في التعليم والصحة والبنية",
-  },
-  {
-    id: 3,
-    icon: "HeartHandshake",
-    value: 850,
-    suffix: "K",
-    label: "ريال تبرعات",
-    sublabel: "وصلت للمحتاجين مباشرة",
-  },
-  {
-    id: 4,
-    icon: "Globe",
-    value: 8,
-    suffix: "",
-    label: "سنوات خبرة",
-    sublabel: "في العمل الخيري والإنساني",
-  },
-];
+const { loadData } = require("../utils/dataLoader");
+const { HTTP_STATUS, MESSAGES } = require("../config/constants");
+const logger = require("../utils/logger");
 
 exports.getStats = (req, res) => {
-  res.json({ success: true, data: stats });
+  try {
+    const items = loadData("stats");
+
+    if (!items || items.length === 0) {
+      logger.warn("No statistics found");
+      return res.status(HTTP_STATUS.OK).json({
+        success: true,
+        message: MESSAGES.NOT_FOUND,
+        data: [],
+      });
+    }
+
+    logger.info("Statistics retrieved successfully", { count: items.length });
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: MESSAGES.SUCCESS,
+      data: items,
+    });
+  } catch (error) {
+    logger.error("Error fetching statistics", { error: error.message });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: MESSAGES.ERROR,
+    });
+  }
 };

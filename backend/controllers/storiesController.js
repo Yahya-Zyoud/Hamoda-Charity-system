@@ -1,42 +1,31 @@
-const stories = [
-  {
-    id: 1,
-    category: "أفضل يتيماً في فلسطين",
-    title: "غزة- من بين الدموع المنهمرة التي كست تجاعيد وجه أم محمد ( س. ع. )",
-    shortDescription:
-      "غزة- من بين الدموع المنهمرة التي كست تجاعيد وجه أم محمد ( س. ع. ) بسبب قساوة الحياة لعدم وجود أي مصدر دخل...",
-    tag: null,
-    date: "2024-01-15",
-  },
-  {
-    id: 2,
-    category: "مشروع إصلاح بيوت الفقراء",
-    title: "رفح ، صعوبة الظروف التي تعصف بغزة والتي تركت أثرها...",
-    shortDescription:
-      "رفح ، صعوبة الظروف التي تعصف بغزة والتي تركت أثرها على جميع السكان...",
-    tag: null,
-    date: "2024-02-10",
-  },
-  {
-    id: 3,
-    category: "دار الرجاء.. حكاية صمود",
-    title: "دار الرجاء.. حكاية صمود خيمة لم تقتلعها العواصف",
-    shortDescription:
-      "في بقعة من أرض فلسطين، حيث تتحدى الإرادة كل عوامل الطبيعة...",
-    tag: null,
-    date: "2024-03-05",
-  },
-  {
-    id: 4,
-    category: "الصعود الى القمة يحتاج الهمة",
-    title: "المبدعة/ نيسان أبو القمصان .. الصعود الى القمة يحتاج الهمة",
-    shortDescription: "كانت مسابقة انا الراوي في عام 2019...",
-    tag: "قصة نجاح",
-    date: "2024-03-20",
-  },
-];
-
+const { loadData } = require("../utils/dataLoader");
+const { HTTP_STATUS, MESSAGES } = require("../config/constants");
+const logger = require("../utils/logger");
 
 exports.getStories = (req, res) => {
-  res.json({ success: true, data: stories });
+  try {
+    const items = loadData("stories");
+
+    if (!items || items.length === 0) {
+      logger.warn("No stories found");
+      return res.status(HTTP_STATUS.OK).json({
+        success: true,
+        message: MESSAGES.NOT_FOUND,
+        data: [],
+      });
+    }
+
+    logger.info("Stories retrieved successfully", { count: items.length });
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: MESSAGES.SUCCESS,
+      data: items,
+    });
+  } catch (error) {
+    logger.error("Error fetching stories", { error: error.message });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: MESSAGES.ERROR,
+    });
+  }
 };

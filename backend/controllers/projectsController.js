@@ -1,43 +1,31 @@
-const projects = [
-  {
-    id: "01",
-    title: "مشروع قطرات الحياة",
-    description:
-      "مشروع يعتمد على توفير مياه حلوه صالحة للشرب للمواطنين في قطا ...",
-    image: null,
-    logoType: "drops",
-    category: "مياه",
-  },
-  {
-    id: "03",
-    title: "رمضان يجمعنا بالحب والعطاء",
-    description:
-      "توزيع سلات غذائية متكاملة وقسائم شرائية ومساعدات نقدية للأسر ...",
-    image: null,
-    logoType: "ramadan",
-    category: "غذاء",
-  },
-  {
-    id: "02",
-    title: "مشروع دفا وعفا",
-    description:
-      "منذ بداية تأسيس الجمعيه في عام 2003 تبنت الجمعيه (دفا وعفا) ...",
-    image: null,
-    logoType: "dafa",
-    category: "رعاية",
-  },
-  {
-    id: "04",
-    title: "مشروع اضاحي العيدين",
-    description:
-      "توزيع لحوم أضاحي طازجة في عيد الأضحي المبارك في قطاع غزة وال ...",
-    image: null,
-    logoType: "sheep",
-    category: "أضاحي",
-  },
-];
-
+const { loadData } = require("../utils/dataLoader");
+const { HTTP_STATUS, MESSAGES } = require("../config/constants");
+const logger = require("../utils/logger");
 
 exports.getProjects = (req, res) => {
-  res.json({ success: true, data: projects });
+  try {
+    const items = loadData("projects");
+
+    if (!items || items.length === 0) {
+      logger.warn("No projects found");
+      return res.status(HTTP_STATUS.OK).json({
+        success: true,
+        message: MESSAGES.NOT_FOUND,
+        data: [],
+      });
+    }
+
+    logger.info("Projects retrieved successfully", { count: items.length });
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: MESSAGES.SUCCESS,
+      data: items,
+    });
+  } catch (error) {
+    logger.error("Error fetching projects", { error: error.message });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: MESSAGES.ERROR,
+    });
+  }
 };

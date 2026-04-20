@@ -1,62 +1,31 @@
-const partners = [
-  {
-    id: 1,
-    name: "وزارة الشؤون الاجتماعية",
-    logo: null,
-    emoji: "🏛️",
-    color: "from-blue-500 to-indigo-600",
-  },
-  {
-    id: 2,
-    name: "مؤسسة الملك عبدالعزيز",
-    logo: null,
-    emoji: "👑",
-    color: "from-amber-500 to-orange-600",
-  },
-  {
-    id: 3,
-    name: "هيئة الهلال الأحمر",
-    logo: null,
-    emoji: "🏥",
-    color: "from-red-500 to-rose-600",
-  },
-  {
-    id: 4,
-    name: "صندوق التنمية الاجتماعية",
-    logo: null,
-    emoji: "💼",
-    color: "from-green-500 to-emerald-600",
-  },
-  {
-    id: 5,
-    name: "المركز الوطني للعمل الخيري",
-    logo: null,
-    emoji: "🌟",
-    color: "from-purple-500 to-violet-600",
-  },
-  {
-    id: 6,
-    name: "اتحاد الجمعيات الخيرية",
-    logo: null,
-    emoji: "🤝",
-    color: "from-teal-500 to-cyan-600",
-  },
-  {
-    id: 7,
-    name: "بنك التنمية الاجتماعية",
-    logo: null,
-    emoji: "🏦",
-    color: "from-sky-500 to-blue-600",
-  },
-  {
-    id: 8,
-    name: "مؤسسة برّ الوالدين",
-    logo: null,
-    emoji: "❤️",
-    color: "from-rose-500 to-pink-600",
-  },
-];
+const { loadData } = require("../utils/dataLoader");
+const { HTTP_STATUS, MESSAGES } = require("../config/constants");
+const logger = require("../utils/logger");
 
 exports.getPartners = (req, res) => {
-  res.json({ success: true, data: partners });
+  try {
+    const items = loadData("partners");
+
+    if (!items || items.length === 0) {
+      logger.warn("No partners found");
+      return res.status(HTTP_STATUS.OK).json({
+        success: true,
+        message: MESSAGES.NOT_FOUND,
+        data: [],
+      });
+    }
+
+    logger.info("Partners retrieved successfully", { count: items.length });
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: MESSAGES.SUCCESS,
+      data: items,
+    });
+  } catch (error) {
+    logger.error("Error fetching partners", { error: error.message });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: MESSAGES.ERROR,
+    });
+  }
 };

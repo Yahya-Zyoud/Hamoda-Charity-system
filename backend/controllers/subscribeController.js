@@ -1,19 +1,24 @@
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const { HTTP_STATUS, MESSAGES } = require("../config/constants");
+const logger = require("../utils/logger");
 
 exports.subscribe = (req, res) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  if (!email || typeof email !== "string" || !EMAIL_REGEX.test(email.trim())) {
-    return res.status(400).json({
+    const cleanEmail = email.trim().toLowerCase();
+
+    logger.info("[Newsletter] New subscriber", { email: cleanEmail });
+
+    return res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      message: MESSAGES.SUBSCRIPTION_SUCCESS,
+      data: { email: cleanEmail },
+    });
+  } catch (error) {
+    logger.error("Error subscribing to newsletter", { error: error.message });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "البريد الإلكتروني غير صالح",
+      message: MESSAGES.ERROR,
     });
   }
-
-  console.log(`[Newsletter] New subscriber: ${email.trim()}`);
-
-  res.json({
-    success: true,
-    message: "تم الاشتراك بنجاح! شكراً لاهتمامك.",
-  });
 };
