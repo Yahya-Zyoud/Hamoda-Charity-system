@@ -1,32 +1,7 @@
 import { useState } from "react";
-import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, ArrowUp } from "lucide-react";
+import { Heart, Mail, Phone, MapPin, ArrowUp } from "lucide-react";
 import { subscribeEmail } from "../services/api";
-
-const footerLinks = {
-  "روابط سريعة": [
-    { label: "الرئيسية", href: "#home" },
-    { label: "مشاريعنا", href: "#projects" },
-    { label: "من نحن", href: "#about" },
-    { label: "تقاريرنا السنوية", href: "#reports" },
-    { label: "فريق العمل", href: "#team" },
-  ],
-  "خدماتنا": [
-    { label: "تقديم طلب مساعدة", href: "#help" },
-    { label: "كفالة يتيم", href: "#orphan" },
-    { label: "كفالة طالب", href: "#student" },
-    { label: "زكاة وصدقات", href: "#zakat" },
-    { label: "التطوع معنا", href: "#volunteer" },
-  ],
-};
-
-const socialLinks = [
-  { icon: Facebook, label: "فيسبوك", href: "#", color: "hover:bg-blue-600" },
-  { icon: Twitter, label: "تويتر", href: "#", color: "hover:bg-sky-500" },
-  { icon: Instagram, label: "إنستغرام", href: "#", color: "hover:bg-pink-600" },
-  { icon: Youtube, label: "يوتيوب", href: "#", color: "hover:bg-red-600" },
-];
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { footerLinks, socialLinks, EMAIL_REGEX } from "../constants/footer";
 
 export default function Footer() {
   const [email,   setEmail]   = useState("");
@@ -64,12 +39,12 @@ export default function Footer() {
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
 
-            <h3 className="text-2xl font-black text-white mb-1">
+            <h3 className="heading-sm font-tajawal text-white mb-2">
               اشترك في نشرتنا البريدية
             </h3>
 
-            <p className="text-green-100 text-sm">
-              كن أول من يعلم بمشاريعنا ونشاطاتنا الخيرية
+            <p className="text-green-50 text-base font-medium leading-relaxed">
+              احصل على آخر الأخبار والتحديثات عن مشاريعنا الخيرية والفرص للمساهمة
             </p>
 
           </div>
@@ -133,7 +108,7 @@ export default function Footer() {
                 <p className="text-green-400 text-xs font-medium">
                   معًا نصنع الفرق
                 </p>
-                
+
               </div>
 
             </div>

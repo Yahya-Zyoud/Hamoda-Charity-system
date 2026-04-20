@@ -1,17 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  ShieldCheck,
-  Search,
-  FileText,
-  Users,
-  Clock,
-  Heart,
-  ArrowLeft,
-  Sparkles
-} from "lucide-react";
-
-import { getServices } from "../../services/api"
+import { ShieldCheck, Search, FileText, Users, Clock, Heart, ArrowLeft, Sparkles } from "lucide-react";
+import { getServices } from "../../services/api";
 
 const iconsMap = {
   ShieldCheck,
@@ -49,14 +39,12 @@ function ServiceCard({ service, index }) {
       </div>
 
       <div className="relative z-10">
-
+       
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-50 to-emerald-50 flex items-center justify-center mb-8 border border-emerald-100 group-hover:from-blue-600 group-hover:to-emerald-500 group-hover:border-emerald-500 transition-all duration-500">
           <Icon className="w-7 h-7 text-blue-600 group-hover:text-white transition-all duration-500 group-hover:scale-110" />
         </div>
 
-        <h3 className="text-2xl font-bold text-slate-800 mb-4 transition-all duration-300 
-          group-hover:text-transparent group-hover:bg-gradient-to-r 
-          group-hover:from-blue-600 group-hover:to-emerald-500 group-hover:bg-clip-text">
+        <h3 className="text-2xl font-bold text-slate-800 mb-4 transition-all duration-300 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-emerald-500 group-hover:bg-clip-text">
           {service.name}
         </h3>
 
@@ -65,7 +53,6 @@ function ServiceCard({ service, index }) {
         <p className="text-slate-500 leading-relaxed font-medium">
           {service.desc}
         </p>
-
       </div>
 
       <div className="relative z-10 mt-auto pt-8">
@@ -82,27 +69,24 @@ export default function ServicesSection() {
   const [services, setServices] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const loadServices = async () => {
       try {
         const data = await getServices();
-
-        const withIcons = data.map(s => ({
+        const withIcons = data.map((s) => ({
           ...s,
-          icon: iconsMap[s.icon]
+          icon: iconsMap[s.icon],
         }));
-
         setServices(withIcons);
       } catch (err) {
         console.error(err);
       }
     };
 
-    fetchData();
+    loadServices();
   }, []);
 
   return (
     <section dir="rtl" className="relative py-32 bg-slate-50 overflow-hidden font-[Cairo,sans-serif]">
-
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <motion.div
           animate={{ rotate: 360 }}
@@ -112,9 +96,7 @@ export default function ServicesSection() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
-
         <div className="text-center max-w-2xl mx-auto mb-20">
-
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -150,18 +132,14 @@ export default function ServicesSection() {
             <ServiceCard key={service.id} service={service} index={index} />
           ))}
         </motion.div>
-
       </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `
-        @keyframes shine {
-          100% { left: 125%; }
-        }
-        .animate-shine {
-          animation: shine 1.2s cubic-bezier(0.8, 0, 0.2, 1);
-        }
-      `}} />
+          @keyframes shine { 100% { left: 125%; } }
+          .animate-shine { animation: shine 1.2s cubic-bezier(0.8, 0, 0.2, 1); }
+        `
+      }} />
     </section>
   );
 }

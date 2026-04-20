@@ -1,8 +1,9 @@
-import HeroSection from "./HeroSection";
-import StatsSection from "./StatsSection";
-import ServicesSection from "./services";
-import ProjectsSection from "./projects";
-import PartnersSection from "./partners";
+import HeroSection from "./sections/HeroSection";
+import StatsSection from "./sections/StatsSection";
+import ServicesSection from "./sections/ServicesSection";
+import ProjectsSection from "./sections/ProjectsSection";
+import StoriesSection from "./sections/StoriesSection";
+import PartnersSection from "./sections/PartnersSection";
 
 const HomePage = () => {
   return (
@@ -11,6 +12,7 @@ const HomePage = () => {
       <StatsSection />
       <ServicesSection />
       <ProjectsSection />
+      <StoriesSection />
       <PartnersSection />
     </div>
   );

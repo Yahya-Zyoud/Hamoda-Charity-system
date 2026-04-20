@@ -1,54 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Heart,
-  Users,
-  FolderOpen,
-  User,
-  HelpCircle,
-  Lock,
-  Menu,
-  X,
-} from "lucide-react";
-
-const navItems = [
-  { label: "الرئيسية", path: "/" },
-  { label: "الفريق", path: "/team" },
-  { label: "المشاريع", path: "/projects" },
-  { label: "المنح والتبرعات", path: "/donations" },
-  { label: "طلب مساعدة", path: "/help" },
-];
+import { User, Lock, Menu, X } from "lucide-react";
+import { navItems, getNavIcon } from "../constants/navigation";
 
 const Navbar = () => {
   const [active, setActive] = useState("الرئيسية");
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const navigate = useNavigate(); // 🔥 أهم إضافة
-
-  const getIcon = (label) => {
-    if (label === "الرئيسية") return <Heart size={20} />;
-    if (label === "الفريق") return <Users size={20} />;
-    if (label === "المشاريع") return <FolderOpen size={20} />;
-    if (label === "طلب مساعدة") return <HelpCircle size={20} />;
-    return null;
-  };
+  const navigate = useNavigate();
 
   return (
     <header className="relative w-full">
-      <nav className="bg-white shadow-sm px-6 py-2">
+      <nav className="bg-white shadow-md px-6 py-3 border-b border-gray-100">
         <div className="flex items-center w-full justify-between">
 
-          {/* Buttons (Desktop) */}
+          {}
           <div className="hidden md:flex items-center gap-3">
 
-            <button className="relative flex items-center gap-2 px-5 py-2 text-gray-700 font-semibold rounded-full border border-gray-200 hover:bg-gray-100 transition-all duration-200 hover:scale-105 shadow-sm group overflow-hidden cursor-pointer">
+            <button className="relative flex items-center gap-2 px-5 py-2.5 text-gray-700 font-tajawal font-bold rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:scale-105 shadow-sm group cursor-pointer">
               <Lock size={16} className="group-hover:rotate-12 transition-transform" />
               تسجيل الدخول
             </button>
 
             <button
-              onClick={() => navigate("/profile")} // ✅ هون التوجيه
-              className="relative flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-l from-blue-600 to-green-500 text-white font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 group overflow-hidden cursor-pointer"
+              onClick={() => navigate("/profile")}
+              className="relative flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-l from-blue-600 to-blue-500 text-white font-tajawal font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 group cursor-pointer"
             >
               <User size={18} />
               الملف الشخصي
@@ -56,24 +32,25 @@ const Navbar = () => {
 
           </div>
 
-          {/* Nav Links */}
+          {}
           <div className="hidden md:flex gap-1" dir="rtl">
             {navItems.map((item) => {
               const isActive = active === item.label;
+              const Icon = getNavIcon(item.label);
 
               return (
                 <button
                   key={item.label}
                   onClick={() => {
                     setActive(item.label);
-                    navigate(item.path); // ✅ تنقل بين الصفحات
+                    navigate(item.path);
                   }}
                   className={`relative group flex items-center gap-2 px-4 py-2 text-base cursor-pointer transition-colors ${isActive
                       ? "text-blue-600"
                       : "text-gray-600 hover:text-blue-600"
                     }`}
                 >
-                  {getIcon(item.label)}
+                  {Icon && <Icon size={20} />}
                   <span>{item.label}</span>
 
                   <span
@@ -87,7 +64,7 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Logo */}
+          {}
           <a href="/" className="flex items-center gap-3 shrink-0 group">
             <div className="text-right">
               <p className="text-base md:text-xl font-extrabold bg-gradient-to-l from-green-500 to-blue-500 bg-clip-text text-transparent transition-all duration-300 group-hover:scale-105">
@@ -108,7 +85,7 @@ const Navbar = () => {
             </div>
           </a>
 
-          {/* Mobile Menu Button */}
+          {}
           <button
             className="md:hidden text-gray-600 cursor-pointer"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -117,29 +94,32 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {}
         {menuOpen && (
           <div
             className="md:hidden flex flex-col gap-1 pb-3 pt-2 border-t border-gray-100"
             dir="rtl"
           >
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => {
-                  setActive(item.label);
-                  navigate(item.path); // ✅
-                  setMenuOpen(false);
-                }}
-                className={`flex items-center gap-2 px-4 py-2 text-base cursor-pointer ${active === item.label
-                    ? "text-blue-600"
-                    : "text-gray-600 hover:text-blue-600"
-                  }`}
-              >
-                {getIcon(item.label)}
-                <span>{item.label}</span>
-              </button>
-            ))}
+            {navItems.map((item) => {
+              const Icon = getNavIcon(item.label);
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => {
+                    setActive(item.label);
+                    navigate(item.path);
+                    setMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 text-base cursor-pointer ${active === item.label
+                      ? "text-blue-600"
+                      : "text-gray-600 hover:text-blue-600"
+                    }`}
+                >
+                  {Icon && <Icon size={20} />}
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
 
             <div className="flex items-center gap-3 mt-3 px-3">
 
@@ -150,7 +130,7 @@ const Navbar = () => {
 
               <button
                 onClick={() => {
-                  navigate("/profile"); // ✅
+                  navigate("/profile");
                   setMenuOpen(false);
                 }}
                 className="flex items-center gap-2 px-5 py-2 bg-blue-600 text-white font-bold cursor-pointer"

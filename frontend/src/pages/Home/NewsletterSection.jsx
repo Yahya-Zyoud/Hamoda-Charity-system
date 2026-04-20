@@ -42,20 +42,14 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section
-      dir="rtl"
-      className="py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 relative overflow-hidden"
-    >
+    <section dir="rtl" className="py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/10 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-400/10 blur-3xl rounded-full pointer-events-none" />
 
       <div className="max-w-2xl mx-auto px-6 relative z-10 text-center">
-
         <div className="inline-flex items-center gap-2 px-5 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
-       
           <Mailbox className="w-5 h-5 text-white/80" />
           <span className="text-white/90 font-bold text-sm">النشرة البريدية</span>
-
         </div>
 
         <h2 className="text-4xl font-black text-white mb-3 leading-tight">
@@ -67,11 +61,7 @@ export default function NewsletterSection() {
           اشترك في نشرتنا البريدية وكن أوّل من يعلم عن حملاتنا ومشاريعنا الخيرية
         </p>
 
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="flex flex-col sm:flex-row gap-3 items-start"
-        >
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col sm:flex-row gap-3 items-start">
           <div className="flex-1 w-full">
             <input
               type="email"
@@ -85,15 +75,13 @@ export default function NewsletterSection() {
               placeholder="أدخل بريدك الإلكتروني..."
               disabled={status === "loading"}
               dir="rtl"
-              className={`w-full px-5 py-4 rounded-xl text-gray-800 text-sm font-medium bg-white/95 backdrop-blur placeholder-gray-400 outline-none transition focus:ring-2 focus:ring-blue-300 disabled:opacity-60
-                ${emailError ? "ring-2 ring-red-400" : ""}`}
+              className={`w-full px-5 py-4 rounded-xl text-gray-800 text-sm font-medium bg-white/95 backdrop-blur placeholder-gray-400 outline-none transition focus:ring-2 focus:ring-blue-300 disabled:opacity-60 ${
+                emailError ? "ring-2 ring-red-400" : ""
+              }`}
             />
             {emailError && (
-              <p className="text-red-300 text-xs mt-1 text-right pr-1">
-                {emailError}
-              </p>
+              <p className="text-red-300 text-xs mt-1 text-right pr-1">{emailError}</p>
             )}
-
           </div>
 
           <button
@@ -117,11 +105,11 @@ export default function NewsletterSection() {
 
         {message && (
           <div
-            className={`mt-5 px-5 py-3 rounded-xl text-sm font-semibold transition-all
-              ${status === "success"
+            className={`mt-5 px-5 py-3 rounded-xl text-sm font-semibold transition-all ${
+              status === "success"
                 ? "bg-green-500/20 text-green-300 border border-green-400/30"
                 : "bg-red-500/20 text-red-300 border border-red-400/30"
-              }`}
+            }`}
           >
             <div className="flex items-center gap-2">
               {status === "success" ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}

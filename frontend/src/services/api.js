@@ -1,45 +1,37 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const url = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-
-async function apiFetch(endpoint, options = {}) {
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
+async function makeRequest(endpoint, options = {}) {
+  const response = await fetch(`${url}${endpoint}`, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
 
-  if (!res.ok) {
-    let message = `HTTP ${res.status}`;
+  if (!response.ok) {
+    let msg = `HTTP ${response.status}`;
     try {
-      const body = await res.json();
-      message = body.message || message;
+      const body = await response.json();
+      msg = body.message || msg;
     } catch {
     }
-    throw new Error(message);
+    throw new Error(msg);
   }
 
-  const json = await res.json();
+  const json = await response.json();
   return json.data !== undefined ? json.data : json;
 }
 
+export const getProjects = () => makeRequest("/projects");
 
-export const getProjects = () => apiFetch("/projects");
+export const getStats = () => makeRequest("/stats");
 
-export const getStats = () => apiFetch("/stats");
+export const getStories = () => makeRequest("/stories");
 
-export const getStories = () => apiFetch("/stories");
+export const getPartners = () => makeRequest("/partners");
 
-export const getPartners = () => apiFetch("/partners");
-
-
-/**
- * POST /api/subscribe — subscribes an email to the newsletter.
- * @param {string} email
- * @returns {{ success: boolean, message: string }}
- */
 export const subscribeEmail = (email) =>
-  apiFetch("/subscribe", {
+  makeRequest("/subscribe", {
     method: "POST",
     body: JSON.stringify({ email }),
   });
 
-export const getServices = () => apiFetch("/services");
+export const getServices = () => makeRequest("/services");
