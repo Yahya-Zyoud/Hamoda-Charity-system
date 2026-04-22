@@ -48,7 +48,7 @@
 
   .vite {
     z-index: 0;
-    top: 107px;
+    top: 107px; 
     height: 26px;
     width: auto;
     transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
