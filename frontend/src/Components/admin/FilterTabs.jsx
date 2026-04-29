@@ -16,9 +16,9 @@ function FilterTabs({ tabs, active, onChange }) {
             fontWeight: 600,
             fontSize: 13,
             transition: "all 0.2s ease",
-            background: active === t.key ? "linear-gradient(135deg, #0891B2, #14B8A6)" : "transparent",
+            background: active === t.key ? "linear-gradient(135deg, #2563eb, #3b82f6)" : "transparent",
             color: active === t.key ? "#fff" : "#64748B",
-            boxShadow: active === t.key ? "0 2px 8px rgba(8,145,178,0.25)" : "none",
+            boxShadow: active === t.key ? "0 2px 8px rgba(37,99,235,0.25)" : "none",
           }}
         >
           {t.label}

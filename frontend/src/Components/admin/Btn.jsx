@@ -15,14 +15,14 @@ function Btn({ children, variant = "primary", sm, onClick, style = {}, type = "b
   };
 
   const variants = {
-    primary: { background: "linear-gradient(135deg, #0891B2, #14B8A6)", color: "#fff", boxShadow: "0 2px 8px rgba(8,145,178,0.25)" },
+    primary: { background: "linear-gradient(135deg, #2563eb, #3b82f6)", color: "#fff", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" },
     success: { background: "linear-gradient(135deg, #16A34A, #22C55E)", color: "#fff", boxShadow: "0 2px 8px rgba(22,163,74,0.25)" },
     danger: { background: "#DC2626", color: "#fff" },
     outline: { background: "transparent", color: "#374151", border: "1px solid #D1D5DB" },
     ghost: { background: "transparent", color: "#64748B" },
     "success-light": { background: "#F0FDF4", color: "#16A34A", border: "1px solid #BBF7D0" },
     "danger-light": { background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA" },
-    "info-light": { background: "#ECFEFF", color: "#0891B2", border: "1px solid #A5F3FC" },
+    "info-light": { background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe" },
     "warning-light": { background: "#FFFBEB", color: "#D97706", border: "1px solid #FDE68A" },
   };
 

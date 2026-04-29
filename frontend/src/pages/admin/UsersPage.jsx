@@ -88,7 +88,7 @@ function UsersPage() {
                         height: 36,
                         borderRadius: "50%",
                         background: u.role === "admin"
-                          ? "linear-gradient(135deg, #0891B2, #14B8A6)"
+                          ? "linear-gradient(135deg, #2563eb, #3b82f6)"
                           : "#64748B",
                         color: "#fff",
                         display: "flex",

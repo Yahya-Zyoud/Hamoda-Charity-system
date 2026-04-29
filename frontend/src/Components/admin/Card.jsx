@@ -1,7 +1,8 @@
-function Card({ children, style = {}, className = "" }) {
+function Card({ children, style = {}, className = "", onClick }) {
   return (
     <div
       className={className}
+      onClick={onClick}
       style={{
         background: "#fff",
         borderRadius: 14,

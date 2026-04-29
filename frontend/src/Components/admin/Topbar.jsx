@@ -32,7 +32,7 @@ function Topbar({ title }) {
                   onClick={markAll}
                   style={{
                     fontSize: 12,
-                    color: "#0891B2",
+                    color: "#2563eb",
                     background: "none",
                     border: "none",
                     cursor: "pointer",
@@ -84,7 +84,7 @@ function Topbar({ title }) {
                         width: 7,
                         height: 7,
                         borderRadius: "50%",
-                        background: "#0891B2",
+                        background: "#2563eb",
                         flexShrink: 0,
                         marginTop: 6,
                       }}

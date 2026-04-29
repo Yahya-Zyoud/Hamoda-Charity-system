@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import "../../styles/admin.css";
 import OverviewPage from "./OverviewPage";
 import RequestsPage from "./RequestsPage";
 import ProjectsPage from "./ProjectsPage";
