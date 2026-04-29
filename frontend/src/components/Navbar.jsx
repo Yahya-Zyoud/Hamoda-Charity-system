@@ -14,13 +14,29 @@ const Navbar = () => {
       <nav className="bg-white shadow-md px-6 py-3 border-b border-gray-100">
         <div className="flex items-center w-full justify-between">
 
-          {}
+          {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
-
-            <button className="relative flex items-center gap-2 px-5 py-2.5 text-gray-700 font-tajawal font-bold rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:scale-105 shadow-sm group cursor-pointer">
-              <Lock size={16} className="group-hover:rotate-12 transition-transform" />
-              تسجيل الدخول
-            </button>
+            {localStorage.getItem("isAdmin") === "true" ? (
+              <button
+                onClick={() => {
+                  localStorage.removeItem("isAdmin");
+                  navigate("/");
+                  window.location.reload(); // Refresh to update navbar state
+                }}
+                className="relative flex items-center gap-2 px-5 py-2.5 text-red-600 font-tajawal font-bold rounded-lg border border-red-100 hover:bg-red-50 transition-all duration-200 hover:scale-105 shadow-sm group cursor-pointer"
+              >
+                <Lock size={16} className="group-hover:rotate-12 transition-transform" />
+                تسجيل الخروج
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate("/admin/login")}
+                className="relative flex items-center gap-2 px-5 py-2.5 text-gray-700 font-tajawal font-bold rounded-lg border border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:scale-105 shadow-sm group cursor-pointer"
+              >
+                <Lock size={16} className="group-hover:rotate-12 transition-transform" />
+                تسجيل الدخول
+              </button>
+            )}
 
             <button
               onClick={() => navigate("/profile")}
@@ -32,7 +48,6 @@ const Navbar = () => {
 
           </div>
 
-          {}
           <div className="hidden md:flex gap-1" dir="rtl">
             {navItems.map((item) => {
               const isActive = active === item.label;
@@ -46,8 +61,8 @@ const Navbar = () => {
                     navigate(item.path);
                   }}
                   className={`relative group flex items-center gap-2 px-4 py-2 text-base cursor-pointer transition-colors ${isActive
-                      ? "text-blue-600"
-                      : "text-gray-600 hover:text-blue-600"
+                    ? "text-blue-600"
+                    : "text-gray-600 hover:text-blue-600"
                     }`}
                 >
                   {Icon && <Icon size={20} />}
@@ -55,8 +70,8 @@ const Navbar = () => {
 
                   <span
                     className={`absolute bottom-0 right-0 left-0 h-0.5 bg-blue-600 transition-transform origin-right ${isActive
-                        ? "scale-x-100"
-                        : "scale-x-0 group-hover:scale-x-100"
+                      ? "scale-x-100"
+                      : "scale-x-0 group-hover:scale-x-100"
                       }`}
                   />
                 </button>
@@ -64,7 +79,7 @@ const Navbar = () => {
             })}
           </div>
 
-          {}
+          {/* Logo & Brand */}
           <a href="/" className="flex items-center gap-3 shrink-0 group">
             <div className="text-right">
               <p className="text-base md:text-xl font-extrabold bg-gradient-to-l from-green-500 to-blue-500 bg-clip-text text-transparent transition-all duration-300 group-hover:scale-105">
@@ -85,7 +100,6 @@ const Navbar = () => {
             </div>
           </a>
 
-          {}
           <button
             className="md:hidden text-gray-600 cursor-pointer"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -94,7 +108,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        {}
+        {/* Mobile Menu */}
         {menuOpen && (
           <div
             className="md:hidden flex flex-col gap-1 pb-3 pt-2 border-t border-gray-100"
@@ -111,8 +125,8 @@ const Navbar = () => {
                     setMenuOpen(false);
                   }}
                   className={`flex items-center gap-2 px-4 py-2 text-base cursor-pointer ${active === item.label
-                      ? "text-blue-600"
-                      : "text-gray-600 hover:text-blue-600"
+                    ? "text-blue-600"
+                    : "text-gray-600 hover:text-blue-600"
                     }`}
                 >
                   {Icon && <Icon size={20} />}
@@ -122,11 +136,30 @@ const Navbar = () => {
             })}
 
             <div className="flex items-center gap-3 mt-3 px-3">
-
-              <button className="flex items-center gap-2 px-4 py-2 border text-gray-700 cursor-pointer">
-                <Lock size={16} />
-                تسجيل الدخول
-              </button>
+              {localStorage.getItem("isAdmin") === "true" ? (
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("isAdmin");
+                    navigate("/");
+                    window.location.reload();
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 cursor-pointer"
+                >
+                  <Lock size={16} />
+                  تسجيل الخروج
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    navigate("/admin/login");
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 border text-gray-700 cursor-pointer"
+                >
+                  <Lock size={16} />
+                  تسجيل الدخول
+                </button>
+              )}
 
               <button
                 onClick={() => {
@@ -138,7 +171,6 @@ const Navbar = () => {
                 <User size={16} />
                 الملف الشخصي
               </button>
-
             </div>
           </div>
         )}

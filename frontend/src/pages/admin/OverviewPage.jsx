@@ -1,7 +1,7 @@
-import DashboardLayout from "../../Components/admin/DashboardLayout";
-import StatCard from "../../Components/admin/StatCard";
-import Card from "../../Components/admin/Card";
-import Badge from "../../Components/admin/Badge";
+import DashboardLayout from "../../components/admin/DashboardLayout";
+import StatCard from "../../components/admin/StatCard";
+import Card from "../../components/admin/Card";
+import Badge from "../../components/admin/Badge";
 import { STATS, MONTHLY, REQUEST_DIST, REQUESTS_DATA, DONATIONS_DATA } from "../../data/mockAdminData";
 
 function OverviewPage() {
