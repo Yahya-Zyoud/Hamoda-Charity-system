@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { getPartners } from "../../../services/api";
-import { PartnerCard } from "../../../components/Cards";
+import { PartnerCard } from "../../../Components/Cards";
 import { Handshake, AlertTriangle } from "lucide-react";
 
 function PartnerSkeleton() {
@@ -59,26 +59,26 @@ export default function PartnersSection() {
   }, [loading, partners]);
 
   return (
-    <section className="relative py-24 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white to-blue-50 overflow-hidden">
+    <section id="partners" dir="rtl" className="relative pt-16 pb-20 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white to-blue-50 overflow-hidden">
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl -mr-48 -mt-48 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100/20 rounded-full blur-3xl -ml-40 -mb-40 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="page-shell relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 xl:mb-12"
         >
           <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-100 mb-6">
             <Handshake className="w-5 h-5 text-blue-600" />
             <span className="text-sm font-bold text-blue-700">شركاؤنا الموثوقون</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4" style={{ fontFamily: '"Tajawal", sans-serif' }}>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3" style={{ fontFamily: '"Tajawal", sans-serif' }}>
             نعمل مع أفضل الشركاء
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
             شراكات استراتيجية قوية تدعم رسالتنا الإنسانية وتساهم في تحقيق أهدافنا الخيرية
           </p>
         </motion.div>

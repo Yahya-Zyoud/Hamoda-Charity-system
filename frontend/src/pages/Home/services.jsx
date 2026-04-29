@@ -72,7 +72,7 @@ export default function ServicesSection() {
     const loadServices = async () => {
       try {
         const data = await getServices();
-        const withIcons = data.map((s) => ({
+        const withIcons = (Array.isArray(data) ? data : []).map((s) => ({
           ...s,
           icon: iconsMap[s.icon],
         }));

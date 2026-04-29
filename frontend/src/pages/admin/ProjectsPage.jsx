@@ -35,7 +35,7 @@ function ProjectsPage() {
     setShowForm(true);
   };
 
-  const CAT_COLORS = { تعليم: "#0891B2", طبي: "#16A34A", إسكان: "#D97706", غذاء: "#0E7490" };
+  const CAT_COLORS = { تعليم: "#2563eb", طبي: "#16A34A", إسكان: "#D97706", غذاء: "#8b5cf6" };
 
   return (
     <DashboardLayout title="إدارة المشاريع">
@@ -49,7 +49,7 @@ function ProjectsPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 18 }}>
         {list.map((pr) => {
           const pct = Math.min(100, Math.round((pr.collected / pr.target) * 100));
-          const barColor = pct >= 100 ? "#16A34A" : pct > 60 ? "#0891B2" : "#D97706";
+          const barColor = pct >= 100 ? "#16A34A" : pct > 60 ? "#2563eb" : "#D97706";
 
           return (
             <Card key={pr.id} className="hover-lift" style={{ overflow: "hidden" }}>

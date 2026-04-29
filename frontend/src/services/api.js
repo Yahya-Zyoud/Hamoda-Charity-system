@@ -11,7 +11,8 @@ async function makeRequest(endpoint, options = {}) {
     try {
       const body = await response.json();
       msg = body.message || msg;
-    } catch {
+    } catch (parseError) {
+      console.debug("[api] Failed to parse error response:", parseError);
     }
     throw new Error(msg);
   }
@@ -35,17 +36,3 @@ export const subscribeEmail = (email) =>
   });
 
 export const getServices = () => makeRequest("/services");
-
-export const getProfile = () => makeRequest("/user/profile");
-
-export const updateProfile = (data) =>
-  makeRequest("/user/profile", {
-    method: "PUT",
-    body: JSON.stringify(data),
-  });
-
-export const uploadImage = (formData) =>
-  fetch(`${url}/user/upload`, {
-    method: "POST",
-    body: formData,
-  }).then(res => res.json());

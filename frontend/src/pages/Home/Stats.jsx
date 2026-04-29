@@ -31,7 +31,7 @@ export default function StatsSection() {
         if (res.success) {
           setStats(res.data);
         }
-      } catch (err) {
+      } catch {
         setError("فشل تحميل الإحصائيات");
       } finally {
         setLoading(false);

@@ -7,7 +7,7 @@ import PartnersSection from "./sections/PartnersSection";
 
 const HomePage = () => {
   return (
-    <div>
+    <div className="overflow-x-hidden bg-white">
       <HeroSection />
       <StatsSection />
       <ServicesSection />

@@ -6,8 +6,6 @@ import {
   AlertTriangle,
   Calendar,
   Tag,
-  ChevronLeft,
-  ChevronRight,
   X,
   Heart,
 } from "lucide-react";
@@ -18,7 +16,6 @@ export default function StoriesSection() {
   const [error, setError] = useState(null);
   const [selectedStory, setSelectedStory] = useState(null);
   const [activeFilter, setActiveFilter] = useState("الكل");
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const fetchStories = async () => {
@@ -64,10 +61,10 @@ export default function StoriesSection() {
 
   if (loading) {
     return (
-      <section className="py-24 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white to-gray-50">
-       
+      <section dir="rtl" className="py-24 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white to-gray-50">
+
         <div className="max-w-7xl mx-auto">
-         
+
           <div className="text-center mb-12">
            
             <div className="h-12 bg-gray-200 rounded-lg w-64 mx-auto mb-4 animate-pulse" />
@@ -96,9 +93,9 @@ export default function StoriesSection() {
 
   if (error) {
     return (
-      <section className="py-24 px-4 sm:px-8 md:px-16">
+      <section dir="rtl" className="py-24 px-4 sm:px-8 md:px-16">
         <div className="max-w-7xl mx-auto">
-        
+
           <div className="bg-red-50 border border-red-200 rounded-2xl p-12 text-center">
             <AlertTriangle className="mx-auto mb-4 text-red-600" size={40} />
             <p className="text-red-700 text-lg">{error}</p>
@@ -110,23 +107,23 @@ export default function StoriesSection() {
   }
 
   return (
-    <section className="py-24 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-7xl mx-auto">
+    <section id="stories" dir="rtl" className="py-16 xl:py-20 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white to-gray-50">
+      <div className="page-shell">
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 xl:mb-12"
         >
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 mb-6">
             <BookOpen className="text-blue-600" size={32} />
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl xl:text-6xl font-bold text-gray-900 mb-3">
             قصص الأمل والتغيير
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             شهادات حقيقية من أشخاص تأثروا بمشاريعنا وأفضلوا حياتهم بفضل دعمكم
           </p>
         </motion.div>
@@ -137,15 +134,15 @@ export default function StoriesSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mb-16"
+            className="mb-10 xl:mb-12"
           >
             <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow">
               <div className={`bg-gradient-to-r ${getCategoryColor(featuredStory.category)} p-1`}>
                 <div className="bg-white rounded-2xl">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 md:p-12">
+                  <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6 xl:gap-8 items-stretch p-6 md:p-8 xl:p-10">
                     {/* Text Content */}
                     <motion.div
-                      initial={{ opacity: 0, x: -20 }}
+                      initial={{ opacity: 0, x: 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
                       viewport={{ once: true }}
@@ -158,11 +155,11 @@ export default function StoriesSection() {
                         </span>
                       </div>
 
-                      <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                      <h3 className="text-2xl md:text-3xl xl:text-4xl font-bold text-gray-900 mb-4">
                         {featuredStory.title}
                       </h3>
 
-                      <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                      <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-6">
                         {featuredStory.shortDescription}
                       </p>
 
@@ -196,19 +193,19 @@ export default function StoriesSection() {
                         onClick={() => setSelectedStory(featuredStory)}
                         className="mt-8 w-fit px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
                       >
-                        اقرأ القصة الكاملة
+                        عرض القصة
                       </motion.button>
                     </motion.div>
 
                     {/* Image/Icon Section */}
                     <motion.div
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
                       viewport={{ once: true }}
                       className={`bg-gradient-to-br ${getCategoryColor(
                         featuredStory.category
-                      )} rounded-xl p-12 flex items-center justify-center min-h-64`}
+                      )} rounded-xl p-10 xl:p-12 flex items-center justify-center min-h-[16rem] xl:min-h-[18rem]`}
                     >
                       <div className="text-center text-white">
                         <BookOpen size={80} className="mx-auto mb-4 opacity-80" />
@@ -230,17 +227,16 @@ export default function StoriesSection() {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
-            className="flex flex-wrap gap-3 mb-12 justify-center"
+            className="flex flex-wrap gap-3 mb-8 xl:mb-10 justify-center"
           >
             {categories.map((cat) => (
               <motion.button
                 key={cat}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  setActiveFilter(cat);
-                  setCurrentIndex(0);
-                }}
+                  onClick={() => {
+                    setActiveFilter(cat);
+                  }}
                 className={`px-6 py-2 rounded-full font-semibold transition ${
                   activeFilter === cat
                     ? "bg-blue-600 text-white shadow-lg"
@@ -259,7 +255,7 @@ export default function StoriesSection() {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 xl:gap-6"
           >
             <AnimatePresence mode="popLayout">
               {filteredStories.slice(1).map((story, index) => (
@@ -274,7 +270,7 @@ export default function StoriesSection() {
                   onClick={() => setSelectedStory(story)}
                   className="group cursor-pointer h-full"
                 >
-                  <div className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-blue-400 shadow-md hover:shadow-xl transition-all h-full flex flex-col">
+                  <div className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-blue-400 shadow-md hover:shadow-xl transition-all min-h-[13rem] h-full flex flex-col">
                     {/* Top colored border */}
                     <div
                       className={`h-1 bg-gradient-to-r ${getCategoryColor(
@@ -358,12 +354,12 @@ export default function StoriesSection() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedStory(null)}
-                  className="absolute top-6 right-6 bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition"
+                  className="absolute top-6 left-6 bg-white bg-opacity-20 hover:bg-opacity-30 p-2 rounded-full transition"
                 >
                   <X size={24} />
                 </motion.button>
 
-                <div className="pr-12">
+                <div className="pl-12">
                   {selectedStory.category && (
                     <span className="inline-block bg-white bg-opacity-25 text-white text-xs font-bold px-3 py-1.5 rounded-full mb-4">
                       {selectedStory.category}
@@ -394,7 +390,7 @@ export default function StoriesSection() {
 
                 <div className="prose prose-lg max-w-none">
                   <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap">
-                    {selectedStory.shortDescription}
+                    {selectedStory.description || selectedStory.content || selectedStory.shortDescription}
                   </p>
                 </div>
 

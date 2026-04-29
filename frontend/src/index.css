@@ -6,10 +6,11 @@
   }
 
   html {
-    
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   body {
@@ -22,6 +23,15 @@
     letter-spacing: 0.3px;
     color: #1a202c;
     font-weight: 500;
+    width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 
   
@@ -31,7 +41,7 @@
     line-height: 1.2;
     font-size: clamp(2rem, 5vw, 3.5rem);
     letter-spacing: -0.02em;
-    margin-bottom: 1.5rem;
+    margin: 0;
     color: #0f172a;
   }
 
@@ -41,7 +51,7 @@
     line-height: 1.2;
     font-size: clamp(1.875rem, 4vw, 2.5rem);
     letter-spacing: -0.015em;
-    margin-bottom: 1.25rem;
+    margin: 0;
     color: #1a202c;
   }
 
@@ -51,7 +61,7 @@
     line-height: 1.375;
     font-size: clamp(1.25rem, 2.5vw, 1.875rem);
     letter-spacing: -0.01em;
-    margin-bottom: 1rem;
+    margin: 0;
     color: #1f2937;
   }
 
@@ -60,7 +70,7 @@
     font-weight: 700;
     font-size: 1.25rem;
     letter-spacing: 0px;
-    margin-bottom: 0.75rem;
+    margin: 0;
     color: #374151;
   }
 
@@ -68,7 +78,7 @@
     font-family: "Tajawal", sans-serif;
     font-weight: 600;
     font-size: 1.125rem;
-    margin-bottom: 0.5rem;
+    margin: 0;
     color: #4b5563;
   }
 
@@ -76,13 +86,13 @@
     font-family: "Tajawal", sans-serif;
     font-weight: 600;
     font-size: 1rem;
-    margin-bottom: 0.5rem;
+    margin: 0;
     color: #6b7280;
   }
 
   
   p {
-    margin-bottom: 1.5rem;
+    margin: 0;
     line-height: 1.8;
   }
 
@@ -141,12 +151,12 @@
   
   ul,
   ol {
-    margin-bottom: 1.5rem;
-    padding-right: 2rem;
+    margin: 0;
+    padding-right: 0;
   }
 
   li {
-    margin-bottom: 0.5rem;
+    margin: 0;
     line-height: 1.75;
   }
 
@@ -366,6 +376,17 @@
     margin: 0 auto;
   }
 
+  .page-shell {
+    width: min(1320px, calc(100vw - 2rem));
+    margin-inline: auto;
+  }
+
+  @media (min-width: 768px) {
+    .page-shell {
+      width: min(1320px, calc(100vw - 3rem));
+    }
+  }
+
   
   .text-gradient {
     background: linear-gradient(to right, currentColor);
@@ -385,8 +406,16 @@
   }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
 @layer utilities {
-  
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
   .text-dark {
     color: #111827;
   }

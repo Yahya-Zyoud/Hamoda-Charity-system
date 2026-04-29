@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { getProjects } from "../../services/api";
 import { ArrowLeft, Target, HeartHandshake, Droplets, Leaf, Activity, AlertTriangle, FolderOpen, ShieldCheck } from "lucide-react";
 

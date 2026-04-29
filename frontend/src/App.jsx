@@ -1,51 +1,42 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./Components/Navbar";
+import Footer from "./Components/Footer";
+import ScrollToHash from "./Components/ScrollToHash";
 import HomePage from "./pages/Home/home";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import ProfilePage from "./pages/Profile/ProfilePage";
-import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-
-function ProtectedRoute({ children }) {
-  const isAdmin = localStorage.getItem("isAdmin") === "true";
-  return isAdmin ? children : <Navigate to="/admin/login" />;
-}
+import AdminRoute from "./Components/AdminRoute";
 
 function App() {
   return (
-    <Routes>
-      {/* Public Routes with Navbar & Footer */}
-      <Route
-        path="/"
-        element={
-          <div>
+    <BrowserRouter>
+      <ScrollToHash />
+      <Routes>
+        {/* Public — with Navbar + Footer */}
+        <Route path="/" element={
+          <>
             <Navbar />
             <HomePage />
             <Footer />
-          </div>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <div>
-            <Navbar />
-            <ProfilePage />
-            <Footer />
-          </div>
-        }
-      />
+          </>
+        } />
 
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route
-        path="/admin/dashboard/*"
-        element={
-          <ProtectedRoute>
+        {/* Admin dashboard — only for users with role: "admin" in Clerk metadata */}
+        <Route path="/admin/dashboard/*" element={
+          <AdminRoute>
             <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+          </AdminRoute>
+        } />
+
+        {/* Redirect any stale /admin/login links to home */}
+        <Route path="/admin/login" element={<Navigate to="/" replace />} />
+        <Route path="/admin" element={<Navigate to="/" replace />} />
+        <Route path="/team" element={<Navigate to="/#partners" replace />} />
+        <Route path="/projects" element={<Navigate to="/#projects" replace />} />
+        <Route path="/donations" element={<Navigate to="/#projects" replace />} />
+        <Route path="/help" element={<Navigate to="/#services" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

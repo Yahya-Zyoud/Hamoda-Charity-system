@@ -32,11 +32,11 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden">
+    <footer className="mt-16 bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden">
 
       <div className="bg-gradient-to-r from-blue-700 to-green-600 py-10 relative z-10">
 
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="page-shell px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
 
             <h3 className="heading-sm font-tajawal text-white mb-2">
@@ -89,7 +89,7 @@ export default function Footer() {
 
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-16 relative z-10">
+      <div className="page-shell px-4 md:px-6 py-16 relative z-10">
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 

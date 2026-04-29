@@ -15,7 +15,7 @@ function Select({ value, onChange, children, style = {} }) {
         transition: "border-color 0.2s ease",
         ...style,
       }}
-      onFocus={(e) => (e.target.style.borderColor = "#0891B2")}
+      onFocus={(e) => (e.target.style.borderColor = "#2563eb")}
       onBlur={(e) => (e.target.style.borderColor = "#E2E8F0")}
     >
       {children}

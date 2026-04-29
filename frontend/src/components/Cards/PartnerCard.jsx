@@ -1,6 +1,6 @@
 import { getPartnerTheme } from "../../constants/partners";
 
-export const PartnerCard = ({ partner, index }) => {
+export const PartnerCard = ({ partner }) => {
   const theme = getPartnerTheme(partner.emoji);
   const color = theme.color;
   const Icon = theme.icon;
