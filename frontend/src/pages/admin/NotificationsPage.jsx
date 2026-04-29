@@ -28,13 +28,13 @@ function NotificationsPage() {
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {unread > 0 && (
             <span style={{
-              background: "#ECFEFF",
-              color: "#0891B2",
+              background: "#eff6ff",
+              color: "#2563eb",
               padding: "4px 14px",
               borderRadius: 20,
               fontSize: 13,
               fontWeight: 600,
-              border: "1px solid #A5F3FC",
+              border: "1px solid #bfdbfe",
             }}>
               {unread} غير مقروء
             </span>
@@ -60,8 +60,8 @@ function NotificationsPage() {
             className="hover-lift"
             style={{
               padding: "16px 20px",
-              borderRight: !n.read ? "4px solid #0891B2" : "4px solid transparent",
-              background: !n.read ? "#FAFFFE" : "#fff",
+              borderRight: !n.read ? "4px solid #2563eb" : "4px solid transparent",
+              background: !n.read ? "#f8faff" : "#fff",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
@@ -70,7 +70,7 @@ function NotificationsPage() {
                   width: 40,
                   height: 40,
                   borderRadius: 10,
-                  background: n.type === "request" ? "#ECFEFF" : n.type === "donation" ? "#F0FDF4" : "#F0F9FF",
+                  background: n.type === "request" ? "#eff6ff" : n.type === "donation" ? "#F0FDF4" : "#F0F9FF",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",

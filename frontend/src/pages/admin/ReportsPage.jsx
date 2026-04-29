@@ -33,7 +33,7 @@ function ReportsPage() {
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
               <div style={{
                 width: 40, height: 40, borderRadius: 10,
-                background: k.up ? "linear-gradient(135deg, #ECFEFF, #F0FDF4)" : "#FEF2F2",
+                background: k.up ? "linear-gradient(135deg, #eff6ff, #F0FDF4)" : "#FEF2F2",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 18,
               }}>
@@ -69,7 +69,7 @@ function ReportsPage() {
                     style={{
                       width: "100%",
                       height: h,
-                      background: "linear-gradient(to top, #0891B2, #5EEAD4)",
+                      background: "linear-gradient(to top, #2563eb, #60a5fa)",
                       borderRadius: "5px 5px 0 0",
                       cursor: "pointer",
                       transition: "opacity 0.15s, transform 0.15s",
@@ -94,7 +94,7 @@ function ReportsPage() {
           </div>
           <div style={{ padding: "14px 20px" }}>
             {perf.map((p) => {
-              const barColor = p.pct >= 100 ? "#16A34A" : p.pct > 60 ? "#0891B2" : "#D97706";
+              const barColor = p.pct >= 100 ? "#16A34A" : p.pct > 60 ? "#2563eb" : "#D97706";
               return (
                 <div key={p.id} style={{ marginBottom: 18 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, alignItems: "center" }}>

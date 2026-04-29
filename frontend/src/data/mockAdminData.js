@@ -57,7 +57,7 @@ export const MONTHLY = [
 ];
 
 export const REQUEST_DIST = [
-  { type: "طبي",   count: 14, color: "#0891B2" },
+  { type: "طبي",   count: 14, color: "#2563eb" },
   { type: "إسكان", count: 8,  color: "#16A34A" },
   { type: "غذاء",  count: 7,  color: "#D97706" },
   { type: "تعليم", count: 5,  color: "#0EA5E9" },
@@ -68,11 +68,11 @@ export const STATUS_CFG = {
   pending:   { label: "قيد المراجعة", bg: "#FFFBEB", color: "#D97706" },
   approved:  { label: "مقبول",        bg: "#F0FDF4", color: "#16A34A" },
   rejected:  { label: "مرفوض",        bg: "#FEF2F2", color: "#DC2626" },
-  on_hold:   { label: "معلق",         bg: "#ECFEFF", color: "#0891B2" },
+  on_hold:   { label: "معلق",         bg: "#eff6ff", color: "#2563eb" },
   active:    { label: "نشط",          bg: "#F0FDF4", color: "#16A34A" },
-  completed: { label: "مكتمل",        bg: "#ECFEFF", color: "#0891B2" },
+  completed: { label: "مكتمل",        bg: "#eff6ff", color: "#2563eb" },
   inactive:  { label: "غير نشط",      bg: "#F3F4F6", color: "#6B7280" },
   failed:    { label: "فشل",          bg: "#FEF2F2", color: "#DC2626" },
   user:      { label: "مستخدم",       bg: "#F3F4F6", color: "#6B7280" },
-  admin:     { label: "مدير",         bg: "#EFF6FF", color: "#0891B2" },
+  admin:     { label: "مدير",         bg: "#eff6ff", color: "#2563eb" },
 };

@@ -82,7 +82,7 @@ function RequestsPage() {
                   </Td>
                   <Td style={{ direction: "ltr" }}>{r.phone}</Td>
                   <Td>
-                    <span style={{ background: "#ECFEFF", color: "#0891B2", padding: "2px 10px", borderRadius: 20, fontSize: 12, fontWeight: 500, border: "1px solid #A5F3FC" }}>
+                    <span style={{ background: "#eff6ff", color: "#2563eb", padding: "2px 10px", borderRadius: 20, fontSize: 12, fontWeight: 500, border: "1px solid #bfdbfe" }}>
                       {r.type}
                     </span>
                   </Td>
@@ -124,7 +124,7 @@ function RequestsPage() {
             <DetailRow label="اسم المتقدم" value={selected.name} />
             <DetailRow label="رقم الهاتف" value={<span style={{ direction: "ltr", display: "inline-block" }}>{selected.phone}</span>} />
             <DetailRow label="نوع الطلب" value={
-              <span style={{ background: "#ECFEFF", color: "#0891B2", padding: "2px 10px", borderRadius: 20, fontSize: 12, fontWeight: 500 }}>{selected.type}</span>
+              <span style={{ background: "#eff6ff", color: "#2563eb", padding: "2px 10px", borderRadius: 20, fontSize: 12, fontWeight: 500 }}>{selected.type}</span>
             } />
             <DetailRow label="الوصف" value={selected.description} />
             <DetailRow label="تاريخ الطلب" value={selected.date} />
@@ -151,7 +151,7 @@ function RequestsPage() {
                 color: "#1E293B",
                 transition: "border-color 0.2s",
               }}
-              onFocus={(e) => e.target.style.borderColor = "#0891B2"}
+              onFocus={(e) => e.target.style.borderColor = "#2563eb"}
               onBlur={(e) => e.target.style.borderColor = "#E2E8F0"}
             />
             <Btn sm variant="outline" style={{ marginTop: 8 }} onClick={() => saveNote(selected.id)}>
