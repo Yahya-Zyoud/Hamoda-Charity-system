@@ -1,0 +1,74 @@
+services:
+
+  db:
+    image: mongo:7-jammy
+    container_name: hamoda_db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS:-secret}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-hamoda_charity}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - charity_net
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    container_name: hamoda_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MONGO_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASS:-secret}@db:27017/${MONGO_DB:-hamoda_charity}?authSource=admin
+    ports:
+      - "5001:5000"
+    volumes:
+      - uploads_data:/app/public/uploads
+    networks:
+      - charity_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    container_name: hamoda_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+        VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    networks:
+      - charity_net
+
+volumes:
+  mongo_data:
+  uploads_data:
+
+networks:
+  charity_net:
