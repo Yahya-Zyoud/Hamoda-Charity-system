@@ -1,73 +1,95 @@
-import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, ArrowUp } from "lucide-react";
-
-const footerLinks = {
-  "روابط سريعة": [
-    { label: "الرئيسية", href: "#home" },
-    { label: "مشاريعنا", href: "#projects" },
-    { label: "من نحن", href: "#about" },
-    { label: "تقاريرنا السنوية", href: "#reports" },
-    { label: "فريق العمل", href: "#team" },
-  ],
-  "خدماتنا": [
-    { label: "تقديم طلب مساعدة", href: "#help" },
-    { label: "كفالة يتيم", href: "#orphan" },
-    { label: "كفالة طالب", href: "#student" },
-    { label: "زكاة وصدقات", href: "#zakat" },
-    { label: "التطوع معنا", href: "#volunteer" },
-  ],
-};
-
-const socialLinks = [
-  { icon: Facebook, label: "فيسبوك", href: "#", color: "hover:bg-blue-600" },
-  { icon: Twitter, label: "تويتر", href: "#", color: "hover:bg-sky-500" },
-  { icon: Instagram, label: "إنستغرام", href: "#", color: "hover:bg-pink-600" },
-  { icon: Youtube, label: "يوتيوب", href: "#", color: "hover:bg-red-600" },
-];
+import { useState } from "react";
+import { Heart, Mail, Phone, MapPin, ArrowUp } from "lucide-react";
+//import { subscribeEmail } from "../services/api";
+import { footerLinks, socialLinks, EMAIL_REGEX } from "../constants/footer";
 
 export default function Footer() {
+  const [email,   setEmail]   = useState("");
+  const [status,  setStatus]  = useState("idle");
+  const [message, setMessage] = useState("");
+
+  const handleSubscribe = async () => {
+    if (!email.trim() || !EMAIL_REGEX.test(email.trim())) {
+      setStatus("error");
+      setMessage("الرجاء إدخال بريد إلكتروني صحيح");
+      return;
+    }
+    setStatus("loading");
+    setMessage("");
+    try {
+      const res = await subscribeEmail(email.trim());
+      setStatus("success");
+      setMessage(res.message || "تم الاشتراك بنجاح!");
+      setEmail("");
+    } catch (err) {
+      setStatus("error");
+      setMessage(err.message || "حدث خطأ، يرجى المحاولة لاحقاً");
+    }
+  };
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden">
+    <footer className="mt-16 bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden">
 
       <div className="bg-gradient-to-r from-blue-700 to-green-600 py-10 relative z-10">
 
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="page-shell px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
 
-            <h3 className="text-2xl font-black text-white mb-1">
+            <h3 className="heading-sm font-tajawal text-white mb-2">
               اشترك في نشرتنا البريدية
             </h3>
 
-            <p className="text-green-100 text-sm">
-              كن أول من يعلم بمشاريعنا ونشاطاتنا الخيرية
+            <p className="text-green-50 text-base font-medium leading-relaxed">
+              احصل على آخر الأخبار والتحديثات عن مشاريعنا الخيرية والفرص للمساهمة
             </p>
 
           </div>
 
-          <div className="flex gap-3 w-full md:w-auto">
+          <div className="flex flex-col gap-2 w-full md:w-auto">
+            <div className="flex gap-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setStatus("idle"); setMessage(""); }}
+                onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
+                placeholder="بريدك الإلكتروني..."
+                disabled={status === "loading"}
+                dir="rtl"
+                className="flex-1 md:w-72 px-5 py-3 rounded-2xl text-gray-800 bg-white font-medium outline-none border-2 border-transparent focus:border-green-300 text-right disabled:opacity-60"
+              />
 
-            <input
-              type="email"
-              placeholder="بريدك الإلكتروني..."
-              className="flex-1 md:w-72 px-5 py-3 rounded-2xl text-gray-800 bg-white font-medium outline-none border-2 border-transparent focus:border-green-300 text-right"
-            />
+              <button
+                onClick={handleSubscribe}
+                disabled={status === "loading"}
+                className="px-6 py-3 rounded-2xl bg-white text-green-700 font-black hover:bg-green-50 transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer disabled:opacity-60"
+              >
+                {status === "loading" ? (
+                  <span className="w-4 h-4 border-2 border-green-300 border-t-green-700 rounded-full animate-spin" />
+                ) : (
+                  <Mail className="w-4 h-4" />
+                )}
+                اشترك
+              </button>
+            </div>
 
-            <button className="px-6 py-3 rounded-2xl bg-white text-green-700 font-black hover:bg-green-50 transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer">
-              <Mail className="w-4 h-4" />
-              اشترك
-            </button>
-
+            {message && (
+              <p className={`text-xs font-semibold text-right pr-1 ${
+                status === "success" ? "text-green-100" : "text-red-200"
+              }`}>
+                {status === "success" ? "✅ " : "❌ "}{message}
+              </p>
+            )}
           </div>
 
         </div>
 
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-16 relative z-10">
+      <div className="page-shell px-4 md:px-6 py-16 relative z-10">
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
@@ -86,6 +108,7 @@ export default function Footer() {
                 <p className="text-green-400 text-xs font-medium">
                   معًا نصنع الفرق
                 </p>
+
               </div>
 
             </div>
@@ -98,7 +121,7 @@ export default function Footer() {
             <div className="space-y-3">
 
               {[
-                { icon: Phone, text: "0599181853", href: "https://wa.me/970599181853" },
+                { icon: Phone, text: "0599181853", href: "https://wa.me/972599181853" },
                 { icon: Mail, text: "muradaydi06@gmail.com", href: "mailto:muradaydi06@gmail.com" },
                 { icon: MapPin, text: "نابلس, Palestine", href: "https://maps.google.com/?q=نابلس,Palestine" },
               ].map(({ icon: Icon, text, href }, i) => (

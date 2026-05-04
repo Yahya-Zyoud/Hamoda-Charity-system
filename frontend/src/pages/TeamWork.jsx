@@ -1,132 +1,100 @@
-import { useState, useMemo } from "react";
-import Navbar from "../Components/Navbar";
-//import Footer from "../Components/Footer";
-import Hero from "../Components/TeamWorkComp/Hero";
+import { useState, useEffect } from "react";
+import Navbar    from "../Components/Navbar";
+
+import Hero      from "../Components/TeamWorkComp/Hero";
+import Stats     from "../Components/TeamWorkComp/Stats";
 import SearchBar from "../Components/TeamWorkComp/SearchBar";
-import TeamGrid from "../Components/TeamWorkComp/TeamGrid";
-
-/* 🔥 الداتا هون مباشرة */
-const ROLE_CONFIG = {
-  administration: {
-    label: "Administration",
-    subtitle: "The leadership team guiding our mission and vision",
-    color: "#16a34a",
-    badgeColor: "bg-green-100 text-green-700 border-green-200",
-  },
-  employees: {
-    label: "Employees",
-    subtitle: "Dedicated professionals powering our daily operations",
-    color: "#3b82f6",
-    badgeColor: "bg-blue-100 text-blue-700 border-blue-200",
-  },
-  doctors: {
-    label: "Doctors",
-    subtitle: "Medical experts delivering compassionate healthcare",
-    color: "#8b5cf6",
-    badgeColor: "bg-violet-100 text-violet-700 border-violet-200",
-  },
-  security: {
-    label: "Security",
-    subtitle: "Keeping our community safe",
-    color: "#f59e0b",
-    badgeColor: "bg-amber-100 text-amber-700 border-amber-200",
-  },
-  volunteers: {
-    label: "Volunteers",
-    subtitle: "Community heroes",
-    color: "#ec4899",
-    badgeColor: "bg-pink-100 text-pink-700 border-pink-200",
-  },
-};
-
-const teamMembers = [
-  {
-    id: "1",
-    name: "Sarah Al-Hassan",
-    title: "Executive Director",
-    role: "administration",
-    description: "Leading the organization",
-    email: "sarah@test.com",
-    phone: "0599111111",
-    skills: ["Leadership"],
-    initials: "SH",
-    avatarColor: "#16a34a",
-  },
-  {
-    id: "2",
-    name: "Omar Khalil",
-    title: "Operations Manager",
-    role: "administration",
-    description: "Managing operations",
-    email: "omar@test.com",
-    phone: "0599222222",
-    skills: ["Management"],
-    initials: "OK",
-    avatarColor: "#15803d",
-  },
-  {
-    id: "3",
-    name: "Layla Mansouri",
-    title: "Employee",
-    role: "employees",
-    description: "Daily operations",
-    email: "layla@test.com",
-    phone: "0599333333",
-    skills: ["Office"],
-    initials: "LM",
-    avatarColor: "#3b82f6",
-  },
-  {
-    id: "4",
-    name: "Dr. Kareem",
-    title: "Doctor",
-    role: "doctors",
-    description: "Healthcare services",
-    email: "doc@test.com",
-    phone: "0599444444",
-    skills: ["Medical"],
-    initials: "DK",
-    avatarColor: "#8b5cf6",
-  },
-];
+import TeamGrid  from "../Components/TeamWorkComp/TeamGrid";
 
 export default function TeamWork() {
-  const [query, setQuery] = useState("");
+  const [team,    setTeam]    = useState([]);
+  const [search,  setSearch]  = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState(null);
 
-  const filtered = useMemo(() => {
-    const q = query.toLowerCase();
-    if (!q) return teamMembers;
+  // ── جلب البيانات من الباكند ──────────────────────────────
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/team");
+        if (!res.ok) throw new Error(`فشل الاتصال بالسيرفر (${res.status})`);
+        const data = await res.json();
+        setTeam(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeam();
+  }, []);
 
-    return teamMembers.filter(
-      (m) =>
-        m.name.toLowerCase().includes(q) ||
-        m.title.toLowerCase().includes(q) ||
-        m.description.toLowerCase().includes(q)
+  // ── تصفية البحث ─────────────────────────────────────────
+  const filtered = team.filter((m) => {
+    const q = search.toLowerCase();
+    return (
+      m.name?.toLowerCase().includes(q)        ||
+      m.role?.toLowerCase().includes(q)        ||
+      m.title?.toLowerCase().includes(q)       ||
+      m.description?.toLowerCase().includes(q)
     );
-  }, [query]);
+  });
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* 🔥 Navbar */}
+    <div className="flex flex-col min-h-screen" style={{ background: "#f0f9ff" }}>
+
       <Navbar />
 
-      {/* 🔥 Hero */}
-      <Hero />
+      <main className="flex-1">
 
-      <div className="max-w-7xl mx-auto mt-10">
-        <SearchBar query={query} onChange={setQuery} />
+        <Hero />
 
-        <div className="mt-12">
-          <TeamGrid
-            members={filtered}
-            ROLE_CONFIG={ROLE_CONFIG}
-            query={query}
-          />
-        </div>
-      </div>
+        <Stats />
+
+        <SearchBar search={search} setSearch={setSearch} />
+
+        {/* Loading */}
+        {loading && (
+          <div className="flex justify-center items-center gap-3 py-24">
+            <svg
+              className="animate-spin w-5 h-5"
+              style={{ color: "#1856FF" }}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none" viewBox="0 0 24 24"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10"
+                stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z" />
+            </svg>
+            <span className="text-sm" style={{ color: "#64748b" }}>
+              جاري تحميل بيانات الفريق...
+            </span>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && !loading && (
+          <div
+            className="max-w-md mx-auto mt-12 text-center text-sm rounded-2xl p-5"
+            style={{
+              background: "rgba(234,33,67,0.07)",
+              border: "1px solid rgba(234,33,67,0.2)",
+              color: "#EA2143",
+            }}
+          >
+            ⚠️ {error}
+          </div>
+        )}
+
+        {/* Grid */}
+        {!loading && !error && <TeamGrid members={filtered} />}
+
+      </main>
 
       
-      
+
     </div>
   );
 }
