@@ -28,6 +28,8 @@ export default defineConfig([
         varsIgnorePattern: '^([A-Z_]|motion$)',
         argsIgnorePattern: '^[A-Z_]',
       }],
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/static-components': 'off',
     },
   },
 

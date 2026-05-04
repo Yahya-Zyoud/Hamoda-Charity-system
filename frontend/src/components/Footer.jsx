@@ -4,8 +4,8 @@ import { subscribeEmail } from "../services/api";
 import { footerLinks, socialLinks, EMAIL_REGEX } from "../constants/footer";
 
 export default function Footer() {
-  const [email,   setEmail]   = useState("");
-  const [status,  setStatus]  = useState("idle");
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
 
   const handleSubscribe = async () => {
@@ -77,9 +77,8 @@ export default function Footer() {
             </div>
 
             {message && (
-              <p className={`text-xs font-semibold text-right pr-1 ${
-                status === "success" ? "text-green-100" : "text-red-200"
-              }`}>
+              <p className={`text-xs font-semibold text-right pr-1 ${status === "success" ? "text-green-100" : "text-red-200"
+                }`}>
                 {status === "success" ? "✅ " : "❌ "}{message}
               </p>
             )}

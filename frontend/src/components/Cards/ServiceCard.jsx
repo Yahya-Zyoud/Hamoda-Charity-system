@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 export const ServiceCard = ({ service, index }) => {
   const Icon = service.icon || ShieldCheck;
@@ -23,7 +23,7 @@ export const ServiceCard = ({ service, index }) => {
         ease: "easeInOut",
         delay: index * 0.2,
       }}
-      className="group relative overflow-hidden rounded-3xl bg-white border border-slate-100 shadow-[0_5px_15px_rgb(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 p-7 md:p-8 flex flex-col min-h-[15rem] h-full cursor-pointer"
+      className="group relative overflow-hidden rounded-3xl bg-[#f8fafc] border border-slate-100/80 shadow-[0_4px_12px_rgb(0,0,0,0.04)] hover:shadow-[0_16px_36px_rgb(0,0,0,0.07)] transition-all duration-300 p-7 md:p-8 flex flex-col min-h-[15rem] h-full"
     >
       <div className="absolute top-0 -inset-full h-full w-1/2 z-0 transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-40 group-hover:animate-shine" />
 
@@ -47,13 +47,6 @@ export const ServiceCard = ({ service, index }) => {
         <p className="text-sm md:text-base text-slate-500 leading-relaxed font-medium">
           {service.desc}
         </p>
-      </div>
-
-      <div className="relative z-10 mt-auto pt-6">
-        <button className="flex items-center gap-2 text-sm font-bold text-slate-400 group-hover:text-emerald-600 transition-colors duration-300">
-          اقرأ المزيد
-          <ArrowLeft className="w-4 h-4 rtl:-scale-x-100 transform group-hover:-translate-x-1 transition-transform" />
-        </button>
       </div>
     </motion.div>
   );

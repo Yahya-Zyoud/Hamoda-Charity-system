@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/static-components */
+
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { getPartners } from "../../../services/api";
-import { PartnerCard } from "../../../Components/Cards";
+import { PartnerCard } from "../../../components/cards";
 import { Handshake, AlertTriangle } from "lucide-react";
 
 function PartnerSkeleton() {

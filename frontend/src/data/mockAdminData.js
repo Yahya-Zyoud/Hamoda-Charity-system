@@ -1,4 +1,4 @@
-// ─── MOCK DATA ────────────────────────────────────────────────────────────────
+
 export const STATS = {
   totalDonations: 124500,
   totalProjects: 12,
@@ -63,7 +63,7 @@ export const REQUEST_DIST = [
   { type: "تعليم", count: 5,  color: "#0EA5E9" },
 ];
 
-// ─── STATUS CONFIG ────────────────────────────────────────────────────────────
+
 export const STATUS_CFG = {
   pending:   { label: "قيد المراجعة", bg: "#FFFBEB", color: "#D97706" },
   approved:  { label: "مقبول",        bg: "#F0FDF4", color: "#16A34A" },

@@ -66,6 +66,7 @@ export default {
         "slide-down": "slideDown 0.5s ease-out",
         "scale-in": "scaleIn 0.4s ease-out",
         "bounce-gentle": "bounceGentle 2s ease-in-out infinite",
+        "spin-slow": "spin 3s linear infinite",
       },
       keyframes: {
         fadeIn: {

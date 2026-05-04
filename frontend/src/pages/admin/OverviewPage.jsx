@@ -9,10 +9,10 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
-import DashboardLayout from "../../Components/admin/DashboardLayout";
-import StatCard from "../../Components/admin/StatCard";
-import Card from "../../Components/admin/Card";
-import Badge from "../../Components/admin/Badge";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import StatCard from "../../components/ui/StatCard";
+import Card from "../../components/ui/Card";
+import Badge from "../../components/ui/Badge";
 import { STATS, MONTHLY, REQUEST_DIST, REQUESTS_DATA, DONATIONS_DATA } from "../../data/mockAdminData";
 
 const fadeUp = {
@@ -40,16 +40,16 @@ const ALERTS = [
 ];
 
 const QUICK_ACTIONS = [
-  { label: "إضافة مشروع",     icon: Plus,     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe", to: "/admin/dashboard/projects"  },
-  { label: "مراجعة الطلبات", icon: FileText,  color: "#D97706", bg: "#FFFBEB", border: "#FDE68A", badge: STATS.pendingRequests, to: "/admin/dashboard/requests"  },
-  { label: "إدارة التبرعات", icon: Wallet,    color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", to: "/admin/dashboard/donations" },
+  { label: "إضافة مشروع", icon: Plus, color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe", to: "/admin/dashboard/projects" },
+  { label: "مراجعة الطلبات", icon: FileText, color: "#D97706", bg: "#FFFBEB", border: "#FDE68A", badge: STATS.pendingRequests, to: "/admin/dashboard/requests" },
+  { label: "إدارة التبرعات", icon: Wallet, color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", to: "/admin/dashboard/donations" },
 ];
 
 const STATS_CONFIG = [
-  { label: "إجمالي التبرعات",  value: `$${STATS.totalDonations.toLocaleString()}`, icon: DollarSign,    color: "#16A34A", trend: "+18%", context: "مقارنة بالشهر الماضي", to: "/admin/dashboard/donations" },
-  { label: "المستخدمون",       value: STATS.totalUsers.toLocaleString(),             icon: Users,         color: "#2563eb", trend: "+12%", context: "مستخدم مسجل",           to: "/admin/dashboard/users"     },
-  { label: "الطلبات الواردة",  value: STATS.totalRequests,                           icon: ClipboardList, color: "#D97706", trend: "+5%",  context: `${STATS.pendingRequests} قيد المراجعة`, urgent: true, to: "/admin/dashboard/requests"  },
-  { label: "المشاريع الجارية", value: STATS.totalProjects,                           icon: CheckCircle2,  color: "#8B5CF6", trend: "-2%",  context: "3 مشاريع نشطة",          to: "/admin/dashboard/projects"  },
+  { label: "إجمالي التبرعات", value: `$${STATS.totalDonations.toLocaleString()}`, icon: DollarSign, color: "#16A34A", trend: "+18%", context: "مقارنة بالشهر الماضي", to: "/admin/dashboard/donations" },
+  { label: "المستخدمون", value: STATS.totalUsers.toLocaleString(), icon: Users, color: "#2563eb", trend: "+12%", context: "مستخدم مسجل", to: "/admin/dashboard/users" },
+  { label: "الطلبات الواردة", value: STATS.totalRequests, icon: ClipboardList, color: "#D97706", trend: "+5%", context: `${STATS.pendingRequests} قيد المراجعة`, urgent: true, to: "/admin/dashboard/requests" },
+  { label: "المشاريع الجارية", value: STATS.totalProjects, icon: CheckCircle2, color: "#8B5CF6", trend: "-2%", context: "3 مشاريع نشطة", to: "/admin/dashboard/projects" },
 ];
 
 const bestMonth = MONTHLY.reduce((a, b) => (a.v > b.v ? a : b));

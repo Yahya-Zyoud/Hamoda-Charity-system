@@ -1,12 +1,12 @@
 import { useState } from "react";
-import DashboardLayout from "../../components/admin/DashboardLayout";
-import Card from "../../components/admin/Card";
-import Badge from "../../components/admin/Badge";
-import Btn from "../../components/admin/Btn";
-import Input from "../../components/admin/Input";
-import Select from "../../components/admin/Select";
-import Modal from "../../components/admin/Modal";
-import { Th, Td, TableRow } from "../../components/admin/TableParts";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import Card from "../../components/ui/Card";
+import Badge from "../../components/ui/Badge";
+import Btn from "../../components/ui/Btn";
+import Input from "../../components/ui/Input";
+import Select from "../../components/ui/Select";
+import Modal from "../../components/ui/Modal";
+import { Th, Td, TableRow } from "../../components/ui/TableParts";
 import { USERS_DATA } from "../../data/mockAdminData";
 
 function UsersPage() {

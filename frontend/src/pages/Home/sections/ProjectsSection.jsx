@@ -39,14 +39,14 @@ export default function ProjectsSection() {
     <section
       id="projects"
       dir="rtl"
-      className="relative py-24 xl:py-28 bg-[#fafcfb] font-[Cairo,sans-serif] overflow-hidden"
+      className="relative py-24 xl:py-28 bg-[#eef2f7] font-[Cairo,sans-serif] overflow-hidden"
     >
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-emerald-50/50 to-transparent rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-50/40 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
-     
+
       <div className="page-shell px-4 md:px-6 xl:px-8 relative z-10">
-       
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -72,7 +72,7 @@ export default function ProjectsSection() {
 
         {error && (
           <div className="flex flex-col items-center justify-center p-12 bg-red-50/80 backdrop-blur-sm rounded-3xl border border-red-100 text-center gap-5 max-w-2xl mx-auto">
-          
+
             <AlertTriangle className="w-16 h-16 text-red-500 mb-2 drop-shadow-sm" />
             <p className="text-red-700 font-bold text-xl">{error}</p>
             <button
@@ -80,7 +80,7 @@ export default function ProjectsSection() {
               className="mt-2 px-8 py-3.5 bg-red-600 text-white rounded-xl text-lg font-bold shadow-md hover:bg-red-700 transition"
             >
               المحاولة مرة أخرى
-          
+
             </button>
           </div>
         )}
@@ -103,14 +103,14 @@ export default function ProjectsSection() {
         )}
 
         {!loading && !error && projects.length === 0 && (
-          
+
           <div className="flex flex-col items-center justify-center p-16 bg-white rounded-3xl border border-slate-100 text-center shadow-sm max-w-2xl mx-auto">
-            
+
             <FolderOpen className="w-24 h-24 text-slate-300 mb-6" />
             <p className="text-slate-500 font-bold text-xl">
               لا توجد مشاريع متاحة حالياً
             </p>
-         
+
           </div>
         )}
 
@@ -125,19 +125,17 @@ export default function ProjectsSection() {
                   <div
                     key={p.id}
                     onMouseEnter={() => setActiveProject(p)}
-                    className={`group p-5 md:p-6 rounded-[2rem] transition-all duration-500 cursor-pointer border ${
-                      isActive
-                        ? "bg-white shadow-[0_20px_50px_rgb(0,0,0,0.06)] border-white scale-[1.02] z-10"
-                        : "bg-transparent border-transparent hover:bg-white/40"
-                    }`}
+                    className={`group p-5 md:p-6 rounded-[2rem] transition-all duration-500 cursor-pointer border ${isActive
+                      ? "bg-white shadow-[0_20px_50px_rgb(0,0,0,0.06)] border-white scale-[1.02] z-10"
+                      : "bg-transparent border-transparent hover:bg-white/40"
+                      }`}
                   >
                     <div className="flex gap-4 md:gap-6 items-start">
                       <div
-                        className={`w-14 h-14 md:w-16 md:h-16 rounded-[1.5rem] flex items-center justify-center shrink-0 transition-all duration-500 ${
-                          isActive
-                            ? `bg-gradient-to-br ${design.color} text-white shadow-lg ${design.shadow} -translate-y-1`
-                            : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
-                        }`}
+                        className={`w-14 h-14 md:w-16 md:h-16 rounded-[1.5rem] flex items-center justify-center shrink-0 transition-all duration-500 ${isActive
+                          ? `bg-gradient-to-br ${design.color} text-white shadow-lg ${design.shadow} -translate-y-1`
+                          : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
+                          }`}
                       >
                         <span className="font-black text-xl">
                           {String(idx + 1).padStart(2, "0")}
@@ -146,54 +144,21 @@ export default function ProjectsSection() {
 
                       <div className="flex-1">
                         <h3
-                          className={`text-2xl font-black mb-3 transition-colors duration-300 line-clamp-1 ${
-                            isActive
-                              ? "text-slate-900"
-                              : "text-slate-600 group-hover:text-slate-800"
-                          }`}
+                          className={`text-2xl font-black mb-3 transition-colors duration-300 line-clamp-1 ${isActive
+                            ? "text-slate-900"
+                            : "text-slate-600 group-hover:text-slate-800"
+                            }`}
                         >
                           {p.title}
                         </h3>
                         <p
-                          className={`font-medium leading-relaxed transition-colors duration-300 line-clamp-2 mb-5 ${
-                            isActive ? "text-slate-600" : "text-slate-400"
-                          }`}
+                          className={`font-medium leading-relaxed transition-colors duration-300 line-clamp-2 mb-5 ${isActive ? "text-slate-600" : "text-slate-400"
+                            }`}
                         >
                           {p.description}
                         </p>
 
-                        <div
-                          className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between overflow-hidden transition-all duration-500 ${
-                            isActive
-                              ? "max-h-16 opacity-100 translate-y-0"
-                              : "max-h-0 opacity-0 translate-y-4"
-                          }`}
-                        >
-                          <button
-                            className={`flex items-center gap-2 font-bold text-sm bg-clip-text text-transparent bg-gradient-to-l ${design.color}`}
-                          >
-                            تفاصيل إضافية{" "}
-                            <ArrowLeft
-                              className={`w-4 h-4 text-slate-800 rtl:-scale-x-100`}
-                            />
-                          </button>
 
-                          {user || !isClerkConfigured || !SignInBtn ? (
-                            <button
-                              type="button"
-                              onClick={() => openDonationInquiry(p.title)}
-                              className={`px-6 py-2.5 rounded-xl text-white font-bold text-sm shadow-md transition-transform hover:-translate-y-1 bg-gradient-to-r ${design.color}`}
-                            >
-                              ساهم الآن
-                            </button>
-                          ) : (
-                            <SignInBtn mode="modal">
-                              <button className={`px-6 py-2.5 rounded-xl text-white font-bold text-sm shadow-md transition-transform hover:-translate-y-1 bg-gradient-to-r ${design.color}`}>
-                                ساهم الآن
-                              </button>
-                            </SignInBtn>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -273,16 +238,16 @@ export default function ProjectsSection() {
                     </div>
                   </motion.div>
                 )}
-             
+
               </AnimatePresence>
-            
+
             </div>
-          
+
           </div>
         )}
-     
+
       </div>
-   
+
     </section>
   );
 }
