@@ -120,7 +120,7 @@ export default function Footer() {
             <div className="space-y-3">
 
               {[
-                { icon: Phone, text: "0599181853", href: "https://wa.me/972599181853" },
+                { icon: Phone, text: "0599181853", href: "" },
                 { icon: Mail, text: "muradaydi06@gmail.com", href: "mailto:muradaydi06@gmail.com" },
                 { icon: MapPin, text: "نابلس, Palestine", href: "https://maps.google.com/?q=نابلس,Palestine" },
               ].map(({ icon: Icon, text, href }, i) => (
