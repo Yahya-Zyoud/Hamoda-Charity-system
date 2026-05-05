@@ -7,8 +7,51 @@ import Stats     from "../Components/TeamWorkComp/Stats";
 import SearchBar from "../Components/TeamWorkComp/SearchBar";
 import TeamGrid  from "../Components/TeamWorkComp/TeamGrid";
 
+const DEMO_TEAM = [
+  {
+    _id: "demo-1",
+    name: "د. نورة العلي",
+    title: "مديرة البرامج الطبية",
+    role: "دكتور",
+    description: "قيادة الفريق الطبي وتنسيق حملات العلاج والرعاية الصحية للمحتاجين.",
+    email: "noura@example.com",
+    phone: "+966500000001",
+    initials: "ن الع",
+  },
+  {
+    _id: "demo-2",
+    name: "أ. محمد السالم",
+    title: "منسق المشاريع",
+    role: "إدارة",
+    description: "متابعة تنفيذ المشاريع الخيرية وضمان وصول الدعم للمستفيدين بشكل فعال.",
+    email: "mohammed@example.com",
+    phone: "+966500000002",
+    initials: "م س",
+  },
+  {
+    _id: "demo-3",
+    name: "فاطمة الشمري",
+    title: "متطوعة اجتماعية",
+    role: "متطوع",
+    description: "تنظيم الفعاليات الجماعية وجمع التبرعات لدعم الأسر المحتاجة.",
+    email: "fatima@example.com",
+    phone: "+966500000003",
+    initials: "ف ش",
+  },
+  {
+    _id: "demo-4",
+    name: "أ. سامي الحربي",
+    title: "موظف دعم فني",
+    role: "موظف",
+    description: "دعم القسم التقني وتقوية الأنظمة الرقمية لسهولة التواصل مع المتبرعين.",
+    email: "sami@example.com",
+    phone: "+966500000004",
+    initials: "س ح",
+  },
+];
+
 export default function TeamWork() {
-  const [team,    setTeam]    = useState([]);
+  const [team,    setTeam]    = useState(DEMO_TEAM);
   const [search,  setSearch]  = useState("");
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
@@ -19,11 +62,17 @@ export default function TeamWork() {
       try {
         setLoading(true);
         const res = await fetch("/api/team");
-        if (!res.ok) throw new Error(`فشل الاتصال بالسيرفر (${res.status})`);
+
+        if (!res.ok) {
+          throw new Error(`فشل الاتصال بالسيرفر (${res.status})`);
+        }
+
         const data = await res.json();
-        setTeam(data);
+        setTeam(Array.isArray(data) && data.length ? data : DEMO_TEAM);
+        setError(null);
       } catch (err) {
-        setError(err.message);
+        setTeam(DEMO_TEAM);
+        setError("لا يمكن جلب بيانات الفريق من الخادم، يتم عرض بيانات تجريبية.");
       } finally {
         setLoading(false);
       }
