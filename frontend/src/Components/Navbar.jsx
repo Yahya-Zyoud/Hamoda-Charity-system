@@ -1,24 +1,31 @@
 import { useState } from "react";
-import { Heart, Users, FolderOpen, Link, HelpCircle, Lock, Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Heart, Users, FolderOpen, ExternalLink, HelpCircle, Lock, Menu, X } from "lucide-react";
 
 const navItems = [
-  { label: "الرئيسية" },
-  { label: "الفريق" },
-  { label: "المشاريع" },
-  { label: "المنح والتبرعات" },
-  { label: "طلب مساعدة" },
+  { label: "الرئيسية", path: "/" },
+  { label: "الفريق", path: "/team" },
+  { label: "المشاريع", path: "/projects" },
+  { label: "المنح والتبرعات", path: "#" },
+  { label: "طلب مساعدة", path: "#" },
 ];
 
 const Navbar = () => {
-  const [active, setActive] = useState("الرئيسية");
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   const getIcon = (label) => {
     if (label === "الرئيسية") return <Heart size={20} />;
     if (label === "الفريق") return <Users size={20} />;
     if (label === "المشاريع") return <FolderOpen size={20} />;
-    if (label === "المنح والتبرعات") return <Link size={20} />;
+    if (label === "المنح والتبرعات") return <ExternalLink size={20} />;
     if (label === "طلب مساعدة") return <HelpCircle size={20} />;
+  };
+
+  const isActive = (path) => {
+    if (path === "/" && location.pathname === "/") return true;
+    if (path !== "/" && location.pathname.startsWith(path)) return true;
+    return false;
   };
 
   let MenuIcon = Menu;
@@ -51,26 +58,26 @@ const Navbar = () => {
 
             {navItems.map((item) => {
 
-              const isActive = active === item.label;
+              const itemIsActive = isActive(item.path);
 
               let textClass = "";
-              if (isActive) {
+              if (itemIsActive) {
                 textClass = "text-blue-600";
               } else {
                 textClass = "text-gray-600 hover:text-blue-600";
               }
 
               let underlineClass = "";
-              if (isActive) {
+              if (itemIsActive) {
                 underlineClass = "scale-x-100";
               } else {
                 underlineClass = "scale-x-0 group-hover:scale-x-100";
               }
 
               return (
-                <button
+                <Link
                   key={item.label}
-                  onClick={() => setActive(item.label)}
+                  to={item.path}
                   className={`relative group flex items-center gap-2 px-4 py-2 text-base cursor-pointer transition-colors ${textClass}`}
                 >
                   {getIcon(item.label)}
@@ -79,13 +86,13 @@ const Navbar = () => {
                   <span
                     className={`absolute bottom-0 right-0 left-0 h-0.5 bg-blue-600 transition-transform origin-right ${underlineClass}`}
                   />
-                </button>
+                </Link>
               );
             })}
 
           </div>
 
-          <a href="/" className="flex items-center gap-3 shrink-0 group">
+          <Link to="/" className="flex items-center gap-3 shrink-0 group">
 
             <div className="text-right">
 
@@ -103,7 +110,7 @@ const Navbar = () => {
               <img src="/images/logo.webp" alt="logo" className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110" />
             </div>
 
-          </a>
+          </Link>
 
           <button
             className="md:hidden text-gray-600 cursor-pointer"
@@ -120,25 +127,25 @@ const Navbar = () => {
 
             {navItems.map((item) => {
 
+              const itemIsActive = isActive(item.path);
+
               let mobileClass = "";
-              if (active === item.label) {
+              if (itemIsActive) {
                 mobileClass = "text-blue-600";
               } else {
                 mobileClass = "text-gray-600 hover:text-blue-600";
               }
 
               return (
-                <button
+                <Link
                   key={item.label}
-                  onClick={() => {
-                    setActive(item.label);
-                    setMenuOpen(false);
-                  }}
+                  to={item.path}
+                  onClick={() => setMenuOpen(false)}
                   className={`flex items-center gap-2 px-4 py-2 text-base cursor-pointer ${mobileClass}`}
                 >
                   {getIcon(item.label)}
                   <span>{item.label}</span>
-                </button>
+                </Link>
               );
             })}
 

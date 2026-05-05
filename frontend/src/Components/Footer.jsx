@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Heart, Mail, Phone, MapPin, ArrowUp } from "lucide-react";
 //import { subscribeEmail } from "../services/api";
-import { footerLinks, socialLinks, EMAIL_REGEX } from "../constants/footer";
+import { footerLinks, socialLinks, EMAIL_REGEX } from "../Components/constants/footer";
 
 export default function Footer() {
   const [email,   setEmail]   = useState("");

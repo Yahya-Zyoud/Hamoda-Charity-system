@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
 
 export default function ProjectGrid({ projects }) {
+  // مشروع واحد مفتوح في نفس الوقت
+  const [expandedId, setExpandedId] = useState(null);
+
   if (!projects || projects.length === 0) {
     return (
       <motion.div
@@ -25,6 +29,8 @@ export default function ProjectGrid({ projects }) {
               key={project._id || idx}
               project={project}
               index={idx}
+              expandedId={expandedId}
+              setExpandedId={setExpandedId}
             />
           ))}
         </div>

@@ -10,9 +10,9 @@ function App() {
       <ScrollToHash />
 
       <Routes>
+        <Route path="/" element={<Navigate to="/projects" replace />} />
         <Route path="/projects" element={<Project />} />
         <Route path="/team" element={<TeamWork />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 import Navbar       from "../Components/Navbar";
+import Footer       from "../Components/Footer";
 
 import ProjectHero    from "../Components/ProjectComp/ProjectHero";
 import ProjectStats   from "../Components/ProjectComp/ProjectStats";
@@ -171,7 +172,7 @@ export default function Projects() {
 
       </main>
 
-     
+      <Footer />
 
     </div>
   );
