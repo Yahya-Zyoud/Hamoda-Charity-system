@@ -17,6 +17,10 @@ app.use("/api/projects", projectRouter);
 
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));
 
+// ── Error handler ─────────────────────────────────────────
+const errorHandler = require("./middleware/errorHandler");
+app.use(errorHandler);
+
 // ── MongoDB + Listen ──────────────────────────────────────
 const PORT      = process.env.PORT      || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/hamoudeh";

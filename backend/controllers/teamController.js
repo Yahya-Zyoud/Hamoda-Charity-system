@@ -1,45 +1,49 @@
 const Team = require("../models/Team");
+const asyncHandler = require("../utils/asyncHandler");
 
-// GET
-const getTeam = async (req, res) => {
-  try {
-    const members = await Team.find({ active: true })
-      .select("-__v -createdAt -updatedAt")
-      .sort({ role: 1, order: 1 });
-
-    res.json(members);
-  } catch (err) {
-    res.status(500).json({
-      message: "خطأ في جلب بيانات الفريق",
-      error: err.message,
-    });
-  }
+const createApiError = (status, message) => {
+  const error = new Error(message);
+  error.statusCode = status;
+  return error;
 };
 
-// POST
-const addMember = async (req, res) => {
-  try {
-    const member = await Team.create(req.body);
-    res.status(201).json(member);
-  } catch (err) {
-    res.status(400).json({
-      message: "خطأ في إضافة العضو",
-      error: err.message,
-    });
-  }
-};
+// GET /api/team
+const getTeam = asyncHandler(async (req, res) => {
+  const members = await Team.find({ active: true })
+    .select("-__v -createdAt -updatedAt")
+    .sort({ role: 1, order: 1 });
 
-// DELETE
-const deleteMember = async (req, res) => {
-  try {
-    await Team.findByIdAndDelete(req.params.id);
-    res.json({ message: "تم الحذف" });
-  } catch (err) {
-    res.status(500).json({
-      message: "خطأ في الحذف",
-      error: err.message,
-    });
-  }
-};
+  res.json(members);
+});
 
-module.exports = { getTeam, addMember, deleteMember };
+// GET /api/team/:id
+const getMember = asyncHandler(async (req, res) => {
+  const member = await Team.findById(req.params.id);
+  if (!member) throw createApiError(404, "العضو غير موجود");
+  res.json(member);
+});
+
+// POST /api/team
+const addMember = asyncHandler(async (req, res) => {
+  const member = await Team.create(req.body);
+  res.status(201).json(member);
+});
+
+// PUT /api/team/:id
+const updateMember = asyncHandler(async (req, res) => {
+  const updated = await Team.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!updated) throw createApiError(404, "العضو غير موجود");
+  res.json(updated);
+});
+
+// DELETE /api/team/:id
+const deleteMember = asyncHandler(async (req, res) => {
+  const deleted = await Team.findByIdAndDelete(req.params.id);
+  if (!deleted) throw createApiError(404, "العضو غير موجود");
+  res.json({ message: "تم حذف العضو بنجاح" });
+});
+
+module.exports = { getTeam, getMember, addMember, updateMember, deleteMember };

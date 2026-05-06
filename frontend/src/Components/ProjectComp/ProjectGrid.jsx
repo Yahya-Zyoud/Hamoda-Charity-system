@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
 
-export default function ProjectGrid({ projects }) {
+export default function ProjectGrid({ projects, onEdit, onDelete }) {
   // مشروع واحد مفتوح في نفس الوقت
   const [expandedId, setExpandedId] = useState(null);
 
@@ -31,6 +31,8 @@ export default function ProjectGrid({ projects }) {
               index={idx}
               expandedId={expandedId}
               setExpandedId={setExpandedId}
+              onEdit={onEdit}
+              onDelete={onDelete}
             />
           ))}
         </div>

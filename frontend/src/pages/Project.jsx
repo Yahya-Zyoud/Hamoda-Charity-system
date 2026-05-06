@@ -9,6 +9,7 @@ import ProjectStats   from "../Components/ProjectComp/ProjectStats";
 import ProjectFilters from "../Components/ProjectComp/ProjectFilters";
 import ProjectGrid    from "../Components/ProjectComp/ProjectGrid";
 import ProjectCTA     from "../Components/ProjectComp/ProjectCTA";
+import * as api       from "../services/api";
 
 // ── بيانات تجريبية تُستخدم إذا فشل الاتصال بالباكند ──────
 const DEMO_PROJECTS = [
@@ -74,45 +75,132 @@ const DEMO_PROJECTS = [
   },
 ];
 
+const initialProjectForm = {
+  title: "",
+  category: "صحة",
+  status: "نشط",
+  description: "",
+  goal: 0,
+  raised: 0,
+  beneficiaries: 0,
+  location: "",
+  startDate: "",
+  image: "",
+};
+
 export default function Projects() {
-  const [projects, setProjects] = useState([]);
-  const [stats,    setStats]    = useState(null);
-  const [loading,  setLoading]  = useState(true);
-  const [search,   setSearch]   = useState("");
-  const [category, setCategory] = useState("الكل");
-  const [status,   setStatus]   = useState("الكل");
+  const [projects,       setProjects]       = useState([]);
+  const [stats,          setStats]          = useState(null);
+  const [loading,        setLoading]        = useState(true);
+  const [search,         setSearch]         = useState("");
+  const [category,       setCategory]       = useState("الكل");
+  const [status,         setStatus]         = useState("الكل");
+  const [formData,       setFormData]       = useState(initialProjectForm);
+  const [formError,      setFormError]      = useState(null);
+  const [pageError,      setPageError]      = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [showForm,       setShowForm]       = useState(false);
+  const [saving,         setSaving]         = useState(false);
 
-  // ── جلب البيانات ────────────────────────────────────────
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        const [projRes, statsRes] = await Promise.all([
-          fetch("/api/projects"),
-          fetch("/api/projects/stats"),
-        ]);
+  
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      setPageError(null);
+      const [projectsData, statsData] = await Promise.all([
+        api.getProjects(),
+        api.getProjectStats(),
+      ]);
 
-        if (projRes.ok) {
-          const data = await projRes.json();
-          setProjects(data.length ? data : DEMO_PROJECTS);
-        } else {
-          setProjects(DEMO_PROJECTS);
-        }
+      setProjects(Array.isArray(projectsData) && projectsData.length ? projectsData : DEMO_PROJECTS);
+      setStats(statsData);
+    } catch (err) {
+      setProjects(DEMO_PROJECTS);
+      setPageError(err.message || "لا يمكن جلب بيانات المشاريع من الخادم.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (statsRes.ok) {
-          setStats(await statsRes.json());
-        }
-      } catch {
-        // fallback للبيانات التجريبية
-        setProjects(DEMO_PROJECTS);
-      } finally {
-        setLoading(false);
+  const openForm = (project = null) => {
+    setSelectedProject(project);
+    setFormData(project ? { ...project } : initialProjectForm);
+    setFormError(null);
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setSelectedProject(null);
+    setFormData(initialProjectForm);
+    setFormError(null);
+    setShowForm(false);
+  };
+
+  const handleFormChange = (event) => {
+    const { name, value, type } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "number" ? Number(value) : value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      setSaving(true);
+      setFormError(null);
+
+      const payload = {
+        title:         formData.title,
+        category:      formData.category,
+        status:        formData.status,
+        description:   formData.description,
+        goal:          Number(formData.goal) || 0,
+        raised:        Number(formData.raised) || 0,
+        beneficiaries: Number(formData.beneficiaries) || 0,
+        location:      formData.location,
+        startDate:     formData.startDate,
+        image:         formData.image,
+      };
+
+      if (selectedProject) {
+        const updated = await api.updateProject(selectedProject._id, payload);
+        setProjects((prev) => prev.map((project) => (project._id === updated._id ? updated : project)));
+      } else {
+        const created = await api.createProject(payload);
+        setProjects((prev) => [created, ...prev]);
       }
-    };
-    load();
+
+      closeForm();
+    } catch (err) {
+      setFormError(err.message || "فشل حفظ المشروع، حاول مرة أخرى.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEdit = (project) => {
+    openForm(project);
+  };
+
+  const handleDelete = async (project) => {
+    if (!window.confirm(`هل أنت متأكد من حذف المشروع: ${project.title}؟`)) return;
+    try {
+      setLoading(true);
+      await api.deleteProject(project._id);
+      setProjects((prev) => prev.filter((item) => item._id !== project._id));
+    } catch (err) {
+      setPageError(err.message || "فشل حذف المشروع.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProjects();
   }, []);
 
-  // ── حساب الإحصاءات من الـ demo إذا ما وصل الباكند ───────
+  
   const computedStats = stats || {
     total:         projects.length,
     active:        projects.filter((p) => p.status === "نشط").length,
@@ -145,14 +233,121 @@ export default function Projects() {
         {/* Stats */}
         <ProjectStats stats={computedStats} />
 
-        {/* Filters + counter */}
-        <ProjectFilters
-          search={search}     setSearch={setSearch}
-          category={category} setCategory={setCategory}
-          status={status}     setStatus={setStatus}
-          total={projects.length}
-          filtered={filtered.length}
-        />
+        <div className="max-w-6xl mx-auto px-5 py-8 space-y-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <ProjectFilters
+              search={search}     setSearch={setSearch}
+              category={category} setCategory={setCategory}
+              status={status}     setStatus={setStatus}
+              total={projects.length}
+              filtered={filtered.length}
+            />
+            <button
+              type="button"
+              onClick={() => openForm(null)}
+              className="rounded-full px-5 py-3 font-bold text-sm"
+              style={{
+                background: "linear-gradient(135deg, #1856FF, #07CA6B)",
+                color: "white",
+                border: "none",
+                boxShadow: "0 10px 24px rgba(24,86,255,0.2)",
+              }}
+            >
+              إضافة مشروع جديد
+            </button>
+          </div>
+
+          {showForm && (
+            <section className="rounded-3xl bg-white p-6 shadow-xl" dir="rtl">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-extrabold" style={{ color: "#0f172a" }}>
+                    {selectedProject ? "تعديل المشروع" : "إضافة مشروع جديد"}
+                  </h2>
+                  <p className="text-sm" style={{ color: "#64748b" }}>
+                    {selectedProject ? "حدّث بيانات المشروع ثم احفظ." : "أنشئ مشروعاً جديداً وأضفه لقائمة المشاريع."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={closeForm}
+                  className="text-sm font-semibold"
+                  style={{ color: "#475569" }}
+                >
+                  إغلاق
+                </button>
+              </div>
+
+              <form className="grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>
+                {[
+                  { label: "العنوان", name: "title", type: "text" },
+                  { label: "الفئة", name: "category", type: "text" },
+                  { label: "الحالة", name: "status", type: "text" },
+                  { label: "الموقع", name: "location", type: "text" },
+                  { label: "تاريخ البدء", name: "startDate", type: "date" },
+                  { label: "رابط الصورة", name: "image", type: "text" },
+                  { label: "الهدف", name: "goal", type: "number" },
+                  { label: "المبالغ المجمعة", name: "raised", type: "number" },
+                  { label: "عدد المستفيدين", name: "beneficiaries", type: "number" },
+                ].map(({ label, name, type }) => (
+                  <label key={name} className="block text-sm font-medium text-slate-700">
+                    {label}
+                    <input
+                      name={name}
+                      type={type}
+                      value={formData[name] ?? ""}
+                      onChange={handleFormChange}
+                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm outline-none transition focus:border-blue-300"
+                    />
+                  </label>
+                ))}
+
+                <label className="block text-sm font-medium text-slate-700 sm:col-span-2">
+                  الوصف
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleFormChange}
+                    rows={4}
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm outline-none transition focus:border-blue-300"
+                  />
+                </label>
+
+                {formError && (
+                  <div className="sm:col-span-2 rounded-2xl bg-red-50 p-3 text-sm text-red-700">
+                    {formError}
+                  </div>
+                )}
+
+                <div className="sm:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={closeForm}
+                    className="rounded-2xl border border-slate-300 px-5 py-3 text-sm font-semibold"
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {saving ? "جاري الحفظ..." : selectedProject ? "حفظ التعديلات" : "إضافة مشروع"}
+                  </button>
+                </div>
+              </form>
+            </section>
+          )}
+
+          {pageError && (
+            <div
+              className="rounded-2xl bg-red-50 p-5 text-sm text-red-700"
+              style={{ border: "1px solid rgba(234,33,67,0.16)" }}
+            >
+              ⚠️ {pageError}
+            </div>
+          )}
+        </div>
 
         {/* Loading */}
         {loading && (
@@ -165,7 +360,13 @@ export default function Projects() {
         )}
 
         {/* Grid */}
-        {!loading && <ProjectGrid projects={filtered} />}
+        {!loading && (
+          <ProjectGrid
+            projects={filtered}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
 
         {/* CTA */}
         {!loading && <ProjectCTA />}

@@ -7,7 +7,7 @@ const SECTIONS = [
   { key: "متطوع",  label: "المتطوعون",  sub: "قلوب تنبض بالعطاء والتضامن الإنساني"             },
 ];
 
-export default function TeamGrid({ members }) {
+export default function TeamGrid({ members, onEdit, onDelete }) {
   if (!members || members.length === 0) {
     return (
       <div className="text-center py-20 text-sm" style={{ color: "#94a3b8" }}>
@@ -70,6 +70,8 @@ export default function TeamGrid({ members }) {
                 key={member._id || member.id}
                 member={member}
                 index={idx}
+                onEdit={onEdit}
+                onDelete={onDelete}
               />
             ))}
           </div>
