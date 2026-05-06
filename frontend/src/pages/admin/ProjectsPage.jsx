@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Pencil, Check, Trash2 } from "lucide-react";
 import DashboardLayout from "../../Components/admin/DashboardLayout";
 import Card from "../../Components/admin/Card";
 import Btn from "../../Components/admin/Btn";
@@ -96,9 +97,9 @@ function ProjectsPage() {
 
               {/* Actions */}
               <div style={{ borderTop: "1px solid #F1F5F9", padding: "10px 16px", display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <Btn sm variant="ghost" onClick={() => openEdit(pr)}>✏️ تعديل</Btn>
-                {pr.status !== "completed" && <Btn sm variant="success-light" onClick={() => complete(pr.id)}>✔ مكتمل</Btn>}
-                <Btn sm variant="danger-light" onClick={() => del(pr.id)}>🗑 حذف</Btn>
+                <Btn sm variant="ghost" onClick={() => openEdit(pr)}><Pencil size={13} style={{ marginLeft: 4 }} /> تعديل</Btn>
+                {pr.status !== "completed" && <Btn sm variant="success-light" onClick={() => complete(pr.id)}><Check size={13} style={{ marginLeft: 4 }} /> مكتمل</Btn>}
+                <Btn sm variant="danger-light" onClick={() => del(pr.id)}><Trash2 size={13} style={{ marginLeft: 4 }} /> حذف</Btn>
               </div>
             </Card>
           );
