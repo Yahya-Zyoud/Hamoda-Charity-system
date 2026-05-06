@@ -32,8 +32,8 @@ const handleAllErrors = (err, req, res, next) => {
 
   return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
     success: false,
-    message: MESSAGES.ERROR,
-    error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    message: err.message || MESSAGES.ERROR,
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 };
 
