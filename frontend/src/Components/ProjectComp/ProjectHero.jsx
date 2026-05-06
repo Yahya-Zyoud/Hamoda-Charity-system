@@ -30,7 +30,7 @@ export default function ProjectHero() {
           }}
         >
           <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
-          OUR IMPACT ON THE GROUND
+          تأثيرنا على أرض الواقع
         </motion.div>
 
         {/* Title */}

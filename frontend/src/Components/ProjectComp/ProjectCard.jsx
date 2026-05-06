@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Users, Calendar, CheckCircle2, Clock, Timer,
   FolderOpen, ChevronDown, Heart, Target,
-  TrendingUp, Info, X, Pencil, Trash2,
+  TrendingUp, Info, X,
 } from "lucide-react";
 import { createPortal } from "react-dom";
 
@@ -279,7 +279,7 @@ function ProjectModal({ project, gradient, progress, onClose, onDonate }) {
 }
 
 // ── الكارد الرئيسي ─────────────────────────────────────────────────────────────
-export default function ProjectCard({ project, index = 0, expandedId, setExpandedId, onEdit, onDelete }) {
+export default function ProjectCard({ project, index = 0, expandedId, setExpandedId }) {
   const isExpanded = expandedId === (project._id || index);
 
   const cat      = CATEGORY_COLORS[project.category] || CATEGORY_COLORS["أخرى"];
@@ -421,29 +421,6 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
             <ChevronDown size={15} />
             عرض التفاصيل
           </button>
-
-          {(onEdit || onDelete) && (
-            <div className="mt-4 flex items-center gap-3">
-              {onEdit && (
-                <button
-                  type="button"
-                  onClick={() => onEdit(project)}
-                  className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-                >
-                  <Pencil size={14} className="inline-block" /> تعديل
-                </button>
-              )}
-              {onDelete && (
-                <button
-                  type="button"
-                  onClick={() => onDelete(project)}
-                  className="flex-1 rounded-2xl border border-rose-200 bg-rose-50 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-100"
-                >
-                  <Trash2 size={14} className="inline-block" /> حذف
-                </button>
-              )}
-            </div>
-          )}
         </div>
       </motion.div>
 

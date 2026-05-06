@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Mail, Phone, Pencil, Trash2 } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 
 const BADGE_COLORS = {
   "إدارة": { bg: "rgba(24,86,255,0.88)"  },
@@ -15,7 +15,7 @@ const GRADIENTS = [
   "linear-gradient(135deg,#1856FF,#0ea5e9)",
 ];
 
-export default function TeamCard({ member, index = 0, onEdit, onDelete }) {
+export default function TeamCard({ member, index = 0 }) {
   const badge    = BADGE_COLORS[member.role] || { bg: "#1856FF" };
   const gradient = GRADIENTS[index % GRADIENTS.length];
   const initials = member.initials || member.name?.slice(0, 2) || "??";
@@ -100,38 +100,6 @@ export default function TeamCard({ member, index = 0, onEdit, onDelete }) {
           )}
         </div>
 
-        {(onEdit || onDelete) && (
-          <div className="mt-4 flex items-center gap-3 justify-between">
-            {onEdit && (
-              <button
-                type="button"
-                onClick={() => onEdit(member)}
-                className="flex-1 rounded-xl py-2 text-sm font-semibold"
-                style={{
-                  background: "rgba(24,86,255,0.12)",
-                  color: "#1856FF",
-                  border: "1px solid rgba(24,86,255,0.18)",
-                }}
-              >
-                <Pencil size={14} /> تعديل
-              </button>
-            )}
-            {onDelete && (
-              <button
-                type="button"
-                onClick={() => onDelete(member)}
-                className="flex-1 rounded-xl py-2 text-sm font-semibold"
-                style={{
-                  background: "rgba(234,33,67,0.12)",
-                  color: "#EA2143",
-                  border: "1px solid rgba(234,33,67,0.18)",
-                }}
-              >
-                <Trash2 size={14} /> حذف
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </motion.div>
   );
