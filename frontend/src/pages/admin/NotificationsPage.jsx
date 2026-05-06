@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Check, BellOff, ClipboardList, DollarSign, Bell } from "lucide-react";
 import DashboardLayout from "../../Components/admin/DashboardLayout";
 import Card from "../../Components/admin/Card";
 import Btn from "../../Components/admin/Btn";
@@ -42,7 +43,7 @@ function NotificationsPage() {
         </div>
         {unread > 0 && (
           <Btn variant="outline" onClick={markAllRead}>
-            ✓ تعيين الكل كمقروء
+            <Check size={14} style={{ marginLeft: 5 }} /> تعيين الكل كمقروء
           </Btn>
         )}
       </div>
@@ -50,8 +51,8 @@ function NotificationsPage() {
       {/* Notifications List */}
       <div style={{ display: "grid", gap: 12 }}>
         {items.length === 0 && (
-          <Card style={{ padding: "50px 20px", textAlign: "center", color: "#94A3B8" }}>
-            📭 لا توجد إشعارات
+          <Card style={{ padding: "50px 20px", textAlign: "center", color: "#94A3B8", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <BellOff size={18} /> لا توجد إشعارات
           </Card>
         )}
         {items.map((n) => (
@@ -74,10 +75,13 @@ function NotificationsPage() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 18,
                   flexShrink: 0,
                 }}>
-                  {n.type === "request" ? "📋" : n.type === "donation" ? "💰" : "🔔"}
+                  {n.type === "request"
+                    ? <ClipboardList size={18} color="#D97706" />
+                    : n.type === "donation"
+                    ? <DollarSign size={18} color="#16A34A" />
+                    : <Bell size={18} color="#2563eb" />}
                 </div>
                 <div>
                   <div style={{ fontWeight: !n.read ? 700 : 500, marginBottom: 4, fontSize: 14 }}>{n.msg}</div>
