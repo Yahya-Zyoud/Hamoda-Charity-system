@@ -27,7 +27,7 @@ export default function Hero() {
           }}
         >
           <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
-          THE PEOPLE BEHIND THE MISSION
+          الأشخاص خلف المهمة
         </motion.div>
 
         {/* Title */}
@@ -37,7 +37,7 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="text-5xl md:text-6xl font-extrabold text-white mb-5 leading-tight"
         >
-          Meet Our Team
+          تعرّف على فريقنا
         </motion.h1>
 
         {/* Description */}
@@ -48,8 +48,8 @@ export default function Hero() {
           className="text-base md:text-lg leading-relaxed max-w-xl mx-auto"
           style={{ color: "rgba(255,255,255,0.82)" }}
         >
-          Doctors, volunteers, and administrators united by a single purpose —
-          bringing hope and care to communities that need it most.
+          أطباء ومتطوعون وإداريون متحدون بهدف واحد —
+          نقل الأمل والرعاية إلى المجتمعات التي في أمس الحاجة إليها.
         </motion.p>
       </div>
     </section>
