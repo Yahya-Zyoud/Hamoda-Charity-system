@@ -2,7 +2,8 @@ const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const { getFileUrl, deleteFile } = require("../utils/fileHandler");
 const logger = require("../utils/logger");
 
-let profile = {
+const profiles = new Map();
+const DEFAULT_PROFILE = {
   name: "محمد أحمد الخالدي",
   role: "متبرع بلاتيني",
   email: "mohammed@example.com",
@@ -14,9 +15,18 @@ let profile = {
   joinDate: "يناير 2024",
 };
 
+function getOrCreate(userId) {
+  if (!profiles.has(userId)) {
+    profiles.set(userId, { ...DEFAULT_PROFILE });
+  }
+  return profiles.get(userId);
+}
+
 exports.getProfile = (req, res) => {
   try {
-    logger.info("User profile retrieved");
+    const userId = req.headers["x-user-id"] || "guest";
+    const profile = getOrCreate(userId);
+    logger.info("User profile retrieved", { userId });
     return res.status(HTTP_STATUS.OK).json({
       success: true,
       message: MESSAGES.SUCCESS,
@@ -33,13 +43,14 @@ exports.getProfile = (req, res) => {
 
 exports.updateProfile = (req, res) => {
   try {
-    profile = { ...profile, ...req.body };
-
-    logger.info("User profile updated");
+    const userId = req.headers["x-user-id"] || "guest";
+    const profile = getOrCreate(userId);
+    profiles.set(userId, { ...profile, ...req.body });
+    logger.info("User profile updated", { userId });
     return res.status(HTTP_STATUS.OK).json({
       success: true,
       message: MESSAGES.SUCCESS,
-      data: profile,
+      data: profiles.get(userId),
     });
   } catch (error) {
     logger.error("Error updating user profile", { error: error.message });
@@ -59,6 +70,8 @@ exports.uploadImage = (req, res) => {
       });
     }
 
+    const userId = req.headers["x-user-id"] || "guest";
+    const profile = getOrCreate(userId);
     const url = getFileUrl(req.file.filename);
     const type = req.body.type || "avatar";
 
@@ -67,10 +80,9 @@ exports.uploadImage = (req, res) => {
       deleteFile(oldName);
     }
 
-    profile[type] = url;
+    profiles.set(userId, { ...profile, [type]: url });
 
-    logger.info("User image uploaded", { type, filename: req.file.filename });
-
+    logger.info("User image uploaded", { userId, type, filename: req.file.filename });
     return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       message: MESSAGES.FILE_UPLOAD_SUCCESS,
