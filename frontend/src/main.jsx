@@ -1,4 +1,4 @@
-import { Component, StrictMode } from "react";
+﻿import { Component, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
@@ -33,7 +33,7 @@ async function boot() {
   if (isClerkConfigured) {
     try {
       const { ClerkProvider } = await import("@clerk/clerk-react");
-      const { ClerkBridge } = await import("./Components/auth/ClerkBridge.jsx");
+      const { ClerkBridge } = await import("./components/auth/ClerkBridge.jsx");
 
       Root = () => (
         <AuthBootBoundary>

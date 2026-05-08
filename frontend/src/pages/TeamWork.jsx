@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import Navbar    from "../Components/Navbar";
-import Footer    from "../Components/Footer";
+﻿import { useState, useEffect } from "react";
+import Navbar    from "../components/Navbar";
+import Footer    from "../components/Footer";
 
-import Hero      from "../Components/TeamWorkComp/Hero";
-import Stats     from "../Components/TeamWorkComp/Stats";
-import SearchBar from "../Components/TeamWorkComp/SearchBar";
-import TeamGrid  from "../Components/TeamWorkComp/TeamGrid";
+import Hero      from "../components/team/Hero";
+import Stats     from "../components/team/Stats";
+import SearchBar from "../components/team/SearchBar";
+import TeamGrid  from "../components/team/TeamGrid";
 import * as api  from "../services/api";
 
 const DEMO_TEAM = [

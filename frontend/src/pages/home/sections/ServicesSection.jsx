@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { ServiceCard } from "../../../Components/Cards";
+import { ServiceCard } from "../../../components/cards";
 import { getServices } from "../../../services/api";
 import {
   ShieldCheck,

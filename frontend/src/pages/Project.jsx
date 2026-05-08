@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
-import Navbar       from "../Components/Navbar";
-import Footer       from "../Components/Footer";
+import Navbar       from "../components/Navbar";
+import Footer       from "../components/Footer";
 
-import ProjectHero    from "../Components/ProjectComp/ProjectHero";
-import ProjectStats   from "../Components/ProjectComp/ProjectStats";
-import ProjectFilters from "../Components/ProjectComp/ProjectFilters";
-import ProjectGrid    from "../Components/ProjectComp/ProjectGrid";
-import ProjectCTA     from "../Components/ProjectComp/ProjectCTA";
+import ProjectHero    from "../components/project/ProjectHero";
+import ProjectStats   from "../components/project/ProjectStats";
+import ProjectFilters from "../components/project/ProjectFilters";
+import ProjectGrid    from "../components/project/ProjectGrid";
+import ProjectCTA     from "../components/project/ProjectCTA";
 import * as api       from "../services/api";
 
 // ── بيانات تجريبية تُستخدم إذا فشل الاتصال بالباكند ──────
