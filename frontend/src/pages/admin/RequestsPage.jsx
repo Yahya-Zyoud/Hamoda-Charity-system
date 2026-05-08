@@ -184,4 +184,4 @@ function DetailRow({ label, value }) {
   );
 }
 
-export default RequestsPa
+export default RequestsPage;

@@ -63,4 +63,4 @@ boot().catch((err) => {
   console.error("[boot] Fatal error:", err);
   document.getElementById("root").innerHTML =
     '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#666">حدث خطأ أثناء التشغيل. يرجى إعادة تحميل الصفحة.</div>';
-}
+});

@@ -131,4 +131,14 @@ export default function TeamWork() {
         )}
 
         {/* Grid */}
-        {!loading && (
+        {!loading && (
+          <TeamGrid members={filtered} />
+        )}
+
+      </main>
+
+      <Footer />
+
+    </div>
+  );
+}
