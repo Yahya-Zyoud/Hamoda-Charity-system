@@ -39,4 +39,8 @@ function App() {
         <Route path="/help" element={<Navigate to="/#services" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    <
+    </BrowserRouter>
+  );
+}
+
+export default App;

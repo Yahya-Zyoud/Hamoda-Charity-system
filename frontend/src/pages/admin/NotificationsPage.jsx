@@ -107,4 +107,4 @@ function NotificationsPage() {
   );
 }
 
-export default NotificationsPa
+export default NotificationsPage;

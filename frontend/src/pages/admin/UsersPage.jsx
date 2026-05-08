@@ -167,4 +167,4 @@ function UsersPage() {
   );
 }
 
-export default UsersPa
+export default UsersPage;

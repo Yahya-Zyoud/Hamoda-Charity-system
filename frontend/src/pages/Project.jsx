@@ -172,4 +172,16 @@ export default function Projects() {
 
         {/* Grid */}
         {!loading && (
-         
+          <ProjectGrid projects={filtered} />
+        )}
+
+        {/* CTA */}
+        {!loading && <ProjectCTA />}
+
+      </main>
+
+      <Footer />
+
+    </div>
+  );
+}

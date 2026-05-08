@@ -125,4 +125,4 @@ function DetailRow({ label, value }) {
   );
 }
 
-export default DonationsPa
+export default DonationsPage;

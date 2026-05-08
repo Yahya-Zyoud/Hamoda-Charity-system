@@ -140,4 +140,4 @@ function ProjectsPage() {
   );
 }
 
-export default ProjectsPa
+export default ProjectsPage;
