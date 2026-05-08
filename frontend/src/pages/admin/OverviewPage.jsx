@@ -1,4 +1,4 @@
-﻿import {
+import {
   DollarSign, Users, ClipboardList, CheckCircle2,
   TrendingUp, BarChart3, Calendar, AlertTriangle,
   AlertCircle, Plus, FileText, Wallet, ArrowUpRight, Heart,
@@ -290,4 +290,4 @@ function OverviewPage() {
   );
 }
 
-export default OverviewPage;
+export default OverviewPag

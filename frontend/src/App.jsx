@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToHash from "./components/ScrollToHash";
@@ -39,8 +39,4 @@ function App() {
         <Route path="/help" element={<Navigate to="/#services" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
-  );
-}
-
-export default App;
+    <
