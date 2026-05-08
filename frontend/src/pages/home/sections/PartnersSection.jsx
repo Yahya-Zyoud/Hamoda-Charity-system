@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { getPartners } from "../../../services/api";
 import { PartnerCard } from "../../../components/cards";

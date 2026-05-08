@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Eye, Search } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
@@ -125,4 +125,4 @@ function DetailRow({ label, value }) {
   );
 }
 
-export default DonationsPage;
+export default DonationsPa

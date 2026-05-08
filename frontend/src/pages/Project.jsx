@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 import Navbar       from "../components/Navbar";
@@ -172,16 +172,4 @@ export default function Projects() {
 
         {/* Grid */}
         {!loading && (
-          <ProjectGrid projects={filtered} />
-        )}
-
-        {/* CTA */}
-        {!loading && <ProjectCTA />}
-
-      </main>
-
-      <Footer />
-
-    </div>
-  );
-}
+         

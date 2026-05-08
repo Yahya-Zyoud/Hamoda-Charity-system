@@ -1,4 +1,4 @@
-﻿import { Download, FileSpreadsheet, DollarSign, ClipboardList, TrendingUp, Users, Briefcase, Wallet } from "lucide-react";
+import { Download, FileSpreadsheet, DollarSign, ClipboardList, TrendingUp, Users, Briefcase, Wallet } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
 import Badge from "../../components/admin/Badge";
@@ -172,4 +172,4 @@ function ReportsPage() {
   );
 }
 
-export default ReportsPage;
+export default ReportsPage

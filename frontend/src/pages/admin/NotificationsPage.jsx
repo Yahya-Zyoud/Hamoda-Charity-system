@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Check, BellOff, ClipboardList, DollarSign, Bell } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
@@ -107,4 +107,4 @@ function NotificationsPage() {
   );
 }
 
-export default NotificationsPage;
+export default NotificationsPa

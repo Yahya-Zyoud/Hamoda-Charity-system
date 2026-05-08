@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Navbar    from "../components/Navbar";
 import Footer    from "../components/Footer";
 
@@ -131,14 +131,4 @@ export default function TeamWork() {
         )}
 
         {/* Grid */}
-        {!loading && (
-          <TeamGrid members={filtered} />
-        )}
-
-      </main>
-
-      <Footer />
-
-    </div>
-  );
-}
+        {!loading && (
