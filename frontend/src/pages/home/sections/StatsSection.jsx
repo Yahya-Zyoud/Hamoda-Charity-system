@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { StatCard } from "../../../Components/Cards";
+﻿import { motion } from "framer-motion";
+import { StatCard } from "../../../components/cards";
 import { statsData } from "../../../constants/stats";
 
 export default function StatsSection() {

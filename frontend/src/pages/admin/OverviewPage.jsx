@@ -1,4 +1,4 @@
-import {
+﻿import {
   DollarSign, Users, ClipboardList, CheckCircle2,
   TrendingUp, BarChart3, Calendar, AlertTriangle,
   AlertCircle, Plus, FileText, Wallet, ArrowUpRight, Heart,
@@ -9,10 +9,10 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
-import DashboardLayout from "../../Components/admin/DashboardLayout";
-import StatCard from "../../Components/admin/StatCard";
-import Card from "../../Components/admin/Card";
-import Badge from "../../Components/admin/Badge";
+import DashboardLayout from "../../components/admin/DashboardLayout";
+import StatCard from "../../components/admin/StatCard";
+import Card from "../../components/admin/Card";
+import Badge from "../../components/admin/Badge";
 import { STATS, MONTHLY, REQUEST_DIST, REQUESTS_DATA, DONATIONS_DATA } from "../../data/mockAdminData";
 
 const fadeUp = {

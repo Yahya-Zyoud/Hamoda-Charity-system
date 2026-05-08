@@ -1,12 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./Components/Navbar";
-import Footer from "./Components/Footer";
-import ScrollToHash from "./Components/ScrollToHash";
-import HomePage from "./pages/Home/home";
+﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ScrollToHash from "./components/ScrollToHash";
+import HomePage from "./pages/home/home";
 import Project from "./pages/Project";
 import TeamWork from "./pages/TeamWork";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminRoute from "./Components/AdminRoute";
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
   return (

@@ -1,8 +1,8 @@
-import { Download, FileSpreadsheet, DollarSign, ClipboardList, TrendingUp, Users, Briefcase, Wallet } from "lucide-react";
-import DashboardLayout from "../../Components/admin/DashboardLayout";
-import Card from "../../Components/admin/Card";
-import Badge from "../../Components/admin/Badge";
-import Btn from "../../Components/admin/Btn";
+﻿import { Download, FileSpreadsheet, DollarSign, ClipboardList, TrendingUp, Users, Briefcase, Wallet } from "lucide-react";
+import DashboardLayout from "../../components/admin/DashboardLayout";
+import Card from "../../components/admin/Card";
+import Badge from "../../components/admin/Badge";
+import Btn from "../../components/admin/Btn";
 import { MONTHLY, REQUEST_DIST, PROJECTS_DATA, STATS } from "../../data/mockAdminData";
 
 function ReportsPage() {
