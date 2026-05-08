@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToHash from "./components/ScrollToHash";
-import HomePage from "./pages/home/home";
+import HomePage from "./pages/home/HomePage";
 import Project from "./pages/Project";
 import TeamWork from "./pages/TeamWork";
 import AdminDashboard from "./pages/admin/AdminDashboard";
