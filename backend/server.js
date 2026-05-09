@@ -1,5 +1,10 @@
+require("dotenv").config();
+
+const connectDB = require("./db");
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const path = require("path");
 
 const config = require("./config/environment");
@@ -18,6 +23,7 @@ app.use(cors({
   origin: config.CORS_ORIGIN,
   credentials: true,
 }));
+app.use(helmet());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,6 +33,14 @@ ensureUploadDir();
 
 app.use(formatResponse);
 
+const subscribeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: "Too many subscribe requests" },
+});
+app.use(`${config.API_PREFIX}/subscribe`, subscribeLimiter);
+
+// Core JSON-file-based API routes
 app.use(config.API_PREFIX, apiRoutes);
 
 app.get("/health", (req, res) => {
@@ -34,17 +48,18 @@ app.get("/health", (req, res) => {
 });
 
 app.use(handleNotFound);
-
 app.use(handleAllErrors);
 
 const PORT = config.PORT;
 const NODE_ENV = config.NODE_ENV;
 
-app.listen(PORT, () => {
-  logger.info(`🚀 Server running`, {
-    port: PORT,
-    environment: NODE_ENV,
-    url: `http://localhost:${PORT}`,
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    logger.info("Server running", {
+      port: PORT,
+      environment: NODE_ENV,
+      url: `http://localhost:${PORT}`,
+    });
   });
 });
 

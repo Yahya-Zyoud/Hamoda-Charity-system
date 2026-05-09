@@ -1,11 +1,12 @@
 import { useState } from "react";
-import DashboardLayout from "../../components/layout/DashboardLayout";
-import Card from "../../components/ui/Card";
-import Btn from "../../components/ui/Btn";
-import Badge from "../../components/ui/Badge";
-import Modal from "../../components/ui/Modal";
-import Input from "../../components/ui/Input";
-import Select from "../../components/ui/Select";
+import { Pencil, Check, Trash2 } from "lucide-react";
+import DashboardLayout from "../../components/admin/DashboardLayout";
+import Card from "../../components/admin/Card";
+import Btn from "../../components/admin/Btn";
+import Badge from "../../components/admin/Badge";
+import Modal from "../../components/admin/Modal";
+import Input from "../../components/admin/Input";
+import Select from "../../components/admin/Select";
 import { PROJECTS_DATA } from "../../data/mockAdminData";
 
 function ProjectsPage() {
@@ -96,9 +97,9 @@ function ProjectsPage() {
 
               {/* Actions */}
               <div style={{ borderTop: "1px solid #F1F5F9", padding: "10px 16px", display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <Btn sm variant="ghost" onClick={() => openEdit(pr)}>✏️ تعديل</Btn>
-                {pr.status !== "completed" && <Btn sm variant="success-light" onClick={() => complete(pr.id)}>✔ مكتمل</Btn>}
-                <Btn sm variant="danger-light" onClick={() => del(pr.id)}>🗑 حذف</Btn>
+                <Btn sm variant="ghost" onClick={() => openEdit(pr)}><Pencil size={13} style={{ marginLeft: 4 }} /> تعديل</Btn>
+                {pr.status !== "completed" && <Btn sm variant="success-light" onClick={() => complete(pr.id)}><Check size={13} style={{ marginLeft: 4 }} /> مكتمل</Btn>}
+                <Btn sm variant="danger-light" onClick={() => del(pr.id)}><Trash2 size={13} style={{ marginLeft: 4 }} /> حذف</Btn>
               </div>
             </Card>
           );

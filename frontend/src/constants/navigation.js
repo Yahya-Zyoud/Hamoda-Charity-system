@@ -8,10 +8,10 @@ import {
 
 export const navItems = [
   { label: "الرئيسية", path: "/#home" },
-  { label: "المشاريع", path: "/#projects" },
+  { label: "المشاريع", path: "/projects" },
   { label: "المنح والتبرعات", path: "/donations" },
   { label: "طلب مساعدة", path: "/#services" },
-  { label: "الفريق", path: "/#partners" },
+  { label: "الفريق", path: "/team" },
 ];
 
 export const getNavIcon = (label) => {

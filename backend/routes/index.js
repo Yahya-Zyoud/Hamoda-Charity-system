@@ -1,16 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { getData } = require("../controllers/dataController");
-const { subscribe } = require("../controllers/subscribeController");
-const { validateSubscribeEmail } = require("../middleware/validators");
 
-router.get("/projects", getData("projects"));
-router.get("/services", getData("services"));
-router.get("/stats", getData("stats"));
-router.get("/partners", getData("partners"));
-router.get("/stories", getData("stories"));
-router.post("/subscribe", validateSubscribeEmail, subscribe);
-const userRoutes = require("./userRoutes");
-router.use("/user", userRoutes);
+router.use("/projects",  require("./projectRoutes"));
+router.use("/services",  require("./serviceRoutes"));
+router.use("/stats",     require("./statRoutes"));
+router.use("/partners",  require("./partnerRoutes"));
+router.use("/stories",   require("./storyRoutes"));
+router.use("/subscribe", require("./subscriptionRoutes"));
+router.use("/user",      require("./userRoutes"));
 
 module.exports = router;

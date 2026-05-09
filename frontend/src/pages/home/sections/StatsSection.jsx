@@ -1,5 +1,9 @@
 import { motion } from "framer-motion";
+<<<<<<< HEAD:frontend/src/pages/Home/sections/StatsSection.jsx
 import { StatCard } from "../../../components/Cards";
+=======
+import { StatCard } from "../../../components/cards";
+>>>>>>> origin/YahyaBranch:frontend/src/pages/home/sections/StatsSection.jsx
 import { statsData } from "../../../constants/stats";
 
 export default function StatsSection() {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Bell, ClipboardList, DollarSign } from "lucide-react";
 import { NOTIFICATIONS } from "../../data/mockAdminData";
 
 function Topbar({ title }) {
@@ -19,7 +20,7 @@ function Topbar({ title }) {
           className="topbar-bell"
           onClick={() => setShowNotifs((p) => !p)}
         >
-          🔔
+          <Bell size={18} />
           {unread > 0 && <span className="topbar-bell-badge">{unread}</span>}
         </button>
 
@@ -56,12 +57,12 @@ function Topbar({ title }) {
                     )
                   }
                 >
-                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 2 }}>
+                  <span style={{ flexShrink: 0, marginTop: 2, color: n.type === "request" ? "#D97706" : n.type === "donation" ? "#16A34A" : "#2563eb" }}>
                     {n.type === "request"
-                      ? "📋"
+                      ? <ClipboardList size={16} />
                       : n.type === "donation"
-                      ? "💰"
-                      : "🔔"}
+                      ? <DollarSign size={16} />
+                      : <Bell size={16} />}
                   </span>
                   <div style={{ flex: 1 }}>
                     <p

@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+<<<<<<< HEAD:frontend/src/pages/Home/sections/ServicesSection.jsx
 import { ServiceCard } from "../../../components/Cards";
+=======
+import { ServiceCard } from "../../../components/cards";
+>>>>>>> origin/YahyaBranch:frontend/src/pages/home/sections/ServicesSection.jsx
 import { getServices } from "../../../services/api";
 import {
   ShieldCheck,
@@ -38,7 +42,7 @@ export default function ServicesSection() {
         setError("");
         const data = await getServices();
 
-        const withIcons = data.map((s) => ({
+        const withIcons = (Array.isArray(data) ? data : []).map((s) => ({
           ...s,
           icon: iconsMap[s.icon],
         }));

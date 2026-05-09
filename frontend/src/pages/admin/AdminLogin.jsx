@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HeartHandshake } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function AdminLogin() {
@@ -50,7 +51,7 @@ function AdminLogin() {
     <div className="login-wrapper">
       <div className="login-card">
         {/* Logo */}
-        <div className="login-logo">🤲</div>
+        <div className="login-logo"><HeartHandshake size={32} /></div>
         <h2 className="login-title">جمعية حمودة الخيرية</h2>
         <p className="login-subtitle">أدخل بيانات المشرف للوصول إلى لوحة الإدارة</p>
 
