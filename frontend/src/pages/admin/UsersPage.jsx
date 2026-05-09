@@ -58,7 +58,7 @@ function UsersPage() {
       {/* Search */}
       <Card style={{ padding: "14px 16px", marginBottom: 16 }}>
         <Input
-          placeholder="🔍 بحث بالاسم أو البريد الإلكتروني..."
+          placeholder="بحث بالاسم أو البريد الإلكتروني..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

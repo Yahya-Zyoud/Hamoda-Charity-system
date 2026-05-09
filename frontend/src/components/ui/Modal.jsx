@@ -1,3 +1,4 @@
+import { X as XIcon } from "lucide-react";
 import Card from "./Card";
 
 function Modal({ title, onClose, children }) {
@@ -32,15 +33,15 @@ function Modal({ title, onClose, children }) {
                 justifyContent: "center",
               }}
               onMouseOver={(e) => {
-                e.target.style.background = "#DC2626";
-                e.target.style.color = "#fff";
+                e.currentTarget.style.background = "#DC2626";
+                e.currentTarget.style.color = "#fff";
               }}
               onMouseOut={(e) => {
-                e.target.style.background = "#F1F5F9";
-                e.target.style.color = "#64748B";
+                e.currentTarget.style.background = "#F1F5F9";
+                e.currentTarget.style.color = "#64748B";
               }}
             >
-              ✕
+              <XIcon size={14} />
             </button>
           </div>
           <div style={{ padding: 22 }}>{children}</div>

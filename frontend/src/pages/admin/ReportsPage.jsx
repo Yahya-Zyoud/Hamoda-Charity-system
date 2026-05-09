@@ -1,3 +1,4 @@
+import { Download, FileSpreadsheet, DollarSign, ClipboardList, TrendingUp, Users, Briefcase, Wallet } from "lucide-react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
@@ -17,17 +18,17 @@ function ReportsPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div />
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <Btn variant="outline">📥 تصدير PDF</Btn>
-          <Btn variant="outline">📊 تصدير Excel</Btn>
+          <Btn variant="outline"><Download size={15} style={{ marginLeft: 6 }} /> تصدير PDF</Btn>
+          <Btn variant="outline"><FileSpreadsheet size={15} style={{ marginLeft: 6 }} /> تصدير Excel</Btn>
         </div>
       </div>
 
       {/* KPI Summary Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 24 }}>
         {[
-          { label: "إجمالي التبرعات هذا الشهر", value: "$17,700", change: "+13%", up: true, icon: "💰" },
-          { label: "معدل قبول الطلبات", value: "68%", change: "+5%", up: true, icon: "📋" },
-          { label: "متوسط قيمة التبرع", value: "$466", change: "-3%", up: false, icon: "📈" },
+          { label: "إجمالي التبرعات هذا الشهر", value: "$17,700", change: "+13%", up: true, icon: <DollarSign size={20} color="#16A34A" /> },
+          { label: "معدل قبول الطلبات", value: "68%", change: "+5%", up: true, icon: <ClipboardList size={20} color="#2563eb" /> },
+          { label: "متوسط قيمة التبرع", value: "$466", change: "-3%", up: false, icon: <TrendingUp size={20} color="#DC2626" /> },
         ].map((k) => (
           <Card key={k.label} className="hover-lift" style={{ padding: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -35,7 +36,6 @@ function ReportsPage() {
                 width: 40, height: 40, borderRadius: 10,
                 background: k.up ? "linear-gradient(135deg, #eff6ff, #F0FDF4)" : "#FEF2F2",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 18,
               }}>
                 {k.icon}
               </div>
@@ -147,22 +147,22 @@ function ReportsPage() {
         <span style={{ fontWeight: 700, fontSize: 15, whiteSpace: "nowrap" }}>ملخص سريع</span>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 18 }}>👥</span>
+            <Users size={18} color="#2563eb" />
             <span style={{ color: "#64748B", fontSize: 13 }}>المستخدمون:</span>
             <span style={{ fontWeight: 700 }}>{STATS.totalUsers.toLocaleString()}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 18 }}>📋</span>
+            <ClipboardList size={18} color="#D97706" />
             <span style={{ color: "#64748B", fontSize: 13 }}>الطلبات:</span>
             <span style={{ fontWeight: 700 }}>{STATS.totalRequests}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 18 }}>💼</span>
+            <Briefcase size={18} color="#8b5cf6" />
             <span style={{ color: "#64748B", fontSize: 13 }}>المشاريع:</span>
             <span style={{ fontWeight: 700 }}>{STATS.totalProjects}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 18 }}>💵</span>
+            <Wallet size={18} color="#16A34A" />
             <span style={{ color: "#64748B", fontSize: 13 }}>التبرعات:</span>
             <span style={{ fontWeight: 700, color: "#16A34A" }}>${STATS.totalDonations.toLocaleString()}</span>
           </div>

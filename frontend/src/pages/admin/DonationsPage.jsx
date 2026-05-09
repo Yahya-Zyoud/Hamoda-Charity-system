@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Eye, Search } from "lucide-react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import Card from "../../components/ui/Card";
 import Input from "../../components/ui/Input";
@@ -38,7 +39,7 @@ function DonationsPage() {
       {/* Search & Filter */}
       <Card style={{ padding: "14px 16px", marginBottom: 16, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ flex: 1, minWidth: 200 }}>
-          <Input placeholder="🔍 بحث بالاسم، المشروع، البريد..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Input placeholder="بحث بالاسم، المشروع، البريد..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
           <option value="all">جميع الحالات</option>
@@ -86,13 +87,13 @@ function DonationsPage() {
                   </Td>
                   <Td style={{ fontSize: 13, color: "#64748B" }}>{d.date}</Td>
                   <Td><Badge status={d.status} /></Td>
-                  <Td><Btn sm variant="ghost" onClick={() => setSelected(d)}>👁 تفاصيل</Btn></Td>
+                  <Td><Btn sm variant="ghost" onClick={() => setSelected(d)}><Eye size={13} style={{ marginLeft: 4 }} /> تفاصيل</Btn></Td>
                 </TableRow>
               ))}
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <div style={{ textAlign: "center", padding: "50px 20px", color: "#94A3B8" }}>🔍 لا توجد نتائج مطابقة</div>
+            <div style={{ textAlign: "center", padding: "50px 20px", color: "#94A3B8", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><Search size={18} /> لا توجد نتائج مطابقة</div>
           )}
         </div>
       </Card>

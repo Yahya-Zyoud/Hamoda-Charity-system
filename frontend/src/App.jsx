@@ -1,10 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/layout/Navbar";
+import Navbar from "./components/Navbar";
 import Footer from "./components/layout/Footer";
 import ScrollToHash from "./components/ScrollToHash";
 import HomePage from "./pages/Home/home";
+import Project from "./pages/Project";
+import TeamWork from "./pages/TeamWork";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminRoute from "./components/routes/AdminRoute";
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
   return (
@@ -19,6 +21,11 @@ function App() {
           </>
         } />
 
+        {/* Mohamed's pages */}
+        <Route path="/projects" element={<Project />} />
+        <Route path="/team" element={<TeamWork />} />
+
+        {/* Admin dashboard — only for users with role: "admin" in Clerk metadata */}
         <Route path="/admin/dashboard/*" element={
           <AdminRoute>
             <AdminDashboard />
@@ -27,8 +34,6 @@ function App() {
 
         <Route path="/admin/login" element={<Navigate to="/" replace />} />
         <Route path="/admin" element={<Navigate to="/" replace />} />
-        <Route path="/team" element={<Navigate to="/#partners" replace />} />
-        <Route path="/projects" element={<Navigate to="/#projects" replace />} />
         <Route path="/donations" element={<Navigate to="/#projects" replace />} />
         <Route path="/help" element={<Navigate to="/#services" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
