@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const logger = require("./logger");
+const logger = require("../utils/logger");
 
 /**
  * Data Access Layer - Handles all JSON file read/write operations

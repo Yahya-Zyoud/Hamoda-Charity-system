@@ -4,7 +4,8 @@ import Footer from "./components/layout/Footer";
 import ScrollToHash from "./components/ScrollToHash";
 import HomePage from "./pages/Home/home";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminRoute from "./components/routes/AdminRoute";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
   return (
@@ -25,8 +26,8 @@ function App() {
           </AdminRoute>
         } />
 
-        <Route path="/admin/login" element={<Navigate to="/" replace />} />
-        <Route path="/admin" element={<Navigate to="/" replace />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         <Route path="/team" element={<Navigate to="/#partners" replace />} />
         <Route path="/projects" element={<Navigate to="/#projects" replace />} />
         <Route path="/donations" element={<Navigate to="/#projects" replace />} />

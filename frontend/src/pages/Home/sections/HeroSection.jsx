@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, ArrowDown, Compass } from "lucide-react";
 import { circleIconsData } from "../../../constants/heroSection";

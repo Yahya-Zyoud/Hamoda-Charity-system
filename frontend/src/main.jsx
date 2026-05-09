@@ -2,6 +2,7 @@ import { Component, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
+import { AppAuthProvider } from "./contexts/AppAuthContext.jsx";
 import { isClerkConfigured, clerkPublishableKey } from "./lib/clerkConfig.js";
 
 class AuthBootBoundary extends Component {
@@ -49,7 +50,31 @@ async function boot() {
       Root = () => <App />;
     }
   } else {
-    Root = () => <App />;
+    Root = () => {
+      const isAdmin =
+        typeof window !== "undefined" &&
+        window.localStorage.getItem("isAdmin") === "true";
+
+      const signOut = () => {
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem("isAdmin");
+          window.location.href = "/";
+        }
+      };
+
+      return (
+        <AppAuthProvider
+          value={{
+            user: null,
+            isAdmin,
+            isLoaded: true,
+            signOut,
+          }}
+        >
+          <App />
+        </AppAuthProvider>
+      );
+    };
   }
 
   createRoot(document.getElementById("root")).render(

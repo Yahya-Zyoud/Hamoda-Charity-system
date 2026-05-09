@@ -8,10 +8,10 @@ import {
   ChevronDown,
   LogOut,
 } from "lucide-react";
-import { navItems, getNavIcon } from "../constants/navigation";
-import { useAppAuth } from "../contexts/AppAuthContext";
-import { isClerkConfigured } from "../lib/clerkConfig";
-import { useClerkSignInButton } from "../hooks/useClerkSignInButton";
+import { navItems, getNavIcon } from "../../constants/navigation";
+import { useAppAuth } from "../../contexts/AppAuthContext";
+import { isClerkConfigured } from "../../lib/clerkConfig";
+import { useClerkSignInButton } from "../../hooks/useClerkSignInButton";
 
 function AuthButtons({ mobile = false }) {
   const { user, isAdmin, signOut } = useAppAuth();
@@ -33,7 +33,16 @@ function AuthButtons({ mobile = false }) {
     };
   }, [menuOpen]);
 
-  if (!isClerkConfigured) return null;
+  if (!isClerkConfigured) {
+    return (
+      <Link
+        to="/admin/login"
+        className={`inline-flex items-center rounded-lg border border-gray-200 bg-white px-5 py-2.5 font-bold text-gray-700 transition-colors hover:bg-gray-50`}
+      >
+        تسجيل الدخول
+      </Link>
+    );
+  }
 
   if (user) {
     const displayName = user.fullName || user.firstName || "المستخدم";

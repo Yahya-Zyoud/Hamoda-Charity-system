@@ -5,7 +5,7 @@ function AdminRoute({ children }) {
   const { isAdmin, isLoaded } = useAppAuth();
 
   if (!isLoaded) return null;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin) return <Navigate to="/admin/login" replace />;
   return children;
 }
 

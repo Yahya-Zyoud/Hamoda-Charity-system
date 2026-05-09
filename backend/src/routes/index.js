@@ -8,7 +8,7 @@ const userRoutes = require("./api/userRoutes");
 /**
  * API Routes organization
  */
-router.use("/data", dataRoutes);
+router.use("/", dataRoutes);
 router.use("/subscribe", subscribeRoutes);
 router.use("/user", userRoutes);
 

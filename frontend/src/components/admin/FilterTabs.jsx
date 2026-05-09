@@ -1,4 +1,4 @@
-import Card from "./Card";
+import Card from "../ui/Card";
 
 function FilterTabs({ tabs, active, onChange }) {
   return (
