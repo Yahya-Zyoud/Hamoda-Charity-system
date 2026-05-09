@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const connectDB = require("./db");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -52,11 +53,13 @@ app.use(handleAllErrors);
 const PORT = config.PORT;
 const NODE_ENV = config.NODE_ENV;
 
-app.listen(PORT, () => {
-  logger.info("Server running", {
-    port: PORT,
-    environment: NODE_ENV,
-    url: `http://localhost:${PORT}`,
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    logger.info("Server running", {
+      port: PORT,
+      environment: NODE_ENV,
+      url: `http://localhost:${PORT}`,
+    });
   });
 });
 

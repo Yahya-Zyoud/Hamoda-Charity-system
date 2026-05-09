@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/yahya/AppData/Roaming/Code/User/History/**)",
+      "Bash(xargs -I{} cat {})"
+    ]
+  }
+}
