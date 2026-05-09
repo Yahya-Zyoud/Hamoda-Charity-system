@@ -7,6 +7,7 @@ module.exports = {
   NODE_ENV: env,
   API_PREFIX: "/api",
   CORS_ORIGIN: corsOrigin,
+  MONGO_URI: process.env.MONGO_URI || "",
   UPLOAD_DIR: "public/uploads",
   MAX_FILE_SIZE: 5 * 1024 * 1024,
   ALLOWED_FILE_TYPES: ["image/jpeg", "image/png", "image/webp"],

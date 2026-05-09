@@ -82,23 +82,24 @@ export default function Projects() {
   const [search,   setSearch]   = useState("");
   const [category, setCategory] = useState("الكل");
   const [status,   setStatus]   = useState("الكل");
-  const [pageError, setPageError] = useState(null);
 
   
   const loadProjects = async () => {
     try {
       setLoading(true);
-      setPageError(null);
-      const [projectsData, statsData] = await Promise.all([
+      const [projectsData, statsData] = await Promise.allSettled([
         api.getProjects(),
         api.getProjectStats(),
       ]);
 
-      setProjects(Array.isArray(projectsData) && projectsData.length ? projectsData : DEMO_PROJECTS);
-      setStats(statsData);
-    } catch (err) {
+      const projects = projectsData.status === "fulfilled" && Array.isArray(projectsData.value) && projectsData.value.length
+        ? projectsData.value
+        : DEMO_PROJECTS;
+      setProjects(projects);
+
+      if (statsData.status === "fulfilled") setStats(statsData.value);
+    } catch {
       setProjects(DEMO_PROJECTS);
-      setPageError(err.message || "لا يمكن جلب بيانات المشاريع من الخادم.");
     } finally {
       setLoading(false);
     }
@@ -150,14 +151,6 @@ export default function Projects() {
             filtered={filtered.length}
           />
 
-          {pageError && (
-            <div
-              className="rounded-2xl bg-red-50 p-5 text-sm text-red-700"
-              style={{ border: "1px solid rgba(234,33,67,0.16)" }}
-            >
-              ⚠️ {pageError}
-            </div>
-          )}
         </div>
 
         {/* Loading */}
