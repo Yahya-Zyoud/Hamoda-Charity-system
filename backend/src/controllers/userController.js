@@ -7,8 +7,7 @@ const logger = require("../utils/logger");
  */
 const getProfile = async (req, res, next) => {
   try {
-    // TODO: Get userId from auth context
-    const userId = req.user?.id || "default";
+    const userId = req.user._id;
     const result = await userService.getProfile(userId);
 
     return res.status(HTTP_STATUS.OK).json({
@@ -27,8 +26,7 @@ const getProfile = async (req, res, next) => {
  */
 const updateProfile = async (req, res, next) => {
   try {
-    // TODO: Get userId from auth context
-    const userId = req.user?.id || "default";
+    const userId = req.user._id;
     const result = await userService.updateProfile(userId, req.body);
 
     return res.status(HTTP_STATUS.OK).json({
@@ -54,9 +52,8 @@ const uploadImage = async (req, res, next) => {
       });
     }
 
-    // TODO: Get userId from auth context
-    const userId = req.user?.id || "default";
-    const result = await userService.uploadImage(userId, req.file.path);
+    const userId = req.user._id;
+    const result = await userService.uploadImage(userId, req.file.filename);
 
     return res.status(HTTP_STATUS.OK).json({
       success: true,
@@ -69,8 +66,22 @@ const uploadImage = async (req, res, next) => {
   }
 };
 
+const getAllUsers = async (req, res, next) => {
+  try {
+    const result = await userService.getAllUsers();
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: result.data,
+    });
+  } catch (error) {
+    logger.error("Error fetching users", { error: error.message });
+    next(error);
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
   uploadImage,
+  getAllUsers,
 };

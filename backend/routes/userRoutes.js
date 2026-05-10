@@ -6,6 +6,7 @@ const fs = require("fs");
 
 const userController = require("../controllers/userController");
 const { validateProfileUpdate } = require("../middleware/validators");
+const { protect, admin } = require("../middleware/authMiddleware");
 
 const storage = multer.diskStorage({
   destination: (request, file, cb) => {
@@ -33,8 +34,9 @@ const upload = multer({
   },
 });
 
-router.get("/profile", userController.getProfile);
-router.put("/profile", validateProfileUpdate, userController.updateProfile);
-router.post("/upload", upload.single("image"), userController.uploadImage);
+router.get("/profile", protect, userController.getProfile);
+router.put("/profile", protect, validateProfileUpdate, userController.updateProfile);
+router.post("/upload", protect, upload.single("image"), userController.uploadImage);
+router.get("/", protect, admin, userController.getAllUsers);
 
 module.exports = router;

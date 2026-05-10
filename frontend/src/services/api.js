@@ -10,10 +10,25 @@ const parseJson = async (response) => {
   }
 };
 
+const getAuthToken = () => {
+  try {
+    return localStorage.getItem("charity_token") || null;
+  } catch {
+    return null;
+  }
+};
+
 async function makeRequest(endpoint, options = {}) {
+  const token = getAuthToken();
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...options.headers,
+  };
+
   const response = await fetch(`${BASE_URL}${endpoint}`, {
-    headers: { "Content-Type": "application/json" },
     ...options,
+    headers,
   });
 
   if (!response.ok) {
@@ -28,7 +43,15 @@ async function makeRequest(endpoint, options = {}) {
   return json && json.data !== undefined ? json.data : json;
 }
 
-// ── Yahya's JSON-file-based endpoints ─────────────────────────────
+// ── Auth endpoints ─────────────────────────────────────────────────
+export const registerUser = (payload) =>
+  makeRequest("/auth/register", { method: "POST", body: JSON.stringify(payload) });
+export const loginUser = (payload) =>
+  makeRequest("/auth/login", { method: "POST", body: JSON.stringify(payload) });
+export const logoutUser = () =>
+  makeRequest("/auth/logout", { method: "POST" });
+
+// ── Public data endpoints ──────────────────────────────────────────
 export const getProjects  = ()      => makeRequest("/projects");
 export const getStats     = ()      => makeRequest("/stats");
 export const getStories   = ()      => makeRequest("/stories");
@@ -37,15 +60,27 @@ export const getServices  = ()      => makeRequest("/services");
 export const subscribeEmail = (email) =>
   makeRequest("/subscribe", { method: "POST", body: JSON.stringify({ email }) });
 
-// ── Mohamed's MongoDB-based endpoints ─────────────────────────────
-export const getTeam           = ()           => makeRequest("/team");
-export const getTeamMember     = (id)         => makeRequest(`/team/${id}`);
-export const createTeamMember  = (payload)    => makeRequest("/team",    { method: "POST",   body: JSON.stringify(payload) });
-export const updateTeamMember  = (id, payload)=> makeRequest(`/team/${id}`, { method: "PUT", body: JSON.stringify(payload) });
-export const deleteTeamMember  = (id)         => makeRequest(`/team/${id}`, { method: "DELETE" });
+// ── Help Request endpoints ─────────────────────────────────────────
+export const submitHelpRequest = (payload) =>
+  makeRequest("/help-requests", { method: "POST", body: JSON.stringify(payload) });
+export const getHelpRequests = () => makeRequest("/help-requests");
+export const updateHelpRequest = (id, payload) =>
+  makeRequest(`/help-requests/${id}`, { method: "PUT", body: JSON.stringify(payload) });
 
-export const getProjectStats   = ()           => makeRequest("/projects/stats");
-export const getProjectById    = (id)         => makeRequest(`/projects/${id}`);
-export const createProject     = (payload)    => makeRequest("/projects",    { method: "POST",   body: JSON.stringify(payload) });
-export const updateProject     = (id, payload)=> makeRequest(`/projects/${id}`, { method: "PUT", body: JSON.stringify(payload) });
-export const deleteProject     = (id)         => makeRequest(`/projects/${id}`, { method: "DELETE" });
+// ── Donation endpoints ─────────────────────────────────────────────
+export const submitDonation = (payload) =>
+  makeRequest("/donations", { method: "POST", body: JSON.stringify(payload) });
+export const getDonations = () => makeRequest("/donations");
+
+// ── Team/Project endpoints (Mohamed's MongoDB-based) ───────────────
+export const getTeam           = ()            => makeRequest("/team");
+export const getTeamMember     = (id)          => makeRequest(`/team/${id}`);
+export const createTeamMember  = (payload)     => makeRequest("/team",       { method: "POST",   body: JSON.stringify(payload) });
+export const updateTeamMember  = (id, payload) => makeRequest(`/team/${id}`, { method: "PUT",    body: JSON.stringify(payload) });
+export const deleteTeamMember  = (id)          => makeRequest(`/team/${id}`, { method: "DELETE" });
+
+export const getProjectStats   = ()            => makeRequest("/projects/stats");
+export const getProjectById    = (id)          => makeRequest(`/projects/${id}`);
+export const createProject     = (payload)     => makeRequest("/projects",       { method: "POST",   body: JSON.stringify(payload) });
+export const updateProject     = (id, payload) => makeRequest(`/projects/${id}`, { method: "PUT",    body: JSON.stringify(payload) });
+export const deleteProject     = (id)          => makeRequest(`/projects/${id}`, { method: "DELETE" });

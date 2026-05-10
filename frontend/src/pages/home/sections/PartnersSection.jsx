@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { getPartners } from "../../../services/api";
-<<<<<<< HEAD:frontend/src/pages/Home/sections/PartnersSection.jsx
 import { PartnerCard } from "../../../components/Cards";
-=======
-import { PartnerCard } from "../../../components/cards";
->>>>>>> origin/YahyaBranch:frontend/src/pages/home/sections/PartnersSection.jsx
 import { Handshake, AlertTriangle } from "lucide-react";
 
 function PartnerSkeleton() {

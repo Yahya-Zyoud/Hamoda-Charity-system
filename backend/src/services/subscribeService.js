@@ -1,29 +1,25 @@
 const logger = require("../utils/logger");
 const { validateSubscribeEmail } = require("../validators");
+const Subscription = require("../models/Subscription");
 
-/**
- * Subscribe Service - Business logic for newsletter subscriptions
- */
 class SubscribeService {
-  /**
-   * Subscribe email to newsletter
-   * TODO: Integrate with email service to save subscriptions
-   */
   async subscribe(email) {
     try {
-      // Validate email
       const cleanEmail = validateSubscribeEmail(email);
-      
       logger.info("[Newsletter] New subscriber", { email: cleanEmail });
       
-      // TODO: Save to database/file when implementing persistence
-      // const saved = dataAccess.addSubscriber(cleanEmail);
+      const existing = await Subscription.findOne({ email: cleanEmail });
+      if (existing) {
+        throw new Error("مسجل مسبقاً");
+      }
+
+      const subscription = await Subscription.create({ email: cleanEmail });
       
       return {
         success: true,
         data: {
-          email: cleanEmail,
-          subscribedAt: new Date().toISOString(),
+          email: subscription.email,
+          subscribedAt: subscription.createdAt,
         },
       };
     } catch (error) {
@@ -32,15 +28,12 @@ class SubscribeService {
     }
   }
 
-  /**
-   * Unsubscribe email from newsletter
-   */
   async unsubscribe(email) {
     try {
       const cleanEmail = validateSubscribeEmail(email);
       logger.info("[Newsletter] Subscriber removed", { email: cleanEmail });
       
-      // TODO: Remove from database when implementing persistence
+      await Subscription.findOneAndDelete({ email: cleanEmail });
       
       return {
         success: true,

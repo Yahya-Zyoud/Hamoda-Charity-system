@@ -1,31 +1,50 @@
-const { loadData } = require("../utils/dataLoader");
+const Story = require("../models/Story");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
-const logger = require("../utils/logger");
 
-exports.getStories = (req, res) => {
+exports.getStories = async (req, res) => {
   try {
-    const items = loadData("stories");
-
-    if (!items || items.length === 0) {
-      logger.warn("No stories found");
-      return res.status(HTTP_STATUS.OK).json({
-        success: true,
-        message: MESSAGES.NOT_FOUND,
-        data: [],
-      });
-    }
-
-    logger.info("Stories retrieved successfully", { count: items.length });
-    return res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: MESSAGES.SUCCESS,
-      data: items,
-    });
+    const items = await Story.find();
+    return res.status(HTTP_STATUS.OK).json({ success: true, data: items, message: MESSAGES.SUCCESS });
   } catch (error) {
-    logger.error("Error fetching stories", { error: error.message });
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: MESSAGES.ERROR,
-    });
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.ERROR });
+  }
+};
+
+exports.getStoryById = async (req, res) => {
+  try {
+    const item = await Story.findById(req.params.id);
+    if (!item) return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, message: MESSAGES.NOT_FOUND });
+    return res.status(HTTP_STATUS.OK).json({ success: true, data: item });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.ERROR });
+  }
+};
+
+exports.createStory = async (req, res) => {
+  try {
+    const item = await Story.create(req.body);
+    return res.status(HTTP_STATUS.CREATED).json({ success: true, data: item, message: MESSAGES.SUCCESS });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.ERROR });
+  }
+};
+
+exports.updateStory = async (req, res) => {
+  try {
+    const item = await Story.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!item) return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, message: MESSAGES.NOT_FOUND });
+    return res.status(HTTP_STATUS.OK).json({ success: true, data: item, message: MESSAGES.SUCCESS });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.ERROR });
+  }
+};
+
+exports.deleteStory = async (req, res) => {
+  try {
+    const item = await Story.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, message: MESSAGES.NOT_FOUND });
+    return res.status(HTTP_STATUS.OK).json({ success: true, message: MESSAGES.SUCCESS });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.ERROR });
   }
 };

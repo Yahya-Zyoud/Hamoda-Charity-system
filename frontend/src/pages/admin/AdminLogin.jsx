@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HeartHandshake } from "lucide-react";
+import { HeartHandshake, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function AdminLogin() {
@@ -8,6 +8,7 @@ function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     const newErrors = { email: "", password: "" };
@@ -33,17 +34,43 @@ function AdminLogin() {
     return valid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoginError("");
 
     if (!validate()) return;
 
-    if (form.email === "admin@charity.com" && form.password === "123456") {
-      localStorage.setItem("isAdmin", "true");
-      navigate("/admin/dashboard/overview");
-    } else {
-      setLoginError("بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success && data.data?.role === "admin") {
+        // Store token and admin flag
+        localStorage.setItem("charity_token", data.data.token);
+        localStorage.setItem("isAdmin", "true");
+        window.location.href = "/admin/dashboard/overview";
+      } else if (res.ok && data.success && data.data?.role !== "admin") {
+        setLoginError("هذا الحساب ليس لديه صلاحيات المشرف");
+        localStorage.removeItem("charity_token");
+        localStorage.removeItem("isAdmin");
+      } else {
+        setLoginError(data.message || "بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى");
+      }
+    } catch {
+      // Fallback: allow demo login with hardcoded credentials if backend is offline
+      if (form.email === "admin@charity.com" && form.password === "123456") {
+        localStorage.setItem("isAdmin", "true");
+        window.location.href = "/admin/dashboard/overview";
+      } else {
+        setLoginError("تعذر الاتصال بالخادم. تأكد من تشغيل الخادم وحاول مرة أخرى.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -92,8 +119,11 @@ function AdminLogin() {
           {loginError && <div className="login-error">{loginError}</div>}
 
           {/* Submit */}
-          <button type="submit" className="login-btn">
-            تسجيل الدخول
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading
+              ? <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> جاري التحقق...</span>
+              : "تسجيل الدخول"
+            }
           </button>
         </form>
 
@@ -105,4 +135,4 @@ function AdminLogin() {
   );
 }
 
-export default AdminLogin;
+export default AdminLogin;

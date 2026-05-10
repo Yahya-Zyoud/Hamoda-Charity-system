@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Check, BellOff, ClipboardList, DollarSign, Bell } from "lucide-react";
-import DashboardLayout from "../../components/admin/DashboardLayout";
-import Card from "../../components/admin/Card";
-import Btn from "../../components/admin/Btn";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import Card from "../../components/ui/Card";
+import Btn from "../../components/ui/Btn";
 import { NOTIFICATIONS } from "../../data/mockAdminData";
 
 function NotificationsPage() {

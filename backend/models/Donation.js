@@ -2,13 +2,17 @@ const mongoose = require("mongoose");
 
 const donationSchema = new mongoose.Schema(
   {
-    userId: String,
-    projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
-    amount: { type: Number, required: true },
-    currency: { type: String, default: "USD" },
-    status: { type: String, enum: ["pending", "completed", "failed"], default: "pending" },
-    method: String,
-    note: String,
+    donor:       { type: String, required: true, trim: true },
+    email:       { type: String, trim: true, lowercase: true },
+    phone:       { type: String, trim: true },
+    amount:      { type: Number, required: true, min: 1 },
+    currency:    { type: String, default: "USD" },
+    project:     { type: String, trim: true },          // project title (display)
+    projectId:   { type: mongoose.Schema.Types.ObjectId, ref: "Project" }, // ref (optional)
+    method:      { type: String, default: "بطاقة ائتمان", enum: ["بطاقة ائتمان", "تحويل بنكي", "PayPal", "نقدي"] },
+    status:      { type: String, default: "completed", enum: ["pending", "completed", "failed"] },
+    note:        { type: String, default: "" },
+    anonymous:   { type: Boolean, default: false },
   },
   {
     timestamps: true,

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
-import Navbar       from "../components/Navbar";
-import Footer       from "../components/Footer";
+import Navbar       from "../components/layout/Navbar";
+import Footer       from "../components/layout/Footer";
 
 import ProjectHero    from "../components/project/ProjectHero";
 import ProjectStats   from "../components/project/ProjectStats";

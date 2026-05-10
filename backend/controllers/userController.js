@@ -4,85 +4,75 @@ const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const { getFileUrl, deleteFile } = require("../utils/fileHandler");
 const logger = require("../utils/logger");
 
-const isDBReady = () => mongoose.connection.readyState === 1;
-
-const DEFAULT_PROFILE = {
-  name: "محمد أحمد الخالدي",
-  role: "متبرع بلاتيني",
-  email: "mohammed@example.com",
-  phone: "0599 123 456",
-  city: "رام الله",
-  bio: "عضو متفاعل وداعم للمبادرات الخيرية منذ عام 2024.",
-  avatar: "",
-  cover: "",
-  joinDate: "يناير 2024",
-};
-
 exports.getProfile = async (req, res) => {
   try {
-    const clerkId = req.headers["x-user-id"] || "guest";
-
-    if (!isDBReady()) {
-      return res.sendSuccess({ ...DEFAULT_PROFILE, clerkId });
-    }
-
-    let user = await User.findOne({ clerkId });
+    const user = await User.findById(req.user._id).select("-password");
     if (!user) {
-      user = await User.create({ clerkId, ...DEFAULT_PROFILE });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, message: "المستخدم غير موجود" });
     }
 
-    logger.info("User profile retrieved", { clerkId });
-    return res.sendSuccess(user);
+    logger.info("User profile retrieved", { id: req.user._id });
+    return res.status(HTTP_STATUS.OK).json({ success: true, data: user });
   } catch (error) {
     logger.error("Error fetching user profile", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.ERROR });
   }
 };
 
 exports.updateProfile = async (req, res) => {
   try {
-    const clerkId = req.headers["x-user-id"] || "guest";
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    ).select("-password");
 
-    if (!isDBReady()) {
-      return res.sendSuccess({ ...DEFAULT_PROFILE, ...req.body, clerkId });
+    if (!user) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, message: "المستخدم غير موجود" });
     }
 
-    const user = await User.findOneAndUpdate(
-      { clerkId },
-      { $set: req.body },
-      { new: true, upsert: true, runValidators: true }
-    );
-
-    logger.info("User profile updated", { clerkId });
-    return res.sendSuccess(user);
+    logger.info("User profile updated", { id: req.user._id });
+    return res.status(HTTP_STATUS.OK).json({ success: true, data: user });
   } catch (error) {
     logger.error("Error updating user profile", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.ERROR });
   }
 };
 
 exports.uploadImage = async (req, res) => {
   try {
     if (!req.file) {
-      return res.sendError("لم يتم اختيار ملف", HTTP_STATUS.BAD_REQUEST);
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: "لم يتم اختيار ملف" });
     }
 
-    const clerkId = req.headers["x-user-id"] || "guest";
     const url = getFileUrl(req.file.filename);
     const type = req.body.type || "avatar";
 
-    if (isDBReady()) {
-      const existing = await User.findOne({ clerkId });
-      if (existing && existing[type]) {
-        deleteFile(existing[type].split("/").pop());
-      }
-      await User.findOneAndUpdate({ clerkId }, { $set: { [type]: url } }, { upsert: true });
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ success: false, message: "المستخدم غير موجود" });
     }
 
-    logger.info("User image uploaded", { clerkId, type, filename: req.file.filename });
-    return res.status(HTTP_STATUS.CREATED).sendSuccess({ url }, MESSAGES.FILE_UPLOAD_SUCCESS);
+    if (user[type]) {
+      deleteFile(user[type].split("/").pop());
+    }
+
+    user[type] = url;
+    await user.save();
+
+    logger.info("User image uploaded", { id: req.user._id, type, filename: req.file.filename });
+    return res.status(HTTP_STATUS.CREATED).json({ success: true, message: MESSAGES.FILE_UPLOAD_SUCCESS, data: { url } });
   } catch (error) {
     logger.error("Error uploading user image", { error: error.message });
-    return res.sendError(MESSAGES.FILE_UPLOAD_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: MESSAGES.FILE_UPLOAD_ERROR });
+  }
+};
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select("-password");
+    res.status(HTTP_STATUS.OK).json({ success: true, data: users });
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };
