@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 import Navbar       from "../components/Navbar";
-import Footer       from "../components/layout/Footer";
+import Footer       from "../components/Footer";
 
-import ProjectHero    from "../components/ProjectComp/ProjectHero";
-import ProjectStats   from "../components/ProjectComp/ProjectStats";
-import ProjectFilters from "../components/ProjectComp/ProjectFilters";
-import ProjectGrid    from "../components/ProjectComp/ProjectGrid";
-import ProjectCTA     from "../components/ProjectComp/ProjectCTA";
+import ProjectHero    from "../components/project/ProjectHero";
+import ProjectStats   from "../components/project/ProjectStats";
+import ProjectFilters from "../components/project/ProjectFilters";
+import ProjectGrid    from "../components/project/ProjectGrid";
+import ProjectCTA     from "../components/project/ProjectCTA";
 import * as api       from "../services/api";
 
 // ── بيانات تجريبية تُستخدم إذا فشل الاتصال بالباكند ──────
@@ -82,23 +82,24 @@ export default function Projects() {
   const [search,   setSearch]   = useState("");
   const [category, setCategory] = useState("الكل");
   const [status,   setStatus]   = useState("الكل");
-  const [pageError, setPageError] = useState(null);
 
   
   const loadProjects = async () => {
     try {
       setLoading(true);
-      setPageError(null);
-      const [projectsData, statsData] = await Promise.all([
+      const [projectsData, statsData] = await Promise.allSettled([
         api.getProjects(),
         api.getProjectStats(),
       ]);
 
-      setProjects(Array.isArray(projectsData) && projectsData.length ? projectsData : DEMO_PROJECTS);
-      setStats(statsData);
-    } catch (err) {
+      const projects = projectsData.status === "fulfilled" && Array.isArray(projectsData.value) && projectsData.value.length
+        ? projectsData.value
+        : DEMO_PROJECTS;
+      setProjects(projects);
+
+      if (statsData.status === "fulfilled") setStats(statsData.value);
+    } catch {
       setProjects(DEMO_PROJECTS);
-      setPageError(err.message || "لا يمكن جلب بيانات المشاريع من الخادم.");
     } finally {
       setLoading(false);
     }
@@ -150,14 +151,6 @@ export default function Projects() {
             filtered={filtered.length}
           />
 
-          {pageError && (
-            <div
-              className="rounded-2xl bg-red-50 p-5 text-sm text-red-700"
-              style={{ border: "1px solid rgba(234,33,67,0.16)" }}
-            >
-              ⚠️ {pageError}
-            </div>
-          )}
         </div>
 
         {/* Loading */}

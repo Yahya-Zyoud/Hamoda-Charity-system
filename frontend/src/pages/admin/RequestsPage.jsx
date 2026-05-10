@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Paperclip, Eye, Inbox, CheckCircle2, XCircle, FileText, Save, Check, X, PauseCircle } from "lucide-react";
-import DashboardLayout from "../../components/layout/DashboardLayout";
-import Card from "../../components/ui/Card";
-import Btn from "../../components/ui/Btn";
-import Badge from "../../components/ui/Badge";
-import Modal from "../../components/ui/Modal";
+import DashboardLayout from "../../components/admin/DashboardLayout";
+import Card from "../../components/admin/Card";
+import Btn from "../../components/admin/Btn";
+import Badge from "../../components/admin/Badge";
+import Modal from "../../components/admin/Modal";
 import FilterTabs from "../../components/admin/FilterTabs";
-import { Th, Td, TableRow } from "../../components/ui/TableParts";
+import { Th, Td, TableRow } from "../../components/admin/TableParts";
 import { REQUESTS_DATA } from "../../data/mockAdminData";
 
 function RequestsPage() {

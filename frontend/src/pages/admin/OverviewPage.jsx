@@ -9,10 +9,10 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
-import DashboardLayout from "../../components/layout/DashboardLayout";
-import StatCard from "../../components/ui/StatCard";
-import Card from "../../components/ui/Card";
-import Badge from "../../components/ui/Badge";
+import DashboardLayout from "../../components/admin/DashboardLayout";
+import StatCard from "../../components/admin/StatCard";
+import Card from "../../components/admin/Card";
+import Badge from "../../components/admin/Badge";
 import { STATS, MONTHLY, REQUEST_DIST, REQUESTS_DATA, DONATIONS_DATA } from "../../data/mockAdminData";
 
 const fadeUp = {

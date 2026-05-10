@@ -1,7 +1,10 @@
 require("dotenv").config();
 
+const connectDB = require("./db");
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const path = require("path");
 
 const config = require("./config/environment");
@@ -20,6 +23,7 @@ app.use(cors({
   origin: config.CORS_ORIGIN,
   credentials: true,
 }));
+app.use(helmet());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,23 +33,15 @@ ensureUploadDir();
 
 app.use(formatResponse);
 
+const subscribeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: "Too many subscribe requests" },
+});
+app.use(`${config.API_PREFIX}/subscribe`, subscribeLimiter);
+
 // Core JSON-file-based API routes
 app.use(config.API_PREFIX, apiRoutes);
-
-// MongoDB-based routes (team & extended projects) — active when MONGO_URI is set
-if (process.env.MONGO_URI) {
-  const mongoose = require("mongoose");
-  mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-      logger.info("MongoDB connected");
-      const teamRouter    = require("./router/teamRouter");
-      const projectRouter = require("./router/projectRouter");
-      app.use("/api/team",     teamRouter);
-      app.use("/api/projects", projectRouter);
-    })
-    .catch((err) => logger.error("MongoDB connection failed", { error: err.message }));
-}
 
 app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
@@ -57,11 +53,13 @@ app.use(handleAllErrors);
 const PORT = config.PORT;
 const NODE_ENV = config.NODE_ENV;
 
-app.listen(PORT, () => {
-  logger.info("Server running", {
-    port: PORT,
-    environment: NODE_ENV,
-    url: `http://localhost:${PORT}`,
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    logger.info("Server running", {
+      port: PORT,
+      environment: NODE_ENV,
+      url: `http://localhost:${PORT}`,
+    });
   });
 });
 

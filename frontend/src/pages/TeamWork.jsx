@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import Navbar    from "../components/Navbar";
-import Footer    from "../components/layout/Footer";
+import Footer    from "../components/Footer";
 
-import Hero      from "../components/TeamWorkComp/Hero";
-import Stats     from "../components/TeamWorkComp/Stats";
-import SearchBar from "../components/TeamWorkComp/SearchBar";
-import TeamGrid  from "../components/TeamWorkComp/TeamGrid";
+import Hero      from "../components/team/Hero";
+import Stats     from "../components/team/Stats";
+import SearchBar from "../components/team/SearchBar";
+import TeamGrid  from "../components/team/TeamGrid";
 import * as api  from "../services/api";
 
 const DEMO_TEAM = [
@@ -55,7 +55,6 @@ export default function TeamWork() {
   const [team,    setTeam]    = useState(DEMO_TEAM);
   const [search,  setSearch]  = useState("");
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
 
   const loadTeam = async () => {
     try {
@@ -63,9 +62,8 @@ export default function TeamWork() {
       setError(null);
       const data = await api.getTeam();
       setTeam(Array.isArray(data) && data.length ? data : DEMO_TEAM);
-    } catch (err) {
+    } catch {
       setTeam(DEMO_TEAM);
-      setError(err.message || "لا يمكن جلب بيانات الفريق من الخادم، يتم عرض بيانات تجريبية.");
     } finally {
       setLoading(false);
     }
@@ -100,14 +98,6 @@ export default function TeamWork() {
         <div className="max-w-6xl mx-auto px-5 py-8 space-y-6">
           <SearchBar search={search} setSearch={setSearch} />
 
-          {error && (
-            <div
-              className="rounded-2xl bg-red-50 p-5 text-sm text-red-700"
-              style={{ border: "1px solid rgba(234,33,67,0.16)" }}
-            >
-              ⚠️ {error}
-            </div>
-          )}
         </div>
 
         {/* Loading */}
