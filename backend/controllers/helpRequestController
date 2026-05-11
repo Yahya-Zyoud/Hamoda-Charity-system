@@ -1,0 +1,166 @@
+const HelpRequest = require("../models/HelpRequest");
+
+async function createHelpRequest(req, res) {
+  try {
+    const {
+      fullName,
+      nationalId,
+      phone,
+      email,
+      city,
+      helpType,
+      description,
+    } = req.body;
+
+    if (!fullName || !nationalId || !phone || !city || !helpType || !description) {
+      return res.status(400).json({
+        message: "Please fill all required fields.",
+      });
+    }
+
+    if (!/^\d{9}$/.test(nationalId)) {
+      return res.status(400).json({
+        message: "National ID must be 9 digits.",
+      });
+    }
+
+    if (!/^05\d{8}$/.test(phone)) {
+      return res.status(400).json({
+        message: "Phone number must start with 05 and be 10 digits.",
+      });
+    }
+
+    if (description.trim().length < 20) {
+      return res.status(400).json({
+        message: "Description must be at least 20 characters.",
+      });
+    }
+
+    const documentPath = req.file
+      ? `/uploads/help-documents/${req.file.filename}`
+      : null;
+
+    const helpRequest = await HelpRequest.create({
+      fullName,
+      nationalId,
+      phone,
+      email,
+      city,
+      helpType,
+      description,
+      documentPath,
+    });
+
+    res.status(201).json({
+      message: "Help request submitted successfully.",
+      request: helpRequest,
+    });
+  } catch (error) {
+    console.error("Create help request error:", error);
+
+    res.status(500).json({
+      message: "Server error while submitting help request.",
+    });
+  }
+}
+
+async function getAllHelpRequests(req, res) {
+  try {
+    const requests = await HelpRequest.find().sort({ createdAt: -1 });
+
+    res.json(requests);
+  } catch (error) {
+    console.error("Get help requests error:", error);
+
+    res.status(500).json({
+      message: "Server error while getting help requests.",
+    });
+  }
+}
+
+async function getHelpRequestById(req, res) {
+  try {
+    const request = await HelpRequest.findById(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Help request not found.",
+      });
+    }
+
+    res.json(request);
+  } catch (error) {
+    console.error("Get help request by id error:", error);
+
+    res.status(500).json({
+      message: "Server error while getting help request.",
+    });
+  }
+}
+
+async function updateHelpRequestStatus(req, res) {
+  try {
+    const { status } = req.body;
+
+    const allowedStatuses = ["pending", "accepted", "rejected"];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status value.",
+      });
+    }
+
+    const request = await HelpRequest.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Help request not found.",
+      });
+    }
+
+    res.json({
+      message: "Help request status updated successfully.",
+      request,
+    });
+  } catch (error) {
+    console.error("Update help request status error:", error);
+
+    res.status(500).json({
+      message: "Server error while updating help request status.",
+    });
+  }
+}
+
+async function deleteHelpRequest(req, res) {
+  try {
+    const request = await HelpRequest.findByIdAndDelete(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Help request not found.",
+      });
+    }
+
+    res.json({
+      message: "Help request deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Delete help request error:", error);
+
+    res.status(500).json({
+      message: "Server error while deleting help request.",
+    });
+  }
+}
+
+module.exports = {
+  createHelpRequest,
+  getAllHelpRequests,
+  getHelpRequestById,
+  updateHelpRequestStatus,
+  deleteHelpRequest,
+};

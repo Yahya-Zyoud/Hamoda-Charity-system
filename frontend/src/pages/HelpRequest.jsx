@@ -30,33 +30,76 @@ function HelpRequest() {
     setSubmitted(false);
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(e) {
+  e.preventDefault();
 
-    if (formData.fullName.trim().length < 3) {
-      setError("الاسم الكامل يجب أن يكون 3 أحرف على الأقل.");
+  if (formData.fullName.trim().length < 3) {
+    setError("الاسم الكامل يجب أن يكون 3 أحرف على الأقل.");
+    return;
+  }
+
+  if (!/^\d{9}$/.test(formData.nationalId)) {
+    setError("رقم الهوية يجب أن يتكون من 9 أرقام.");
+    return;
+  }
+
+  if (!/^05\d{8}$/.test(formData.phone)) {
+    setError("رقم الهاتف يجب أن يبدأ بـ 05 ويتكون من 10 أرقام.");
+    return;
+  }
+
+  if (formData.description.trim().length < 20) {
+    setError("وصف الحالة يجب أن يكون 20 حرفًا على الأقل.");
+    return;
+  }
+
+  try {
+    const requestData = new FormData();
+
+    requestData.append("fullName", formData.fullName);
+    requestData.append("nationalId", formData.nationalId);
+    requestData.append("phone", formData.phone);
+    requestData.append("email", formData.email);
+    requestData.append("city", formData.city);
+    requestData.append("helpType", formData.helpType);
+    requestData.append("description", formData.description);
+
+    if (formData.document) {
+      requestData.append("document", formData.document);
+    }
+
+    const response = await fetch("http://localhost:5000/api/help-requests", {
+      method: "POST",
+      body: requestData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.message || "حدث خطأ أثناء إرسال الطلب.");
       return;
     }
 
-    if (!/^\d{9}$/.test(formData.nationalId)) {
-      setError("رقم الهوية يجب أن يتكون من 9 أرقام.");
-      return;
-    }
+    console.log("Saved request:", data);
 
-    if (!/^05\d{8}$/.test(formData.phone)) {
-      setError("رقم الهاتف يجب أن يبدأ بـ 05 ويتكون من 10 أرقام.");
-      return;
-    }
-
-    if (formData.description.trim().length < 20) {
-      setError("وصف الحالة يجب أن يكون 20 حرفًا على الأقل.");
-      return;
-    }
-
-    console.log("Help request submitted:", formData);
     setSubmitted(true);
     setError("");
+
+    setFormData({
+      fullName: "",
+      nationalId: "",
+      phone: "",
+      email: "",
+      city: "",
+      helpType: "",
+      description: "",
+      document: null,
+    });
+  } catch (error) {
+    console.error("Submit request error:", error);
+    setError("تعذر الاتصال بالخادم. تأكد أن الباك إند يعمل.");
   }
+}
 
   return (
     <>
