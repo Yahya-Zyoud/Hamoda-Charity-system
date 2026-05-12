@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Footer from "./components/layout/Footer";
 import ScrollToHash from "./components/ScrollToHash";
 import HomePage from "./pages/home/HomePage";
 import Project from "./pages/Project";

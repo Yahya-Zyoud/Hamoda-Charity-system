@@ -1,7 +1,12 @@
 {
+  "files.autoSave": "onFocusChange",
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+  "claudeCode.preferredLocation": "panel",
+  "chat.viewSessions.orientation": "stacked",
+
   "permissions": {
     "allow": [
-      "Read(//c/Users/yahya/AppData/Roaming/Code/User/History/**)",
+      "Read(//c/Users/Mahmo/AppData/Roaming/Code/User/History/**)",
       "Bash(xargs -I{} cat {})"
     ]
   }
