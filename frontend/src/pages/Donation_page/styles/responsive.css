@@ -1,0 +1,31 @@
+/* styles/responsive.css */
+/* Import AFTER donations.css. Overrides layout for smaller screens. */
+
+/* ── Tablet ≤ 900px ── */
+@media (max-width: 900px) {
+  .dp-main {
+    grid-template-columns: 1fr;
+    margin-top: -20px;
+  }
+  .dp-sidebar   { order: 2; }
+  .dp-form-card { order: 1; }
+  .dp-header-title { font-size: 26px; }
+}
+
+/* ── Mobile ≤ 600px ── */
+@media (max-width: 600px) {
+  .dp-header         { padding: 32px 16px 44px; }
+  .dp-header-title   { font-size: 22px; }
+  .dp-header-subtitle{ font-size: 13px; }
+  .dp-form-card      { padding: 20px 16px; }
+  .dp-grid-3         { grid-template-columns: repeat(2, 1fr); }
+  .dp-form-row       { grid-template-columns: 1fr; gap: 10px; }
+  .dp-summary-amount { font-size: 26px; }
+  .dp-submit-btn     { font-size: 16px; padding: 14px; }
+}
+
+/* ── Very small ≤ 380px ── */
+@media (max-width: 380px) {
+  .dp-grid-3 { grid-template-columns: 1fr; }
+  .dp-main   { padding: 0 12px; }
+}
