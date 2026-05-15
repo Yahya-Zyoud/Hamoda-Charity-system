@@ -12,7 +12,6 @@ const HomePage = () => {
       <StatsSection />
       <ServicesSection />
       <ProjectsSection />
-      <StoriesSection />
       <PartnersSection />
     </div>
   );

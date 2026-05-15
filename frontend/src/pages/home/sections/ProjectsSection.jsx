@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { getProjects } from "../../../services/api";
 import { getProjectDesign } from "../../../constants/projects";
 import { ArrowLeft, Target, FolderOpen, AlertTriangle } from "lucide-react";
 import { useAppAuth } from "../../../contexts/AppAuthContext";
-import { isClerkProviderActive } from "../../../lib/clerkConfig";
-import { useClerkSignInButton } from "../../../hooks/useClerkSignInButton";
-import { openDonationInquiry } from "../../../lib/contactLinks";
 
 export default function ProjectsSection() {
   const [projects, setProjects] = useState([]);
@@ -14,7 +12,6 @@ export default function ProjectsSection() {
   const [error, setError] = useState(null);
   const [activeProject, setActiveProject] = useState(null);
   const { user } = useAppAuth();
-  const SignInBtn = useClerkSignInButton(!user);
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -178,21 +175,14 @@ export default function ProjectsSection() {
                             />
                           </button>
 
-                          {user || !isClerkProviderActive() || !SignInBtn ? (
+                          <Link to="/donations">
                             <button
                               type="button"
-                              onClick={() => openDonationInquiry(p.title)}
                               className={`px-6 py-2.5 rounded-xl text-white font-bold text-sm shadow-md transition-transform hover:-translate-y-1 bg-gradient-to-r ${design.color}`}
                             >
                               ساهم الآن
                             </button>
-                          ) : (
-                            <SignInBtn mode="modal">
-                              <button className={`px-6 py-2.5 rounded-xl text-white font-bold text-sm shadow-md transition-transform hover:-translate-y-1 bg-gradient-to-r ${design.color}`}>
-                                ساهم الآن
-                              </button>
-                            </SignInBtn>
-                          )}
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -255,21 +245,14 @@ export default function ProjectsSection() {
                         </p>
                       )}
 
-                      {user || !isClerkProviderActive() || !SignInBtn ? (
+                      <Link to="/donations" style={{ display: "block" }}>
                         <button
                           type="button"
-                          onClick={() => openDonationInquiry(activeProject?.title)}
                           className="mt-auto w-full py-3.5 bg-gradient-to-r from-emerald-600 to-blue-600 text-white rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all hover:-translate-y-1"
                         >
                           ساهم الآن
                         </button>
-                      ) : (
-                        <SignInBtn mode="modal">
-                          <button className="mt-auto w-full py-3.5 bg-gradient-to-r from-emerald-600 to-blue-600 text-white rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all hover:-translate-y-1">
-                            ساهم الآن
-                          </button>
-                        </SignInBtn>
-                      )}
+                      </Link>
                     </div>
                   </motion.div>
                 )}

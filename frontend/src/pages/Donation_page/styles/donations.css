@@ -52,7 +52,7 @@
 /* ── Layout ────────────────────────────────────────────────────────────────── */
 .dp-layout {
   max-width: 1100px;
-  margin: -32px auto 64px;
+  margin: 24px auto 64px;
   padding: 0 24px;
   display: grid;
   grid-template-columns: 1fr 340px;
