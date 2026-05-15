@@ -1,0 +1,64 @@
+/* styles/responsive.css */
+
+/* ── Tablet (≤ 900px) ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .dp-main {
+    grid-template-columns: 1fr;
+    margin-top: 32px;
+  }
+
+  .dp-sidebar {
+    order: 2;
+  }
+
+  .dp-form-card {
+    order: 1;
+  }
+}
+
+/* ── Mobile (≤ 600px) ──────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .dp-form-card {
+    padding: 20px 16px;
+  }
+
+  .dp-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dp-form-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .dp-summary-amount {
+    font-size: 28px;
+  }
+
+  .dp-submit-btn {
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  .dp-impact-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .dp-impact-header {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Very small screens (≤ 380px) ─────────────────────────────────────────── */
+@media (max-width: 380px) {
+  .dp-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .dp-main {
+    padding: 0 12px;
+  }
+}

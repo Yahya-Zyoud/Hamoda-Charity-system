@@ -8,5 +8,6 @@ router.use("/partners",  require("./partnerRoutes"));
 router.use("/stories",   require("./storyRoutes"));
 router.use("/subscribe", require("./subscriptionRoutes"));
 router.use("/user",      require("./userRoutes"));
+router.use("/donations", require("./donationRoutes"));
 
 module.exports = router;

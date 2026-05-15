@@ -5,6 +5,7 @@ import ScrollToHash from "./components/ScrollToHash";
 import HomePage from "./pages/home/HomePage";
 import Project from "./pages/Project";
 import TeamWork from "./pages/TeamWork";
+import DonationPage from "./pages/Donation_page/Home";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
 
@@ -35,7 +36,7 @@ function App() {
 
         <Route path="/admin/login" element={<Navigate to="/" replace />} />
         <Route path="/admin" element={<Navigate to="/" replace />} />
-        <Route path="/donations" element={<Navigate to="/#projects" replace />} />
+        <Route path="/donations" element={<DonationPage />} />
         <Route path="/help" element={<Navigate to="/#services" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
