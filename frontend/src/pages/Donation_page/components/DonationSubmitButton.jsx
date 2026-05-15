@@ -1,8 +1,16 @@
 // components/DonationSubmitButton.jsx
-// Full-width submit button.
-// When isPending = true: button is disabled, spinner shows, text changes.
-// When isPending = false: normal "تبرع الآن" state.
+// ─────────────────────────────────────────────────────────────────────────────
+// The final submit button for the donation form.
+// When isPending is true:
+//   - Button is disabled (no double-submit)
+//   - CSS spinner appears
+//   - Text changes to Arabic loading message
+// ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * @param {boolean}  isPending - true while the API call is in progress
+ * @param {function} onClick   - called when the button is clicked
+ */
 function DonationSubmitButton({ isPending, onClick }) {
   return (
     <button
@@ -12,12 +20,16 @@ function DonationSubmitButton({ isPending, onClick }) {
       disabled={isPending}
     >
       {isPending ? (
+        /* Loading state */
         <>
           <span className="dp-spinner" />
           جاري معالجة التبرع...
         </>
       ) : (
-        <>❤️ تبرع الآن</>
+        /* Normal state */
+        <>
+          ❤️ تبرع الآن
+        </>
       )}
     </button>
   );

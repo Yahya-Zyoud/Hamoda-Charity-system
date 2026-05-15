@@ -1,11 +1,31 @@
 // components/DonorInfoForm.jsx
-// Personal info section: Full Name, Email, Phone, City.
-// 2-column grid that collapses to 1 column on mobile (handled by responsive.css).
-// Fields turn red when validation errors are passed from Home.jsx.
+// ─────────────────────────────────────────────────────────────────────────────
+// Personal information section of the donation form.
+// Four fields: Full Name, Email, Phone, and City (optional).
+// Renders in a 2-column grid that collapses to 1 column on mobile (via CSS).
+// Each field highlights red when there's a validation error.
+// ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * @param {string}   donorName      - full name value
+ * @param {string}   donorEmail     - email value
+ * @param {string}   donorPhone     - phone value
+ * @param {string}   donorCity      - city value (optional)
+ * @param {function} onNameChange   - setter callbacks
+ * @param {function} onEmailChange
+ * @param {function} onPhoneChange
+ * @param {function} onCityChange
+ * @param {object}   errors         - { donorName, donorEmail, donorPhone }
+ */
 function DonorInfoForm({
-  donorName, donorEmail, donorPhone, donorCity,
-  onNameChange, onEmailChange, onPhoneChange, onCityChange,
+  donorName,
+  donorEmail,
+  donorPhone,
+  donorCity,
+  onNameChange,
+  onEmailChange,
+  onPhoneChange,
+  onCityChange,
   errors,
 }) {
   return (
@@ -14,6 +34,8 @@ function DonorInfoForm({
 
       {/* Row 1: Name + Email */}
       <div className="dp-form-row">
+
+        {/* Full name */}
         <div className="dp-field">
           <label className="dp-field-label">الاسم الكامل *</label>
           <input
@@ -23,9 +45,12 @@ function DonorInfoForm({
             value={donorName}
             onChange={(e) => onNameChange(e.target.value)}
           />
-          {errors.donorName && <p className="dp-error-msg">⚠ {errors.donorName}</p>}
+          {errors.donorName && (
+            <p className="dp-error-msg">⚠ {errors.donorName}</p>
+          )}
         </div>
 
+        {/* Email */}
         <div className="dp-field">
           <label className="dp-field-label">البريد الإلكتروني *</label>
           <input
@@ -34,14 +59,18 @@ function DonorInfoForm({
             placeholder="example@email.com"
             value={donorEmail}
             onChange={(e) => onEmailChange(e.target.value)}
-            dir="ltr"
+            dir="ltr" /* email addresses are LTR */
           />
-          {errors.donorEmail && <p className="dp-error-msg">⚠ {errors.donorEmail}</p>}
+          {errors.donorEmail && (
+            <p className="dp-error-msg">⚠ {errors.donorEmail}</p>
+          )}
         </div>
       </div>
 
       {/* Row 2: Phone + City */}
       <div className="dp-form-row">
+
+        {/* Phone */}
         <div className="dp-field">
           <label className="dp-field-label">رقم الهاتف *</label>
           <input
@@ -50,11 +79,14 @@ function DonorInfoForm({
             placeholder="+966 50 123 4567"
             value={donorPhone}
             onChange={(e) => onPhoneChange(e.target.value)}
-            dir="ltr"
+            dir="ltr" /* phone numbers are LTR */
           />
-          {errors.donorPhone && <p className="dp-error-msg">⚠ {errors.donorPhone}</p>}
+          {errors.donorPhone && (
+            <p className="dp-error-msg">⚠ {errors.donorPhone}</p>
+          )}
         </div>
 
+        {/* City — optional, no error needed */}
         <div className="dp-field">
           <label className="dp-field-label">المدينة (اختياري)</label>
           <input

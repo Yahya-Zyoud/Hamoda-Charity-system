@@ -1,7 +1,11 @@
 // components/DonationTypeSelector.jsx
-// 3×2 grid of donation type buttons. Active button turns green.
-// State lives in Home.jsx — this component only displays and calls onChange.
+// ─────────────────────────────────────────────────────────────────────────────
+// Shows a 3×2 grid of donation type buttons (صدقة, زكاة, إغاثة, إسكان, علاج, تعليم).
+// The selected button gets the "active" green style.
+// All state lives in Home.jsx — this component only receives props and calls onChange.
+// ─────────────────────────────────────────────────────────────────────────────
 
+// Donation types list — each has an id, Arabic label, and a short subtitle
 const DONATION_TYPES = [
   { id: "صدقة",  label: "صدقة",  sub: "تبرع عام" },
   { id: "زكاة",  label: "زكاة",  sub: "زكي الإسلام" },
@@ -11,6 +15,11 @@ const DONATION_TYPES = [
   { id: "تعليم", label: "تعليم", sub: "دعم التعليم" },
 ];
 
+/**
+ * @param {string}   donationType - currently selected type id
+ * @param {function} onChange     - called with the new type id when a button is clicked
+ * @param {string}   error        - Arabic error message (shown if validation fails)
+ */
 function DonationTypeSelector({ donationType, onChange, error }) {
   return (
     <div className="dp-section">
@@ -30,6 +39,7 @@ function DonationTypeSelector({ donationType, onChange, error }) {
         ))}
       </div>
 
+      {/* Show error only when parent passes one */}
       {error && <p className="dp-error-msg">⚠ {error}</p>}
     </div>
   );
