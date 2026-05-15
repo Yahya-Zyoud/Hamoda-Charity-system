@@ -18,7 +18,7 @@ export const StatCard = ({ stat, index }) => {
       </div>
 
       <div className="text-base md:text-lg font-bold text-slate-500">
-        {stat.name}
+        {stat.label}
       </div>
 
       {index !== 3 && (
