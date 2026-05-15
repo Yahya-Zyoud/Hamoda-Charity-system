@@ -1,11 +1,75 @@
-const express = require('express');
+require("dotenv").config();
+
+const connectDB = require("./db");
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const path = require("path");
+
+const config = require("./config/environment");
+
+const { responseFormatter: formatResponse } = require("./middleware/responseFormatter");
+const { errorHandler: handleAllErrors, notFoundHandler: handleNotFound } = require("./middleware/errorHandler");
+
+const { ensureUploadDir } = require("./utils/fileHandler");
+const logger = require("./utils/logger");
+
+const apiRoutes = require("./routes");
+
 const app = express();
-const PORT = 5000;
 
-app.get('/api', (req, res) => {
-  res.json({ message: "Hello from backend of hamoda-charity-system!" });
+app.use(cors({
+  origin: config.CORS_ORIGIN,
+  credentials: true,
+}));
+app.use(helmet());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/uploads", express.static(config.UPLOAD_DIR));
+ensureUploadDir();
+
+app.use(formatResponse);
+
+const subscribeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: "Too many subscribe requests" },
+});
+app.use(`${config.API_PREFIX}/subscribe`, subscribeLimiter);
+
+// Core JSON-file-based API routes
+app.use(config.API_PREFIX, apiRoutes);
+
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.use(handleNotFound);
+app.use(handleAllErrors);
+
+const PORT = config.PORT;
+const NODE_ENV = config.NODE_ENV;
+
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    logger.info("Server running", {
+      port: PORT,
+      environment: NODE_ENV,
+      url: `http://localhost:${PORT}`,
+    });
+  });
 });
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("Unhandled Rejection", { reason, promise });
+});
+
+process.on("uncaughtException", (error) => {
+  logger.error("Uncaught Exception", { error: error.message });
+  process.exit(1);
+});
+
+module.exports = app;

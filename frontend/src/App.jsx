@@ -1,54 +1,46 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ScrollToHash from "./components/ScrollToHash";
+import HomePage from "./pages/home/HomePage";
+import Project from "./pages/Project";
+import TeamWork from "./pages/TeamWork";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [data, setData] = useState("")
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api")
-      .then((res) => res.json())
-      .then((data) => setData(data.message))
-      .catch((err) => console.error(err))
-  }, [])
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+    <BrowserRouter>
+      <ScrollToHash />
+      <Routes>
+        {/* Public — with Navbar + Footer */}
+        <Route path="/" element={
+          <>
+            <Navbar />
+            <HomePage />
+            <Footer />
+          </>
+        } />
 
-        {}
-        <div className="backend-data">
-          {data ? <p>Backend says: {data}</p> : <p>Loading backend data...</p>}
-        </div>
-      </section>
+        {/* Mohamed's pages */}
+        <Route path="/projects" element={<Project />} />
+        <Route path="/team" element={<TeamWork />} />
 
-      <div className="ticks"></div>
+        {/* Admin dashboard — only for users with role: "admin" in Clerk metadata */}
+        <Route path="/admin/dashboard/*" element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } />
 
-      <section id="next-steps">
-        {}
-      </section>
-    </>
-  )
+        <Route path="/admin/login" element={<Navigate to="/" replace />} />
+        <Route path="/admin" element={<Navigate to="/" replace />} />
+        <Route path="/donations" element={<Navigate to="/#projects" replace />} />
+        <Route path="/help" element={<Navigate to="/#services" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

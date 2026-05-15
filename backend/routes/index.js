@@ -1,0 +1,12 @@
+const express = require("express");
+const router = express.Router();
+
+router.use("/projects",  require("./projectRoutes"));
+router.use("/services",  require("./serviceRoutes"));
+router.use("/stats",     require("./statRoutes"));
+router.use("/partners",  require("./partnerRoutes"));
+router.use("/stories",   require("./storyRoutes"));
+router.use("/subscribe", require("./subscriptionRoutes"));
+router.use("/user",      require("./userRoutes"));
+
+module.exports = router;
