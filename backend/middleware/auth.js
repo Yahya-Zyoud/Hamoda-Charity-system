@@ -9,10 +9,10 @@
 const { HTTP_STATUS } = require("../config/constants");
 const logger = require("../utils/logger");
 
-const IS_CLERK_READY = !!process.env.CLERK_SECRET_KEY;
+const IS_CLERK_READY = !!(process.env.CLERK_SECRET_KEY && process.env.CLERK_PUBLISHABLE_KEY);
 
 if (!IS_CLERK_READY) {
-  logger.warn("CLERK_SECRET_KEY not set — auth middleware running in dev-bypass mode");
+  logger.warn("Clerk keys not fully set — auth middleware running in dev-bypass mode (x-user-id header)");
 }
 
 // Lazy-load Clerk so the app boots even when the package is absent in tests.

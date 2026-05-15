@@ -26,6 +26,19 @@ exports.updateProfile = async (clerkId, data) =>
   );
 
 exports.getUserActivity = async (clerkId) => {
+  // Look up the user's saved phone to match pre-auth donations (saved with userId: "")
+  const userProfile = await User.findOne({ clerkId }).select("phone").lean();
+  const userPhone   = userProfile?.phone?.trim() || null;
+
+  // Match by userId (current) OR by donorPhone (fallback for old anonymous donations)
+  const donationFilter = userPhone
+    ? { $or: [{ userId: clerkId }, { donorPhone: userPhone }] }
+    : { userId: clerkId };
+
+  const donationStatsFilter = userPhone
+    ? { $or: [{ userId: clerkId }, { donorPhone: userPhone }], status: { $ne: "failed" } }
+    : { userId: clerkId, status: { $ne: "failed" } };
+
   const [
     helpRequests,
     donations,
@@ -34,13 +47,13 @@ exports.getUserActivity = async (clerkId) => {
     uniqueProjectIds,
   ] = await Promise.all([
     HelpRequest.find({ clerkId }).sort({ createdAt: -1 }).limit(10).lean(),
-    Donation.find({ userId: clerkId }).populate("projectId", "title").sort({ createdAt: -1 }).limit(10).lean(),
+    Donation.find(donationFilter).populate("projectId", "title").sort({ createdAt: -1 }).limit(10).lean(),
     HelpRequest.countDocuments({ clerkId }),
     Donation.aggregate([
-      { $match: { userId: clerkId, status: { $ne: "failed" } } },
+      { $match: donationStatsFilter },
       { $group: { _id: null, count: { $sum: 1 }, total: { $sum: "$amount" } } },
     ]),
-    Donation.distinct("projectId", { userId: clerkId, projectId: { $ne: null } }),
+    Donation.distinct("donationType", donationFilter),
   ]);
 
   const agg = donationAgg[0] || { count: 0, total: 0 };
