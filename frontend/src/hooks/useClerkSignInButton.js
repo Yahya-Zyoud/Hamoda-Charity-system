@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { isClerkConfigured } from "../lib/clerkConfig";
+import { isClerkProviderActive } from "../lib/clerkConfig.js";
 
 export function useClerkSignInButton(enabled = true) {
   const [SignInButton, setSignInButton] = useState(null);
@@ -7,7 +7,7 @@ export function useClerkSignInButton(enabled = true) {
   useEffect(() => {
     let isMounted = true;
 
-    if (!enabled || !isClerkConfigured) {
+    if (!enabled || !isClerkProviderActive()) {
       setSignInButton(null);
       return () => {
         isMounted = false;
@@ -29,5 +29,5 @@ export function useClerkSignInButton(enabled = true) {
     };
   }, [enabled]);
 
-  return SignInButton;
+  return isClerkProviderActive() ? SignInButton : null;
 }

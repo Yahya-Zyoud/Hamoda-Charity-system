@@ -37,7 +37,7 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       MONGO_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASS:-secret}@db:27017/${MONGO_DB:-hamoda_charity}?authSource=admin
     ports:
-      - "5001:5000"
+      - "5000:5000"
     volumes:
       - uploads_data:/app/public/uploads
     networks:

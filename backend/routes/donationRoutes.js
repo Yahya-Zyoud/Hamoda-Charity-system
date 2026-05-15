@@ -1,42 +1,32 @@
-// router/donationRouter.js
-// ─────────────────────────────────────────────────────────────────────────────
-// Maps every HTTP method + URL path to the correct controller function.
-// The validateDonation middleware runs BEFORE createDonation to check input.
-//
-// Full route table (base = /api/donations):
-//   POST   /              → create a new donation
-//   GET    /              → get all donations (admin)
-//   GET    /recent        → get 6 most recent (sidebar widget)
-//   GET    /stats         → get total amount + donor count (impact card)
-//   GET    /:id           → get one donation by MongoDB id
-//   PATCH  /:id/status    → update status: pending | completed | failed
-// ─────────────────────────────────────────────────────────────────────────────
-
-const express            = require('express');
-const router             = express.Router();
-const validateDonation   = require('../middleware/validateDonation');
+const express          = require("express");
+const router           = express.Router();
+const validateDonation = require("../middleware/validateDonation");
+const { optionalAuth, requireAdmin } = require("../middleware/auth");
 const {
   createDonation,
+  createCheckoutSession,
+  verifyAndSaveDonation,
   getAllDonations,
   getRecentDonations,
   getDonationStats,
   getDonationById,
   updateDonationStatus,
-} = require('../controllers/donationController');
+} = require("../controllers/donationController");
 
-// ── Specific routes first (before /:id) ───────────────────────────────────
-// IMPORTANT: /recent and /stats must be defined BEFORE /:id
-// otherwise Express will try to find a donation with id "recent" or "stats"
+// Public stats + recent widget (defined BEFORE /:id to avoid wildcard match)
+router.get("/stats",  getDonationStats);
+router.get("/recent", getRecentDonations);
 
-router.get('/recent', getRecentDonations);     // GET  /api/donations/recent
-router.get('/stats',  getDonationStats);       // GET  /api/donations/stats
+// Stripe (no auth required on verify — Stripe calls it)
+router.post("/checkout", optionalAuth, createCheckoutSession);
+router.get("/verify",    verifyAndSaveDonation);
 
-// ── Main CRUD routes ───────────────────────────────────────────────────────
-router.post('/',    validateDonation, createDonation);  // POST   /api/donations
-router.get('/',     getAllDonations);                    // GET    /api/donations
-router.get('/:id',  getDonationById);                   // GET    /api/donations/:id
+// Direct donation — optionalAuth so logged-in userId is captured
+router.post("/", optionalAuth, validateDonation, createDonation);
 
-// ── Status update ──────────────────────────────────────────────────────────
-router.patch('/:id/status', updateDonationStatus);      // PATCH  /api/donations/:id/status
+// Admin-only
+router.get("/",             requireAdmin, getAllDonations);
+router.get("/:id",          requireAdmin, getDonationById);
+router.patch("/:id/status", requireAdmin, updateDonationStatus);
 
 module.exports = router;

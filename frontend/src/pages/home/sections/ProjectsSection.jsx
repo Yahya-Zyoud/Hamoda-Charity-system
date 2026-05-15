@@ -4,7 +4,7 @@ import { getProjects } from "../../../services/api";
 import { getProjectDesign } from "../../../constants/projects";
 import { ArrowLeft, Target, FolderOpen, AlertTriangle } from "lucide-react";
 import { useAppAuth } from "../../../contexts/AppAuthContext";
-import { isClerkConfigured } from "../../../lib/clerkConfig";
+import { isClerkProviderActive } from "../../../lib/clerkConfig";
 import { useClerkSignInButton } from "../../../hooks/useClerkSignInButton";
 import { openDonationInquiry } from "../../../lib/contactLinks";
 
@@ -178,7 +178,7 @@ export default function ProjectsSection() {
                             />
                           </button>
 
-                          {user || !isClerkConfigured || !SignInBtn ? (
+                          {user || !isClerkProviderActive() || !SignInBtn ? (
                             <button
                               type="button"
                               onClick={() => openDonationInquiry(p.title)}
@@ -255,7 +255,7 @@ export default function ProjectsSection() {
                         </p>
                       )}
 
-                      {user || !isClerkConfigured || !SignInBtn ? (
+                      {user || !isClerkProviderActive() || !SignInBtn ? (
                         <button
                           type="button"
                           onClick={() => openDonationInquiry(activeProject?.title)}

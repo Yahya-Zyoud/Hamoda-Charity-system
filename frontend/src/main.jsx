@@ -2,7 +2,7 @@ import { Component, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
-import { isClerkConfigured, clerkPublishableKey } from "./lib/clerkConfig.js";
+import { isClerkConfigured, clerkPublishableKey, markClerkProviderFailed } from "./lib/clerkConfig.js";
 
 class AuthBootBoundary extends Component {
   constructor(props) {
@@ -10,7 +10,8 @@ class AuthBootBoundary extends Component {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(err) {
+    markClerkProviderFailed();
     return { hasError: true };
   }
 

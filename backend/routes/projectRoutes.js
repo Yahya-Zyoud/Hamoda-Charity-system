@@ -3,15 +3,21 @@ const router = express.Router();
 const {
   getProjects,
   getProjectById,
+  getProjectStats,
   createProject,
   updateProject,
   deleteProject,
 } = require("../controllers/projectController");
+const { requireAdmin } = require("../middleware/auth");
 
+// Public reads
 router.get("/",        getProjects);
+router.get("/stats",   getProjectStats);
 router.get("/:id",     getProjectById);
-router.post("/",       createProject);
-router.put("/:id",     updateProject);
-router.delete("/:id",  deleteProject);
+
+// Admin mutations
+router.post("/",       requireAdmin, createProject);
+router.put("/:id",     requireAdmin, updateProject);
+router.delete("/:id",  requireAdmin, deleteProject);
 
 module.exports = router;

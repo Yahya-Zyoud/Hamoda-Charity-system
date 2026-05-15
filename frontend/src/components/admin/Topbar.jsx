@@ -1,13 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, ClipboardList, DollarSign } from "lucide-react";
-import { NOTIFICATIONS } from "../../data/mockAdminData";
+import { getNotifications, markAllNotificationsRead } from "../../services/api";
+
+const timeAgo = (dateStr) => {
+  if (!dateStr) return "حديثاً";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "الآن";
+  if (mins < 60) return `منذ ${mins} دقيقة`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `منذ ${hrs} ساعة`;
+  return `منذ ${Math.floor(hrs / 24)} يوم`;
+};
 
 function Topbar({ title }) {
   const [showNotifs, setShowNotifs] = useState(false);
-  const [notifs, setNotifs] = useState(NOTIFICATIONS);
+  const [notifs, setNotifs] = useState([]);
   const unread = notifs.filter((n) => !n.read).length;
 
-  const markAll = () => setNotifs((p) => p.map((n) => ({ ...n, read: true })));
+  useEffect(() => {
+    getNotifications()
+      .then((data) => setNotifs(data.map((n) => ({ ...n, time: timeAgo(n.createdAt) }))))
+      .catch(() => {});
+  }, []);
+
+  const markAll = () => {
+    setNotifs((p) => p.map((n) => ({ ...n, read: true })));
+    markAllNotificationsRead().catch(() => {});
+  };
 
   return (
     <div className="topbar">

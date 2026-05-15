@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
     avatar: String,
     cover: String,
     joinDate: String,
+    status:   { type: String, enum: ["active", "inactive"], default: "active" },
   },
   {
     timestamps: true,

@@ -1,21 +1,9 @@
-/* eslint-disable react-hooks/static-components */
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Heart, ArrowDown, Compass } from "lucide-react";
 import { circleIconsData } from "../../../constants/heroSection";
-import { useAppAuth } from "../../../contexts/AppAuthContext";
-import { isClerkConfigured } from "../../../lib/clerkConfig";
-import { useClerkSignInButton } from "../../../hooks/useClerkSignInButton";
-import { openDonationInquiry } from "../../../lib/contactLinks";
 
 export default function HeroSection() {
-  const [isVisible, setIsVisible] = useState(false);
-  const { user } = useAppAuth();
-  const SignInBtn = useClerkSignInButton(!user);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
+  const navigate = useNavigate();
 
   return (
     <section
@@ -47,11 +35,7 @@ export default function HeroSection() {
         );
       })}
 
-      <div
-        className={`relative z-30 text-center max-w-4xl px-6 transition-all duration-700 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-        }`}
-      >
+      <div className="relative z-30 text-center max-w-4xl px-6 animate-hero-enter">
         <h1 className="heading-xl font-tajawal text-blue-950 mb-6 drop-shadow-lg">
           معاً..
           <br />
@@ -67,40 +51,18 @@ export default function HeroSection() {
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center mb-10">
-          {user || !isClerkConfigured ? (
-            <button
-              type="button"
-              onClick={() => openDonationInquiry()}
-              className="group flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-tajawal font-bold text-lg shadow-lg transition duration-200 hover:bg-blue-700 hover:shadow-xl hover:scale-[1.03] cursor-pointer"
-            >
-              <Heart className="w-5 h-5 fill-white" />
-              تبرع الآن
-            </button>
-          ) : SignInBtn ? (
-            <SignInBtn mode="modal">
-              <button className="group flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-tajawal font-bold text-lg shadow-lg transition duration-200 hover:bg-blue-700 hover:shadow-xl hover:scale-[1.03] cursor-pointer">
-                <Heart className="w-5 h-5 fill-white" />
-                تبرع الآن
-              </button>
-            </SignInBtn>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="group flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-tajawal font-bold text-lg shadow-lg opacity-70 cursor-not-allowed"
-            >
-              <Heart className="w-5 h-5 fill-white" />
-              تبرع الآن
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => navigate("/donations")}
+            className="group flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-tajawal font-bold text-lg shadow-lg transition duration-200 hover:bg-blue-700 hover:shadow-xl hover:scale-[1.03] cursor-pointer"
+          >
+            <Heart className="w-5 h-5 fill-white" />
+            تبرع الآن
+          </button>
 
           <button
             type="button"
-            onClick={() => {
-              document
-                .getElementById("projects")
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
+            onClick={() => navigate("/projects")}
             className="flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-900 px-8 py-4 rounded-xl font-tajawal font-bold text-lg shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.03] cursor-pointer border border-gray-200"
           >
             <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center">

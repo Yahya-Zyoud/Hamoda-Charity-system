@@ -1,35 +1,16 @@
-// components/DonationSubmitButton.jsx
-// ─────────────────────────────────────────────────────────────────────────────
-// The final submit button for the donation form.
-// When isPending is true:
-//   - Button is disabled (no double-submit)
-//   - CSS spinner appears
-//   - Text changes to Arabic loading message
-// ─────────────────────────────────────────────────────────────────────────────
+function DonationSubmitButton({ loading, paymentMethod }) {
+  const label = paymentMethod === "stripe" ? "انتقل إلى الدفع" : "إرسال طلب التبرع";
 
-/**
- * @param {boolean}  isPending - true while the API call is in progress
- * @param {function} onClick   - called when the button is clicked
- */
-function DonationSubmitButton({ isPending, onClick }) {
   return (
     <button
-      type="button"
+      type="submit"
       className="dp-submit-btn"
-      onClick={onClick}
-      disabled={isPending}
+      disabled={loading}
     >
-      {isPending ? (
-        /* Loading state */
-        <>
-          <span className="dp-spinner" />
-          جاري معالجة التبرع...
-        </>
+      {loading ? (
+        <span className="dp-spinner" />
       ) : (
-        /* Normal state */
-        <>
-          ❤️ تبرع الآن
-        </>
+        label
       )}
     </button>
   );

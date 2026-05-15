@@ -1,504 +1,361 @@
-/* styles/donations.css */
+/* ── Donation Page — dp- prefix ──────────────────────────────────────────── */
 
-:root {
-  --dp-primary:       #2563eb;
-  --dp-primary-dark:  #1d4ed8;
-  --dp-primary-light: #eff6ff;
-  --dp-primary-glow:  rgba(37, 99, 235, 0.22);
-  --dp-error:         #dc2626;
-  --dp-error-light:   #fef2f2;
-  --dp-text:          #0f172a;
-  --dp-text-muted:    #6b7280;
-  --dp-border:        #e5e7eb;
-  --dp-bg:            #f8fafc;
-  --dp-white:         #ffffff;
-  --dp-radius:        12px;
-  --dp-radius-lg:     18px;
-  --dp-shadow:        0 4px 24px rgba(0, 0, 0, 0.07);
-  --dp-shadow-sm:     0 2px 10px rgba(0, 0, 0, 0.05);
-  --dp-font:          "Tajawal", "Cairo", sans-serif;
-  --dp-transition:    all 0.2s ease;
-}
-
-/* ── Page wrapper ──────────────────────────────────────────────────────────── */
 .dp-page {
+  min-height: 100vh;
+  background: #f4f6fb;
   direction: rtl;
-  font-family: var(--dp-font);
-  background: var(--dp-bg);
-  color: var(--dp-text);
 }
 
-/* ── Main layout (sidebar + form) ──────────────────────────────────────────── */
-.dp-main {
-  display: grid;
-  grid-template-columns: 290px 1fr;
-  gap: 28px;
-  width: min(1280px, calc(100vw - 2rem));
-  margin: 48px auto 64px;
-  padding: 0 24px;
-}
-
-/* ── Sidebar ───────────────────────────────────────────────────────────────── */
-.dp-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.dp-impact-card {
-  background: var(--dp-white);
-  border-radius: var(--dp-radius-lg);
-  padding: 22px;
-  box-shadow: var(--dp-shadow);
-  border: 1px solid #dbeafe;
-}
-
-.dp-impact-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: flex-end;
-  color: var(--dp-primary);
-  font-weight: 700;
-  font-size: 15px;
-  margin-bottom: 18px;
-}
-
-.dp-impact-stat {
-  background: var(--dp-primary-light);
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  text-align: right;
-}
-
-.dp-impact-stat-label {
-  font-size: 11px;
-  color: var(--dp-text-muted);
-  margin-bottom: 2px;
-}
-
-.dp-impact-stat-value {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--dp-primary);
-}
-
-.dp-recent-title {
-  font-weight: 700;
-  font-size: 14px;
-  text-align: right;
-  color: var(--dp-text);
-  padding: 8px 2px 4px;
-}
-
-.dp-donation-item {
-  background: var(--dp-white);
-  border-radius: var(--dp-radius);
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: var(--dp-shadow-sm);
-  border: 1px solid var(--dp-border);
-  transition: var(--dp-transition);
-}
-
-.dp-donation-item:hover {
-  border-color: #bfdbfe;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.1);
-}
-
-.dp-donation-badge {
-  background: var(--dp-primary);
+/* ── Hero ──────────────────────────────────────────────────────────────────── */
+.dp-hero {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
   color: #fff;
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 13px;
+  text-align: center;
+  padding: 72px 24px 56px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dp-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(255,255,255,.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.dp-hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: .8rem;
+  letter-spacing: .04em;
+  margin-bottom: 16px;
+}
+
+.dp-hero h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
   font-weight: 700;
-  white-space: nowrap;
-  flex-shrink: 0;
+  margin: 0 0 12px;
 }
 
-.dp-donation-item-name {
-  font-weight: 600;
-  font-size: 13px;
-  text-align: right;
+.dp-hero p {
+  font-size: 1rem;
+  opacity: .85;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
 }
 
-.dp-donation-item-meta {
-  font-size: 11px;
-  color: var(--dp-text-muted);
-  text-align: right;
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+.dp-layout {
+  max-width: 1100px;
+  margin: -32px auto 64px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
 }
 
-/* ── Form card ─────────────────────────────────────────────────────────────── */
-.dp-form-card {
-  background: var(--dp-white);
-  border-radius: var(--dp-radius-lg);
-  padding: 36px;
-  box-shadow: var(--dp-shadow);
-  border: 1px solid #f1f5f9;
+/* ── Card ──────────────────────────────────────────────────────────────────── */
+.dp-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.07);
+  padding: 32px;
 }
 
-.dp-form-title {
-  text-align: right;
-  color: var(--dp-primary);
-  font-size: 20px;
-  font-weight: 800;
-  margin: 0 0 26px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid var(--dp-primary-light);
-  font-family: var(--dp-font);
+.dp-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin: 0 0 24px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #e8edf5;
 }
 
-/* ── Section labels ────────────────────────────────────────────────────────── */
+/* ── Section ───────────────────────────────────────────────────────────────── */
+.dp-section {
+  margin-bottom: 28px;
+}
+
 .dp-section-label {
   display: block;
-  text-align: right;
-  font-size: 13px;
-  font-weight: 700;
-  color: #374151;
-  margin-bottom: 10px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 12px;
 }
 
-.dp-section-title {
-  text-align: right;
-  color: var(--dp-primary);
-  font-size: 16px;
-  font-weight: 700;
-  margin: 0 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--dp-primary-light);
-}
-
-/* ── Grid for type / amount / payment buttons ──────────────────────────────── */
+/* ── Choice grids ──────────────────────────────────────────────────────────── */
 .dp-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
-/* ── Generic choice button ─────────────────────────────────────────────────── */
+.dp-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* ── Choice button ─────────────────────────────────────────────────────────── */
 .dp-choice-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12px 8px;
-  border: 2px solid var(--dp-border);
-  border-radius: var(--dp-radius);
-  background: var(--dp-white);
+  gap: 4px;
+  padding: 14px 8px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
   cursor: pointer;
-  transition: var(--dp-transition);
-  color: var(--dp-text);
-  font-family: var(--dp-font);
+  transition: all .18s ease;
+  text-align: center;
 }
 
 .dp-choice-btn:hover {
-  border-color: #93c5fd;
-  background: #f8faff;
+  border-color: #2563eb;
+  background: #eff6ff;
 }
 
 .dp-choice-btn.active {
-  background: linear-gradient(135deg, var(--dp-primary), var(--dp-primary-dark));
-  border-color: var(--dp-primary);
-  color: #fff;
-  box-shadow: 0 4px 14px var(--dp-primary-glow);
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
 }
 
-/* ── Amount preset buttons ─────────────────────────────────────────────────── */
-.dp-amount-btn {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-/* ── Custom amount input wrapper ───────────────────────────────────────────── */
-.dp-custom-amount-wrapper {
-  display: flex;
-  align-items: center;
-  border: 2px solid var(--dp-border);
-  border-radius: var(--dp-radius);
-  overflow: hidden;
-  margin-top: 10px;
-  transition: var(--dp-transition);
-}
-
-.dp-custom-amount-wrapper:focus-within {
-  border-color: var(--dp-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-.dp-currency-symbol {
-  padding: 10px 14px;
-  background: #f1f5f9;
-  color: #374151;
-  font-weight: 700;
-  font-size: 16px;
-  border-left: 2px solid var(--dp-border);
-  flex-shrink: 0;
-}
-
-.dp-custom-input {
-  flex: 1;
-  padding: 10px 12px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  text-align: right;
-  direction: rtl;
-  color: var(--dp-text);
-  background: var(--dp-white);
-  font-family: var(--dp-font);
-}
-
-/* ── Type button sub-label ─────────────────────────────────────────────────── */
 .dp-type-main {
-  font-weight: 700;
-  font-size: 15px;
+  font-size: .95rem;
+  font-weight: 600;
+  color: #1e293b;
 }
 
 .dp-type-sub {
-  font-size: 11px;
-  color: #9ca3af;
-  margin-top: 3px;
+  font-size: .72rem;
+  color: #64748b;
 }
 
-.dp-choice-btn.active .dp-type-sub {
-  color: rgba(255, 255, 255, 0.75);
+/* ── Custom amount input ───────────────────────────────────────────────────── */
+.dp-custom-amount {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: .9rem;
+  background: #f8fafc;
+  color: #1e293b;
+  outline: none;
+  text-align: right;
+  box-sizing: border-box;
+  transition: border-color .18s;
 }
 
-/* ── Donor info form rows ──────────────────────────────────────────────────── */
-.dp-form-row {
+.dp-custom-amount:focus {
+  border-color: #2563eb;
+  background: #fff;
+}
+
+/* ── Form fields ───────────────────────────────────────────────────────────── */
+.dp-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 16px;
 }
 
 .dp-field {
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 
-.dp-field-label {
-  font-size: 13px;
-  color: #374151;
+.dp-field-full {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.dp-label {
+  font-size: .82rem;
   font-weight: 600;
-  margin-bottom: 6px;
-  text-align: right;
+  color: #374151;
 }
 
-.dp-input {
-  padding: 11px 14px;
-  border: 2px solid var(--dp-border);
-  border-radius: var(--dp-radius);
-  font-size: 14px;
-  color: var(--dp-text);
+.dp-input,
+.dp-textarea {
+  padding: 10px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: .9rem;
+  background: #f8fafc;
+  color: #1e293b;
   outline: none;
   text-align: right;
-  direction: rtl;
-  transition: var(--dp-transition);
-  background: var(--dp-white);
-  font-family: var(--dp-font);
+  font-family: inherit;
+  transition: border-color .18s;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.dp-input:focus {
-  border-color: var(--dp-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+.dp-input:focus,
+.dp-textarea:focus {
+  border-color: #2563eb;
+  background: #fff;
 }
 
-.dp-input.has-error {
-  border-color: var(--dp-error);
-  background: var(--dp-error-light);
+.dp-input-error {
+  border-color: #ef4444 !important;
 }
 
-/* ── Payment method card ───────────────────────────────────────────────────── */
-.dp-payment-btn {
-  padding: 18px 10px;
+.dp-textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
-.dp-payment-icon {
-  font-size: 26px;
-  margin-bottom: 6px;
+/* ── Error message ─────────────────────────────────────────────────────────── */
+.dp-error-msg {
+  font-size: .78rem;
+  color: #dc2626;
+  margin: 4px 0 0;
 }
 
-.dp-payment-label {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.dp-choice-btn.active.dp-payment-btn {
-  background: var(--dp-primary-light);
-  border-color: var(--dp-primary);
-  color: var(--dp-primary);
-  box-shadow: 0 4px 14px var(--dp-primary-glow);
-}
-
-/* ── Summary card ──────────────────────────────────────────────────────────── */
-.dp-summary-card {
-  background: var(--dp-primary-light);
-  border: 2px solid #bfdbfe;
-  border-radius: var(--dp-radius-lg);
-  padding: 22px;
-  margin-top: 8px;
-}
-
-.dp-summary-header {
+/* ── Alert (top of form) ───────────────────────────────────────────────────── */
+.dp-alert {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: .88rem;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 8px;
-  justify-content: flex-end;
-  color: var(--dp-primary);
-  font-weight: 700;
-  font-size: 15px;
-  margin-bottom: 14px;
 }
 
-.dp-summary-type-badge {
-  display: inline-block;
-  background: var(--dp-primary);
-  color: #fff;
-  padding: 4px 18px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 6px;
+.dp-alert-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
-.dp-summary-amount {
-  font-size: 36px;
-  font-weight: 800;
-  color: var(--dp-primary);
-  direction: ltr;
-  margin-bottom: 16px;
-}
-
-.dp-summary-divider {
-  border: none;
-  border-top: 1px solid #bfdbfe;
-  margin-bottom: 12px;
-}
-
-.dp-summary-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px dashed #bfdbfe;
-}
-
-.dp-summary-row:last-child {
-  border-bottom: none;
-}
-
-.dp-summary-row-label {
-  font-size: 13px;
-  color: var(--dp-text-muted);
-}
-
-.dp-summary-row-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--dp-text);
-}
-
-.dp-summary-disclaimer {
-  font-size: 11px;
-  color: #9ca3af;
-  text-align: center;
-  margin-top: 10px;
+.dp-alert-success {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
 }
 
 /* ── Submit button ─────────────────────────────────────────────────────────── */
 .dp-submit-btn {
   width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--dp-primary), var(--dp-primary-dark));
-  color: #fff;
+  padding: 14px;
   border: none;
-  border-radius: var(--dp-radius);
-  font-size: 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1e3a5f, #2563eb);
+  color: #fff;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: var(--dp-transition);
-  box-shadow: 0 6px 20px var(--dp-primary-glow);
-  letter-spacing: 0.3px;
+  transition: opacity .2s, transform .15s;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  font-family: var(--dp-font);
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .dp-submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.35);
+  opacity: .9;
+  transform: translateY(-1px);
 }
 
 .dp-submit-btn:disabled {
-  background: #93c5fd;
+  opacity: .6;
   cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
 }
 
-/* ── Spinner ───────────────────────────────────────────────────────────────── */
+/* loading spinner */
 .dp-spinner {
-  width: 18px;
-  height: 18px;
-  border: 3px solid rgba(255, 255, 255, 0.35);
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,.3);
   border-top-color: #fff;
   border-radius: 50%;
-  animation: dp-spin 0.75s linear infinite;
-  flex-shrink: 0;
+  animation: dp-spin .7s linear infinite;
 }
 
 @keyframes dp-spin {
   to { transform: rotate(360deg); }
 }
 
-/* ── Error / validation messages ───────────────────────────────────────────── */
-.dp-error-msg {
-  color: var(--dp-error);
-  font-size: 12px;
-  margin-top: 5px;
-  text-align: right;
+/* ── Summary card (right sidebar) ─────────────────────────────────────────── */
+.dp-summary {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.07);
+  padding: 28px 24px;
+}
+
+.dp-summary-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin: 0 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e8edf5;
+}
+
+.dp-summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dp-summary-item {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 4px;
+  font-size: .88rem;
 }
 
-/* ── Section spacing ───────────────────────────────────────────────────────── */
-.dp-section {
-  margin-bottom: 26px;
+.dp-summary-key {
+  color: #6b7280;
+  font-weight: 500;
 }
 
-.dp-section:last-child {
-  margin-bottom: 0;
+.dp-summary-val {
+  color: #1e293b;
+  font-weight: 600;
+  text-align: left;
+  direction: ltr;
 }
 
-/* ── Feedback banners ──────────────────────────────────────────────────────── */
-.dp-success-message {
-  margin-top: 18px;
-  padding: 14px 18px;
+.dp-summary-amount {
+  font-size: 1.1rem;
+  color: #2563eb;
+}
+
+/* ── Info box (below summary) ─────────────────────────────────────────────── */
+.dp-info-box {
+  margin-top: 20px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 12px;
-  background: #f0fdf4;
-  color: #15803d;
-  border: 1px solid #86efac;
-  font-weight: 700;
-  text-align: center;
-  font-family: var(--dp-font);
+  padding: 16px;
+  font-size: .82rem;
+  color: #1e40af;
+  line-height: 1.6;
 }
 
-.dp-submit-error {
-  margin-top: 18px;
-  padding: 14px 18px;
-  border-radius: 12px;
-  background: var(--dp-error-light);
-  color: #991b1b;
-  border: 1px solid #fca5a5;
-  font-weight: 700;
-  text-align: center;
-  font-family: var(--dp-font);
+.dp-info-box strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: .85rem;
 }

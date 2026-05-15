@@ -1,31 +1,18 @@
-const { loadData } = require("../utils/dataLoader");
+const mongoose = require("mongoose");
+const Stat = require("../models/Stat");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
-exports.getStats = (req, res) => {
+const isDBReady = () => mongoose.connection.readyState === 1;
+
+exports.getStats = async (req, res) => {
   try {
-    const items = loadData("stats");
-
-    if (!items || items.length === 0) {
-      logger.warn("No statistics found");
-      return res.status(HTTP_STATUS.OK).json({
-        success: true,
-        message: MESSAGES.NOT_FOUND,
-        data: [],
-      });
-    }
-
-    logger.info("Statistics retrieved successfully", { count: items.length });
-    return res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: MESSAGES.SUCCESS,
-      data: items,
-    });
+    if (!isDBReady()) return res.sendSuccess([]);
+    const items = await Stat.find().sort({ order: 1, createdAt: 1 });
+    logger.info("Stats retrieved", { count: items.length });
+    return res.sendSuccess(items);
   } catch (error) {
-    logger.error("Error fetching statistics", { error: error.message });
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: MESSAGES.ERROR,
-    });
+    logger.error("Error fetching stats", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 };

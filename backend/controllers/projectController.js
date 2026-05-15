@@ -1,26 +1,13 @@
 const mongoose = require("mongoose");
 const Project = require("../models/Project");
-const { loadData } = require("../utils/dataLoader");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
 const isDBReady = () => mongoose.connection.readyState === 1;
 
-const seedIfEmpty = async () => {
-  const count = await Project.countDocuments();
-  if (count === 0) {
-    const json = loadData("projects");
-    if (json.length) await Project.insertMany(json);
-  }
-};
-
 exports.getProjects = async (req, res) => {
   try {
-    if (!isDBReady()) {
-      const items = loadData("projects");
-      return res.sendSuccess(items);
-    }
-    await seedIfEmpty();
+    if (!isDBReady()) return res.sendSuccess([]);
     const items = await Project.find().sort({ createdAt: -1 });
     logger.info("Projects retrieved", { count: items.length });
     return res.sendSuccess(items);
@@ -38,6 +25,21 @@ exports.getProjectById = async (req, res) => {
     return res.sendSuccess(project);
   } catch (error) {
     logger.error("Error fetching project", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.getProjectStats = async (req, res) => {
+  try {
+    if (!isDBReady()) return res.sendSuccess({ total: 0, active: 0, completed: 0 });
+    const [total, active, completed] = await Promise.all([
+      Project.countDocuments(),
+      Project.countDocuments({ status: "active" }),
+      Project.countDocuments({ status: "completed" }),
+    ]);
+    return res.sendSuccess({ total, active, completed });
+  } catch (error) {
+    logger.error("Error fetching project stats", { error: error.message });
     return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 };

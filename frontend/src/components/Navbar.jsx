@@ -7,10 +7,11 @@ import {
   LayoutDashboard,
   ChevronDown,
   LogOut,
+  UserCircle,
 } from "lucide-react";
 import { navItems, getNavIcon } from "../constants/navigation";
 import { useAppAuth } from "../contexts/AppAuthContext";
-import { isClerkConfigured } from "../lib/clerkConfig";
+import { isClerkProviderActive } from "../lib/clerkConfig";
 import { useClerkSignInButton } from "../hooks/useClerkSignInButton";
 
 function AuthButtons({ mobile = false }) {
@@ -33,7 +34,7 @@ function AuthButtons({ mobile = false }) {
     };
   }, [menuOpen]);
 
-  if (!isClerkConfigured) return null;
+  if (!isClerkProviderActive()) return null;
 
   if (user) {
     const displayName = user.fullName || user.firstName || "المستخدم";
@@ -71,6 +72,14 @@ function AuthButtons({ mobile = false }) {
                 لوحة التحكم
               </Link>
             )}
+
+            <Link
+              to="/profile"
+              className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-gray-50"
+            >
+              <UserCircle size={16} />
+              حسابي
+            </Link>
 
             <button
               onClick={signOut}
@@ -139,6 +148,17 @@ function AuthButtons({ mobile = false }) {
                 لوحة التحكم
               </Link>
             )}
+
+            <Link
+              to="/profile"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-gray-50"
+            >
+              <UserCircle size={16} />
+              حسابي
+            </Link>
+
+            <div style={{ height: 1, background: "#F1F5F9", margin: "4px 0" }} />
 
             <button
               type="button"
