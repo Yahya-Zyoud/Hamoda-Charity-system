@@ -411,9 +411,18 @@
   50% { transform: translateY(-12px); }
 }
 
+@keyframes hero-enter {
+  from { opacity: 0; transform: translateY(1.5rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @layer utilities {
   .animate-float {
     animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-hero-enter {
+    animation: hero-enter 0.7s ease-out forwards;
   }
 
   .text-dark {

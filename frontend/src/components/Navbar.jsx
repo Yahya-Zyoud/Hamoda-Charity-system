@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { navItems, getNavIcon } from "../constants/navigation";
 import { useAppAuth } from "../contexts/AppAuthContext";
-import { isClerkConfigured } from "../lib/clerkConfig";
+import { isClerkProviderActive } from "../lib/clerkConfig";
 import { useClerkSignInButton } from "../hooks/useClerkSignInButton";
 
 function AuthButtons({ mobile = false }) {
@@ -34,7 +34,7 @@ function AuthButtons({ mobile = false }) {
     };
   }, [menuOpen]);
 
-  if (!isClerkConfigured) return null;
+  if (!isClerkProviderActive()) return null;
 
   if (user) {
     const displayName = user.fullName || user.firstName || "المستخدم";
