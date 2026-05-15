@@ -1,124 +1,158 @@
 // Home.jsx
-// ═══════════════════════════════════════════════════════════════════════════
-// MAIN PAGE — owns ALL form state and passes it to child components as props.
-// This is the "lifting state up" pattern: one parent controls everything,
-// children just display data and fire callbacks.
-//
-// Flow:
-//   User interacts → child calls a callback → Home.jsx updates state
-//   → React re-renders → child receives new props → UI updates
-// ═══════════════════════════════════════════════════════════════════════════
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-import DonationTypeSelector   from "./components/DonationTypeSelector";
+import DonationTypeSelector from "./components/DonationTypeSelector";
 import DonationAmountSelector from "./components/DonationAmountSelector";
-import DonorInfoForm          from "./components/DonorInfoForm";
-import PaymentMethodSelector  from "./components/PaymentMethodSelector";
-import DonationSummary        from "./components/DonationSummary";
-import DonationSubmitButton   from "./components/DonationSubmitButton";
+import DonorInfoForm from "./components/DonorInfoForm";
+import PaymentMethodSelector from "./components/PaymentMethodSelector";
+import DonationSummary from "./components/DonationSummary";
+import DonationSubmitButton from "./components/DonationSubmitButton";
 
 import { validateDonationForm } from "./utils/validation";
-import { submitDonation }       from "./services/donationService";
+import {
+  submitDonation,
+  fetchRecentDonations,
+  fetchDonationStats,
+} from "./services/donationService";
 
 import "./styles/donations.css";
 import "./styles/responsive.css";
 
-// Static recent donations shown in sidebar
-// TODO: replace with a real fetch('/api/donations/recent') call
-const RECENT_DONATIONS = [
-  { amount: "$100",  name: "محمد أحمد",     type: "صدقة", date: "13 مايو 2026" },
-  { amount: "$1000", name: "يوسف المحطاني", type: "صدقة", date: "13 مايو 2026" },
-  { amount: "$250",  name: "سارة المظري",   type: "زكاة", date: "14 مايو 2026" },
-  { amount: "$500",  name: "أحمد محمد علي", type: "زكاة", date: "12 مايو 2026" },
-  { amount: "$100",  name: "فاطمة إبراهيم", type: "صدقة", date: "11 مايو 2026" },
-  { amount: "$250",  name: "محمد عبدالله",  type: "صدقة", date: "11 مايو 2026" },
-];
-
 function Home() {
+  const [donationType, setDonationType] = useState("");
+  const [selectedAmount, setSelectedAmount] = useState(null);
+  const [customAmountText, setCustomAmountText] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [donorPhone, setDonorPhone] = useState("");
+  const [donorCity, setDonorCity] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [errors, setErrors] = useState({});
+  const [isPending, setIsPending] = useState(false);
 
-  // ── All Form State ───────────────────────────────────────────────────────
-  const [donationType,     setDonationType]     = useState("");
-  const [selectedAmount,   setSelectedAmount]   = useState(null);   // number | null
-  const [customAmountText, setCustomAmountText] = useState("");      // string
-  const [donorName,        setDonorName]        = useState("");
-  const [donorEmail,       setDonorEmail]       = useState("");
-  const [donorPhone,       setDonorPhone]       = useState("");
-  const [donorCity,        setDonorCity]        = useState("");
-  const [paymentMethod,    setPaymentMethod]    = useState("");
-  const [errors,           setErrors]           = useState({});
-  const [isPending,        setIsPending]        = useState(false);
-  // ────────────────────────────────────────────────────────────────────────
+  const [successMessage, setSuccessMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
-  // Clear one specific error (called when user starts correcting a field)
-  function clearError(field) {
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  const [recentDonations, setRecentDonations] = useState([]);
+  const [stats, setStats] = useState({
+    totalAmountFormatted: "...",
+    totalDonors: "...",
+  });
+  const [sidebarLoading, setSidebarLoading] = useState(true);
+
+  useEffect(() => {
+    loadSidebarData();
+  }, []);
+
+  async function loadSidebarData() {
+    try {
+      setSidebarLoading(true);
+
+      const [recent, statsData] = await Promise.all([
+        fetchRecentDonations(),
+        fetchDonationStats(),
+      ]);
+
+      setRecentDonations(recent);
+      setStats(statsData);
+    } catch (err) {
+      console.error("Failed to load sidebar data:", err.message);
+    } finally {
+      setSidebarLoading(false);
+    }
   }
 
-  // Preset amount selected → clear custom input
   function handleSelectPreset(amount) {
     setSelectedAmount(amount);
     setCustomAmountText("");
-    clearError("amount");
+    setErrors((prev) => ({ ...prev, amount: undefined }));
+    setSubmitError("");
+    setSuccessMessage("");
   }
 
-  // User types custom amount → deselect preset
   function handleCustomAmountChange(text) {
     setCustomAmountText(text);
     setSelectedAmount(null);
-    clearError("amount");
+    setErrors((prev) => ({ ...prev, amount: undefined }));
+    setSubmitError("");
+    setSuccessMessage("");
   }
 
-  // Form submission
+  function clearError(field) {
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setSubmitError("");
+    setSuccessMessage("");
+  }
+
   async function handleSubmit() {
-    // 1. Validate
     const validationErrors = validateDonationForm({
-      donationType, selectedAmount, customAmountText,
-      donorName, donorEmail, donorPhone, paymentMethod,
+      donationType,
+      selectedAmount,
+      customAmountText,
+      donorName,
+      donorEmail,
+      donorPhone,
+      paymentMethod,
     });
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return; // stop — show errors to user
+      setSubmitError("يرجى تعبئة الحقول المطلوبة بشكل صحيح.");
+      setSuccessMessage("");
+      return;
     }
 
-    // 2. Build payload
-    const donationPayload = {
-      donationType,
-      amount:        selectedAmount ?? parseFloat(customAmountText),
-      donorName:     donorName.trim(),
-      donorEmail:    donorEmail.trim(),
-      donorPhone:    donorPhone.trim(),
-      donorCity:     donorCity.trim(),
-      paymentMethod,
-    };
-
-    // 3. Submit
     setIsPending(true);
     setErrors({});
+    setSubmitError("");
+    setSuccessMessage("");
 
     try {
-      const result = await submitDonation(donationPayload); // ← service layer
-      alert(`✅ ${result.message}`);
+      const donationPayload = {
+        donationType,
+        amount: selectedAmount ?? parseFloat(customAmountText),
+        donorName: donorName.trim(),
+        donorEmail: donorEmail.trim(),
+        donorPhone: donorPhone.trim(),
+        donorCity: donorCity.trim(),
+        paymentMethod,
+      };
 
-      // 4. Reset form on success
-      setDonationType(""); setSelectedAmount(null); setCustomAmountText("");
-      setDonorName(""); setDonorEmail(""); setDonorPhone("");
-      setDonorCity(""); setPaymentMethod("");
+      const result = await submitDonation(donationPayload);
 
+      setSuccessMessage(result.message || "تم استلام تبرعك بنجاح، شكرًا لك");
+      setSubmitError("");
+
+      setDonationType("");
+      setSelectedAmount(null);
+      setCustomAmountText("");
+      setDonorName("");
+      setDonorEmail("");
+      setDonorPhone("");
+      setDonorCity("");
+      setPaymentMethod("");
+
+      await loadSidebarData();
     } catch (err) {
-      alert("❌ حدث خطأ أثناء إرسال التبرع. يرجى المحاولة مرة أخرى.");
-      console.error(err);
+      if (err.errors && Object.keys(err.errors).length > 0) {
+        setErrors(err.errors);
+        setSubmitError("يرجى مراجعة الحقول وإصلاح الأخطاء.");
+      } else {
+        setSubmitError(
+          err.message || "حدث خطأ أثناء إرسال التبرع. يرجى المحاولة مرة أخرى."
+        );
+      }
+
+      setSuccessMessage("");
+      console.error("Donation submission error:", err);
     } finally {
       setIsPending(false);
     }
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="dp-page">
-
-      {/* Header */}
       <header className="dp-header">
         <span className="dp-header-icon">♡</span>
         <h1 className="dp-header-title">منصة الجمعية الخيرية</h1>
@@ -127,50 +161,66 @@ function Home() {
         </p>
       </header>
 
-      {/* Main: sidebar + form */}
       <main className="dp-main">
-
-        {/* Sidebar */}
         <aside className="dp-sidebar">
           <div className="dp-impact-card">
             <div className="dp-impact-header">
-              <span>📈</span><span>أثر عطائكم</span>
+              <span>📈</span>
+              <span>أثر عطائكم</span>
             </div>
+
             <div className="dp-impact-stat">
               <div className="dp-impact-stat-label">إجمالي التبرعات</div>
-              <div className="dp-impact-stat-value">$5,750</div>
+              <div className="dp-impact-stat-value">
+                {sidebarLoading ? "..." : stats.totalAmountFormatted}
+              </div>
             </div>
+
             <div className="dp-impact-stat">
               <div className="dp-impact-stat-label">عدد المتبرعين</div>
-              <div className="dp-impact-stat-value">9</div>
+              <div className="dp-impact-stat-value">
+                {sidebarLoading ? "..." : stats.totalDonors}
+              </div>
             </div>
           </div>
 
           <div className="dp-recent-title">أحدث التبرعات</div>
 
-          {RECENT_DONATIONS.map((d, i) => (
-            <div key={i} className="dp-donation-item">
-              <span className="dp-donation-badge">{d.amount}</span>
-              <div>
-                <div className="dp-donation-item-name">{d.name}</div>
-                <div className="dp-donation-item-meta">{d.type} • {d.date}</div>
+          {sidebarLoading ? (
+            <p style={{ textAlign: "right", color: "#aaa", fontSize: "13px", padding: "8px" }}>
+              جاري التحميل...
+            </p>
+          ) : recentDonations.length === 0 ? (
+            <p style={{ textAlign: "right", color: "#aaa", fontSize: "13px", padding: "8px" }}>
+              لا توجد تبرعات بعد
+            </p>
+          ) : (
+            recentDonations.map((donation, index) => (
+              <div key={donation._id || index} className="dp-donation-item">
+                <span className="dp-donation-badge">{donation.amount}</span>
+                <div>
+                  <div className="dp-donation-item-name">{donation.name}</div>
+                  <div className="dp-donation-item-meta">
+                    {donation.type} • {donation.date}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </aside>
 
-        {/* Form card */}
         <section className="dp-form-card">
           <h2 className="dp-form-title">تفاصيل التبرع</h2>
 
-          {/* 1. Type */}
           <DonationTypeSelector
             donationType={donationType}
-            onChange={(t) => { setDonationType(t); clearError("donationType"); }}
+            onChange={(t) => {
+              setDonationType(t);
+              clearError("donationType");
+            }}
             error={errors.donationType}
           />
 
-          {/* 2. Amount */}
           <DonationAmountSelector
             selectedAmount={selectedAmount}
             customAmountText={customAmountText}
@@ -179,25 +229,40 @@ function Home() {
             error={errors.amount}
           />
 
-          {/* 3. Personal info */}
           <DonorInfoForm
-            donorName={donorName}   donorEmail={donorEmail}
-            donorPhone={donorPhone} donorCity={donorCity}
-            onNameChange={(v)  => { setDonorName(v);  clearError("donorName");  }}
-            onEmailChange={(v) => { setDonorEmail(v); clearError("donorEmail"); }}
-            onPhoneChange={(v) => { setDonorPhone(v); clearError("donorPhone"); }}
+            donorName={donorName}
+            donorEmail={donorEmail}
+            donorPhone={donorPhone}
+            donorCity={donorCity}
+            onNameChange={(v) => {
+              setDonorName(v);
+              clearError("donorName");
+            }}
+            onEmailChange={(v) => {
+              setDonorEmail(v);
+              clearError("donorEmail");
+            }}
+            onPhoneChange={(v) => {
+              setDonorPhone(v);
+              clearError("donorPhone");
+            }}
             onCityChange={setDonorCity}
-            errors={{ donorName: errors.donorName, donorEmail: errors.donorEmail, donorPhone: errors.donorPhone }}
+            errors={{
+              donorName: errors.donorName,
+              donorEmail: errors.donorEmail,
+              donorPhone: errors.donorPhone,
+            }}
           />
 
-          {/* 4. Payment */}
           <PaymentMethodSelector
             paymentMethod={paymentMethod}
-            onChange={(m) => { setPaymentMethod(m); clearError("paymentMethod"); }}
+            onChange={(m) => {
+              setPaymentMethod(m);
+              clearError("paymentMethod");
+            }}
             error={errors.paymentMethod}
           />
 
-          {/* 5. Live summary */}
           <DonationSummary
             donationType={donationType}
             selectedAmount={selectedAmount}
@@ -206,12 +271,22 @@ function Home() {
             paymentMethod={paymentMethod}
           />
 
-          {/* 6. Submit */}
+          {successMessage && (
+            <div className="dp-success-message">
+              ✅ {successMessage}
+            </div>
+          )}
+
+          {submitError && (
+            <div className="dp-submit-error">
+              ❌ {submitError}
+            </div>
+          )}
+
           <div style={{ marginTop: "20px" }}>
             <DonationSubmitButton isPending={isPending} onClick={handleSubmit} />
           </div>
         </section>
-
       </main>
     </div>
   );
