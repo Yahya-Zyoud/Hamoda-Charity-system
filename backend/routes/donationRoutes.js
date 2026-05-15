@@ -4,8 +4,6 @@ const validateDonation = require("../middleware/validateDonation");
 const { optionalAuth, requireAdmin } = require("../middleware/auth");
 const {
   createDonation,
-  createCheckoutSession,
-  verifyAndSaveDonation,
   getAllDonations,
   getRecentDonations,
   getDonationStats,
@@ -13,15 +11,11 @@ const {
   updateDonationStatus,
 } = require("../controllers/donationController");
 
-// Public stats + recent widget (defined BEFORE /:id to avoid wildcard match)
+// Public stats + recent widget
 router.get("/stats",  getDonationStats);
 router.get("/recent", getRecentDonations);
 
-// Stripe (no auth required on verify — Stripe calls it)
-router.post("/checkout", optionalAuth, createCheckoutSession);
-router.get("/verify",    verifyAndSaveDonation);
-
-// Direct donation — optionalAuth so logged-in userId is captured
+// Direct donation
 router.post("/", optionalAuth, validateDonation, createDonation);
 
 // Admin-only

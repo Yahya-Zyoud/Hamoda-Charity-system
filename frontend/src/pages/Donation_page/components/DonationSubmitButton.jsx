@@ -1,17 +1,11 @@
-function DonationSubmitButton({ loading, paymentMethod }) {
-  const label = paymentMethod === "stripe" ? "انتقل إلى الدفع" : "إرسال طلب التبرع";
-
+function DonationSubmitButton({ loading }) {
   return (
     <button
       type="submit"
       className="dp-submit-btn"
       disabled={loading}
     >
-      {loading ? (
-        <span className="dp-spinner" />
-      ) : (
-        label
-      )}
+      {loading ? <span className="dp-spinner" /> : "إرسال طلب التبرع"}
     </button>
   );
 }

@@ -75,15 +75,6 @@ export const getAdminStats = () => makeRequest("/admin/stats");
 // ── Donations ─────────────────────────────────────────────────────────────
 export const getDonations = () => makeRequest("/donations");
 
-export const createCheckoutSession = (payload) =>
-  makeRequest("/donations/checkout", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-
-export const verifyDonation = (sessionId) =>
-  makeRequest(`/donations/verify?session_id=${encodeURIComponent(sessionId)}`);
-
 export const createDirectDonation = (payload) =>
   makeRequest("/donations", { method: "POST", body: JSON.stringify(payload) });
 

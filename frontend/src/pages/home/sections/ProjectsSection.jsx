@@ -115,8 +115,8 @@ export default function ProjectsSection() {
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12 items-start">
             <div className="flex flex-col gap-4">
               {projects.map((p, idx) => {
-                const isActive = activeProject?.id === p.id;
-                const design = getProjectDesign(p.id);
+                const isActive = activeProject?._id === p._id || activeProject?.id === p.id;
+                const design = getProjectDesign(idx);
 
                 return (
                   <div
@@ -210,7 +210,8 @@ export default function ProjectsSection() {
                       />
                     ) : (
                       (() => {
-                        const activeDesign = getProjectDesign(activeProject.id);
+                        const activeIdx = projects.findIndex(p => p.id === activeProject.id || p._id === activeProject._id);
+                        const activeDesign = getProjectDesign(activeIdx >= 0 ? activeIdx : 0);
                         const ActiveIcon = activeDesign.icon;
 
                         return (

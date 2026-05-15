@@ -63,7 +63,7 @@ if (require.main === module) {
   // Start HTTP server immediately so the frontend isn't blocked.
   // MongoDB connection is attempted in parallel; API routes that need
   // the DB will fail gracefully if it hasn't connected yet.
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     logger.info("Server running", {
       port: PORT,
       environment: NODE_ENV,
@@ -76,6 +76,25 @@ if (require.main === module) {
       hint: "Run: docker compose up -d",
     });
   });
+
+  const gracefulShutdown = (signal) => {
+    logger.info(`${signal} received — shutting down gracefully`);
+    server.close(() => {
+      logger.info("HTTP server closed");
+      const mongoose = require("mongoose");
+      mongoose.connection.close(false).then(() => {
+        logger.info("MongoDB connection closed");
+        process.exit(0);
+      }).catch(() => process.exit(1));
+    });
+    setTimeout(() => {
+      logger.error("Forced shutdown after timeout");
+      process.exit(1);
+    }, 10_000).unref();
+  };
+
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.on("SIGINT",  () => gracefulShutdown("SIGINT"));
 } else {
   // Serverless: kick off the DB connection but don't block module export.
   connectDB().catch((err) => {
