@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function ProjectCTA() {
   return (
@@ -23,19 +24,21 @@ export default function ProjectCTA() {
       >
         تبرعك يساعدنا في الاستمرار في تقديم خدماتنا وتوسيع نطاق مشاريعنا الإنسانية
       </p>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.97 }}
-        className="inline-flex items-center gap-2 px-10 py-3.5 rounded-2xl font-extrabold text-base transition-all"
-        style={{
-          background: "white",
-          color: "#1856FF",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
-        }}
-      >
-        <Heart size={18} className="fill-current" />
-        تبرع الآن
-      </motion.button>
+      <Link to="/donations">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
+          className="inline-flex items-center gap-2 px-10 py-3.5 rounded-2xl font-extrabold text-base transition-all"
+          style={{
+            background: "white",
+            color: "#1856FF",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+          }}
+        >
+          <Heart size={18} className="fill-current" />
+          تبرع الآن
+        </motion.button>
+      </Link>
     </motion.section>
   );
 }

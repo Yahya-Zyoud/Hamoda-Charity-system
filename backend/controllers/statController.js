@@ -1,18 +1,14 @@
-const mongoose = require("mongoose");
-const Stat = require("../models/Stat");
+const statsService = require("../services/statsService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
-const isDBReady = () => mongoose.connection.readyState === 1;
-
 exports.getStats = async (req, res) => {
   try {
-    if (!isDBReady()) return res.sendSuccess([]);
-    const items = await Stat.find().sort({ order: 1, createdAt: 1 });
-    logger.info("Stats retrieved", { count: items.length });
-    return res.sendSuccess(items);
+    const stats = await statsService.getLiveStats();
+    logger.info("Live stats served", stats);
+    return res.sendSuccess(stats);
   } catch (error) {
-    logger.error("Error fetching stats", { error: error.message });
+    logger.error("Error computing live stats", { error: error.message });
     return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 };

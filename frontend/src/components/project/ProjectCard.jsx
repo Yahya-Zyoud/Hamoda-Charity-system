@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Users, Calendar, CheckCircle2, Clock, Timer,
@@ -44,7 +45,7 @@ function formatCurrency(n) {
 }
 
 // ── Modal Overlay ──────────────────────────────────────────────────────────────
-function ProjectModal({ project, gradient, progress, onClose, onDonate }) {
+function ProjectModal({ project, gradient, progress, onClose }) {
   const cat    = CATEGORY_COLORS[project.category] || CATEGORY_COLORS["أخرى"];
   const status = STATUS_CONFIG[project.status]     || STATUS_CONFIG["قيد التخطيط"];
 
@@ -253,22 +254,23 @@ function ProjectModal({ project, gradient, progress, onClose, onDonate }) {
             </div>
 
             {/* Donate button */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={onDonate}
-              className="w-full py-3.5 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2"
-              style={{
-                background: "linear-gradient(135deg, #1856FF 0%, #07CA6B 100%)",
-                color: "white",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 6px 20px rgba(24,86,255,0.35)",
-              }}
-            >
-              <Heart size={16} className="fill-white" />
-              تبرع الآن
-            </motion.button>
+            <Link to="/donations" style={{ display: "block" }}>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="w-full py-3.5 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2"
+                style={{
+                  background: "linear-gradient(135deg, #1856FF 0%, #07CA6B 100%)",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  boxShadow: "0 6px 20px rgba(24,86,255,0.35)",
+                }}
+              >
+                <Heart size={16} className="fill-white" />
+                تبرع الآن
+              </motion.button>
+            </Link>
           </div>
         </motion.div>
       </motion.div>
@@ -292,9 +294,6 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
   const toggleExpand = () =>
     setExpandedId(isExpanded ? null : (project._id || index));
 
-  const handleDonate = () => {
-    alert(`شكراً لك! سيتم توجيهك لصفحة التبرع لمشروع: ${project.title}`);
-  };
 
   return (
     <>
@@ -431,7 +430,6 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
           gradient={gradient}
           progress={progress}
           onClose={() => setExpandedId(null)}
-          onDonate={handleDonate}
         />
       )}
     </>

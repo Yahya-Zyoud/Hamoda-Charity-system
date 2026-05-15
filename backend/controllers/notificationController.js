@@ -1,14 +1,10 @@
-const mongoose = require("mongoose");
-const Notification = require("../models/Notification");
+const notificationService = require("../services/notificationService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
-const isDBReady = () => mongoose.connection.readyState === 1;
-
 exports.getAll = async (req, res) => {
   try {
-    if (!isDBReady()) return res.sendSuccess([]);
-    const notifications = await Notification.find().sort({ createdAt: -1 }).limit(50);
+    const notifications = await notificationService.getAll();
     return res.sendSuccess(notifications);
   } catch (error) {
     logger.error("Error fetching notifications", { error: error.message });
@@ -18,12 +14,7 @@ exports.getAll = async (req, res) => {
 
 exports.markRead = async (req, res) => {
   try {
-    if (!isDBReady()) return res.sendError("Database not connected", HTTP_STATUS.INTERNAL_SERVER_ERROR);
-    const notification = await Notification.findByIdAndUpdate(
-      req.params.id,
-      { read: true },
-      { new: true }
-    );
+    const notification = await notificationService.markRead(req.params.id);
     if (!notification) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
     return res.sendSuccess(notification);
   } catch (error) {
@@ -34,8 +25,7 @@ exports.markRead = async (req, res) => {
 
 exports.markAllRead = async (req, res) => {
   try {
-    if (!isDBReady()) return res.sendError("Database not connected", HTTP_STATUS.INTERNAL_SERVER_ERROR);
-    await Notification.updateMany({ read: false }, { read: true });
+    await notificationService.markAllRead();
     return res.sendSuccess(null, "تم تعيين الكل كمقروء");
   } catch (error) {
     logger.error("Error marking all notifications read", { error: error.message });
@@ -45,8 +35,7 @@ exports.markAllRead = async (req, res) => {
 
 exports.deleteOne = async (req, res) => {
   try {
-    if (!isDBReady()) return res.sendError("Database not connected", HTTP_STATUS.INTERNAL_SERVER_ERROR);
-    const notification = await Notification.findByIdAndDelete(req.params.id);
+    const notification = await notificationService.deleteOne(req.params.id);
     if (!notification) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
     return res.sendSuccess(null, "تم حذف الإشعار");
   } catch (error) {

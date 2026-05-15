@@ -1,13 +1,9 @@
-const mongoose = require("mongoose");
 const Partner = require("../models/Partner");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
-const isDBReady = () => mongoose.connection.readyState === 1;
-
 exports.getPartners = async (req, res) => {
   try {
-    if (!isDBReady()) return res.sendSuccess([]);
     const items = await Partner.find().sort({ order: 1, createdAt: 1 });
     logger.info("Partners retrieved", { count: items.length });
     return res.sendSuccess(items);

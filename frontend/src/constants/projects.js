@@ -17,5 +17,6 @@ export const projectDesignMap = [
 ];
 
 export const getProjectDesign = (id) => {
-  return projectDesignMap[id % projectDesignMap.length];
+  const idx = typeof id === "number" && !isNaN(id) ? id : 0;
+  return projectDesignMap[Math.abs(idx) % projectDesignMap.length];
 };

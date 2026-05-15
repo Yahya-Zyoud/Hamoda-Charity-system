@@ -1,6 +1,4 @@
-function DonationSummary({ donationType, amount, donorInfo, paymentMethod }) {
-  const methodLabel = paymentMethod === "stripe" ? "بطاقة ائتمانية" : "كاش / تحويل";
-
+function DonationSummary({ donationType, amount, donorInfo }) {
   return (
     <div className="dp-summary">
       <h3 className="dp-summary-title">ملخص التبرع</h3>
@@ -21,7 +19,7 @@ function DonationSummary({ donationType, amount, donorInfo, paymentMethod }) {
         </li>
         <li className="dp-summary-item">
           <span className="dp-summary-key">طريقة الدفع</span>
-          <span className="dp-summary-val">{paymentMethod ? methodLabel : "—"}</span>
+          <span className="dp-summary-val">تحويل بنكي / كاش</span>
         </li>
       </ul>
     </div>

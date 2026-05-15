@@ -1,13 +1,9 @@
-const mongoose = require("mongoose");
 const Story = require("../models/Story");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
-const isDBReady = () => mongoose.connection.readyState === 1;
-
 exports.getStories = async (req, res) => {
   try {
-    if (!isDBReady()) return res.sendSuccess([]);
     const items = await Story.find().sort({ date: -1 });
     logger.info("Stories retrieved", { count: items.length });
     return res.sendSuccess(items);
