@@ -1,19 +1,18 @@
 import { useEffect } from "react";
 import { useUser, useClerk, useAuth } from "@clerk/clerk-react";
 import { AppAuthProvider } from "../../contexts/AppAuthContext";
-import { setAuthTokenGetter } from "../../services/api";
+import { setAuthTokenGetter, setCurrentUserId } from "../../services/api";
 
 export function ClerkBridge({ children }) {
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
   const { getToken } = useAuth();
 
-  // Wire Clerk's getToken into the API layer so every request gets
-  // Authorization: Bearer <token> without passing clerkId around manually.
   useEffect(() => {
     setAuthTokenGetter(getToken);
-    return () => setAuthTokenGetter(null);
-  }, [getToken]);
+    setCurrentUserId(user?.id || null);
+    return () => { setAuthTokenGetter(null); setCurrentUserId(null); };
+  }, [getToken, user]);
 
   const isAdmin =
     isLoaded &&

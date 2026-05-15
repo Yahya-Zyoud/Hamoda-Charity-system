@@ -83,9 +83,9 @@ export default function UserProfilePage() {
       setEditing(false);
       setSaveMsg("تم حفظ التغييرات بنجاح");
       setTimeout(() => setSaveMsg(""), 3000);
-    } catch {
-      setSaveMsg("تعذر الحفظ، حاول مجدداً");
-      setTimeout(() => setSaveMsg(""), 3000);
+    } catch (err) {
+      setSaveMsg(err?.message || "تعذر الحفظ، حاول مجدداً");
+      setTimeout(() => setSaveMsg(""), 5000);
     } finally {
       setSaving(false);
     }

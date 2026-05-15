@@ -64,10 +64,10 @@ const checkProfileUpdate = (request, response, next) => {
     });
   }
 
-  if (bio && !checkBio(bio)) {
+  if (bio && bio.trim().length > VALIDATION.MAX_BIO_LENGTH) {
     return response.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
-      message: "النبذة يجب أن تكون بين 10 و 500 حرف",
+      message: `النبذة يجب أن تكون أقل من ${VALIDATION.MAX_BIO_LENGTH} حرف`,
     });
   }
 

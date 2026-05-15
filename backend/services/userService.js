@@ -22,27 +22,37 @@ exports.updateProfile = async (clerkId, data) =>
   User.findOneAndUpdate(
     { clerkId },
     { $set: data },
-    { new: true, upsert: true, runValidators: true }
+    { new: true, upsert: true }
   );
 
 exports.getUserActivity = async (clerkId) => {
-  const [helpRequests, donations] = await Promise.all([
+  const [
+    helpRequests,
+    donations,
+    totalRequests,
+    donationAgg,
+    uniqueProjectIds,
+  ] = await Promise.all([
     HelpRequest.find({ clerkId }).sort({ createdAt: -1 }).limit(10).lean(),
     Donation.find({ userId: clerkId }).populate("projectId", "title").sort({ createdAt: -1 }).limit(10).lean(),
+    HelpRequest.countDocuments({ clerkId }),
+    Donation.aggregate([
+      { $match: { userId: clerkId, status: { $ne: "failed" } } },
+      { $group: { _id: null, count: { $sum: 1 }, total: { $sum: "$amount" } } },
+    ]),
+    Donation.distinct("projectId", { userId: clerkId, projectId: { $ne: null } }),
   ]);
 
-  const uniqueProjects = new Set(
-    donations.filter((d) => d.projectId).map((d) => String(d.projectId._id || d.projectId))
-  ).size;
+  const agg = donationAgg[0] || { count: 0, total: 0 };
 
   return {
     helpRequests,
     donations,
     stats: {
-      totalRequests:  helpRequests.length,
-      totalDonations: donations.length,
-      totalProjects:  uniqueProjects,
-      donationAmount: donations.reduce((s, d) => s + (d.amount || 0), 0),
+      totalRequests:  totalRequests,
+      totalDonations: agg.count,
+      totalProjects:  uniqueProjectIds.length,
+      donationAmount: agg.total,
     },
   };
 };

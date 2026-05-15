@@ -1,19 +1,22 @@
 const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 // ── Auth token injection ───────────────────────────────────────────────────
-// ClerkBridge calls setAuthTokenGetter(getToken) once on mount so every
-// request automatically includes Authorization: Bearer <token>.
+// ClerkBridge calls setAuthTokenGetter(getToken) and setCurrentUserId(id)
+// once on mount so every request automatically includes the auth headers.
 let _getToken = null;
+let _userId   = null;
 export const setAuthTokenGetter = (fn) => { _getToken = fn; };
+export const setCurrentUserId   = (id) => { _userId   = id; };
 
 async function getAuthHeader() {
-  if (!_getToken) return {};
+  const headers = {};
+  if (_userId) headers["x-user-id"] = _userId;   // dev-bypass fallback
+  if (!_getToken) return headers;
   try {
     const token = await _getToken();
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  } catch {
-    return {};
-  }
+    if (token) headers.Authorization = `Bearer ${token}`;
+  } catch { /* ignore */ }
+  return headers;
 }
 
 // ── Core request helper ────────────────────────────────────────────────────
