@@ -4,41 +4,66 @@ import { Users, Briefcase, Heart, Activity } from "lucide-react";
 import { StatCard } from "../../../components/cards";
 import { getStats } from "../../../services/api";
 
-const ICON_MAP = { Users, Briefcase, Heart, Activity };
-const COLOR_MAP = [
-  { color: "text-blue-600",    bg: "bg-blue-50" },
-  { color: "text-emerald-600", bg: "bg-emerald-50" },
-  { color: "text-rose-600",    bg: "bg-rose-50" },
-  { color: "text-amber-600",   bg: "bg-amber-50" },
+/**
+ * Display config lives here — backend only returns plain numbers.
+ * Reorder or rename by editing this array, zero backend changes needed.
+ */
+const STATS_CONFIG = [
+  { key: "beneficiaries", icon: Users,     label: "إجمالي المستفيدين", suffix: "+", color: "text-blue-600",    bg: "bg-blue-50"    },
+  { key: "projects",      icon: Briefcase, label: "مشروع منجز",        suffix: "+", color: "text-emerald-600", bg: "bg-emerald-50" },
+  { key: "donors",        icon: Heart,     label: "متبرع كريم",         suffix: "+", color: "text-rose-600",    bg: "bg-rose-50"    },
+  { key: "team",          icon: Activity,  label: "متطوع نشط",          suffix: "+", color: "text-amber-600",   bg: "bg-amber-50"   },
 ];
 
-const FALLBACK = [
-  { id: 1, name: "إجمالي المستفيدين", value: 50430, suffix: "+", icon: Users,    ...COLOR_MAP[0] },
-  { id: 2, name: "مشروع منجز",        value: 1250,  suffix: "+", icon: Briefcase,...COLOR_MAP[1] },
-  { id: 3, name: "متبرع كريم",         value: 8300,  suffix: "+", icon: Heart,    ...COLOR_MAP[2] },
-  { id: 4, name: "متطوع نشط",          value: 340,   suffix: "+", icon: Activity, ...COLOR_MAP[3] },
-];
+function SkeletonCard() {
+  return (
+    <div className="flex flex-col items-center justify-center text-center relative z-10 animate-pulse">
+      <div className="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] bg-slate-200 mb-6" />
+      <div className="h-10 w-24 bg-slate-200 rounded-lg mb-3" />
+      <div className="h-4 w-20 bg-slate-100 rounded-lg" />
+    </div>
+  );
+}
 
 export default function StatsSection() {
-  const [stats, setStats] = useState(FALLBACK);
+  const [data,    setData]    = useState(null);  // null = loading, {} = loaded
+  const [failed,  setFailed]  = useState(false);
 
   useEffect(() => {
-    getStats()
-      .then((data) => {
-        if (!Array.isArray(data) || data.length === 0) return;
-        setStats(
-          data.map((s, i) => ({
-            id:     s._id || i,
-            name:   s.label,
-            value:  s.value,
-            suffix: s.suffix || "+",
-            icon:   ICON_MAP[s.icon] || Activity,
-            ...(COLOR_MAP[i % COLOR_MAP.length]),
-          }))
-        );
-      })
-      .catch(() => {});
+    let cancelled = false;
+
+    const load = (attempt = 1) => {
+      getStats()
+        .then((res) => {
+          if (cancelled) return;
+          // Backend now returns a plain object { donors, projects, beneficiaries, team, totalAmount }
+          if (res && typeof res === "object" && !Array.isArray(res)) {
+            setData(res);
+          } else {
+            setFailed(true);
+          }
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (attempt < 4) {
+            setTimeout(() => load(attempt + 1), attempt * 3000);
+          } else {
+            setFailed(true);
+          }
+        });
+    };
+
+    load();
+    return () => { cancelled = true; };
   }, []);
+
+  const stats = STATS_CONFIG.map((cfg) => ({
+    ...cfg,
+    value: data?.[cfg.key] ?? 0,
+  }));
+
+  // Don't render the section at all if load permanently failed with 0s everywhere
+  if (failed && stats.every((s) => s.value === 0)) return null;
 
   return (
     <section
@@ -57,9 +82,12 @@ export default function StatsSection() {
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-blue-500/5 via-emerald-500/5 to-rose-500/5 blur-3xl pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />
 
-          {stats.map((stat, index) => (
-            <StatCard key={index} stat={stat} index={index} />
-          ))}
+          {data === null
+            ? STATS_CONFIG.map((_, i) => <SkeletonCard key={i} />)
+            : stats.map((stat, index) => (
+                <StatCard key={stat.key} stat={stat} index={index} />
+              ))
+          }
         </motion.div>
       </div>
     </section>

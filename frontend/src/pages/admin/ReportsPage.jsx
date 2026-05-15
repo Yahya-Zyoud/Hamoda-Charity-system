@@ -6,12 +6,6 @@ import Badge from "../../components/admin/Badge";
 import Btn from "../../components/admin/Btn";
 import { getAdminStats, getHelpRequests, getProjects } from "../../services/api";
 
-const MONTHLY = [
-  { m: "يناير",   v: 8200  }, { m: "فبراير", v: 11500 }, { m: "مارس",   v: 9800  },
-  { m: "أبريل",  v: 13200 }, { m: "مايو",   v: 10500 }, { m: "يونيو",  v: 14800 },
-  { m: "يوليو",  v: 12000 }, { m: "أغسطس", v: 15600 }, { m: "سبتمبر", v: 11200 },
-  { m: "أكتوبر", v: 17700 },
-];
 
 const HELP_TYPE_AR = {
   medical: "طبي", education: "تعليم", food: "غذاء",
@@ -53,6 +47,7 @@ function buildProjectPerf(projects) {
 
 function ReportsPage() {
   const [stats,    setStats]    = useState(null);
+  const [monthly,  setMonthly]  = useState([]);
   const [reqDist,  setReqDist]  = useState([]);
   const [projPerf, setProjPerf] = useState([]);
   const [loading,  setLoading]  = useState(true);
@@ -61,6 +56,7 @@ function ReportsPage() {
     Promise.all([getAdminStats(), getHelpRequests(), getProjects()])
       .then(([adminStats, requests, projects]) => {
         setStats(adminStats);
+        setMonthly(adminStats.monthlyDonations || []);
         setReqDist(buildRequestDist(requests));
         setProjPerf(buildProjectPerf(projects));
       })
@@ -68,7 +64,7 @@ function ReportsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const maxVal = Math.max(...MONTHLY.map((m) => m.v));
+  const maxVal = monthly.length > 0 ? Math.max(...monthly.map((m) => m.v)) : 1;
   const totalDonationsDisplay = stats ? `$${(stats.totalDonations || 0).toLocaleString()}` : "—";
 
   return (
@@ -112,11 +108,14 @@ function ReportsPage() {
           <Card style={{ marginBottom: 20 }}>
             <div style={{ padding: "16px 20px 10px", borderBottom: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontWeight: 700, fontSize: 15 }}>التبرعات الشهرية</span>
-              <span style={{ fontSize: 13, color: "#94A3B8" }}>2024 — بيانات تقديرية</span>
+              <span style={{ fontSize: 13, color: "#94A3B8" }}>{new Date().getFullYear()}</span>
             </div>
             <div style={{ padding: "16px 20px 20px" }}>
+              {monthly.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "40px 0", color: "#94A3B8", fontSize: 13 }}>لا توجد تبرعات مسجّلة هذا العام بعد</div>
+              ) : (
               <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 200 }}>
-                {MONTHLY.map((m) => {
+                {monthly.map((m) => {
                   const h = Math.round((m.v / maxVal) * 170);
                   return (
                     <div key={m.m} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
@@ -132,6 +131,7 @@ function ReportsPage() {
                   );
                 })}
               </div>
+              )}
             </div>
           </Card>
 

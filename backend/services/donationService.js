@@ -1,5 +1,6 @@
 const Donation     = require("../models/Donation");
 const Notification = require("../models/Notification");
+const statsService = require("./statsService");
 const logger       = require("../utils/logger");
 
 exports.createDirectDonation = async ({ donationType, amount, donorName, donorEmail, donorPhone, donorCity, paymentMethod, userId }) => {
@@ -21,6 +22,7 @@ exports.createDirectDonation = async ({ donationType, amount, donorName, donorEm
     relatedId: donation._id,
   }).catch((err) => logger.warn("Failed to create donation notification", { error: err.message }));
 
+  statsService.invalidateCache();
   return donation;
 };
 

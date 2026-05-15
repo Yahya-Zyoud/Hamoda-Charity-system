@@ -16,41 +16,10 @@ import Card from "../../components/admin/Card";
 import Badge from "../../components/admin/Badge";
 import { getAdminStats } from "../../services/api";
 
-// Chart data — requires DB aggregation; keep as static until backend analytics are built
-const MONTHLY = [
-  { m: "يناير",   v: 8200  }, { m: "فبراير", v: 11500 }, { m: "مارس",   v: 9800  },
-  { m: "أبريل",  v: 13200 }, { m: "مايو",   v: 10500 }, { m: "يونيو",  v: 14800 },
-  { m: "يوليو",  v: 12000 }, { m: "أغسطس", v: 15600 }, { m: "سبتمبر", v: 11200 },
-  { m: "أكتوبر", v: 17700 },
-];
-const REQUEST_DIST = [
-  { type: "طبي",   count: 14, color: "#2563eb" },
-  { type: "إسكان", count: 8,  color: "#16A34A" },
-  { type: "غذاء",  count: 7,  color: "#D97706" },
-  { type: "تعليم", count: 5,  color: "#0EA5E9" },
-];
-
-const ALERTS = [
-  {
-    level: "danger", icon: AlertCircle,
-    title: "طلبات طبية عاجلة بانتظار قرار",
-    desc: "راجع قسم الطلبات للاطلاع على الحالات العاجلة",
-    action: "مراجعة الطلبات", to: "/admin/dashboard/requests",
-  },
-  {
-    level: "warning", icon: AlertTriangle,
-    title: "بعض المشاريع تحتاج تمويل إضافي",
-    desc: "راجع قسم المشاريع لمتابعة نسب الإنجاز",
-    action: "عرض المشاريع", to: "/admin/dashboard/projects",
-  },
-];
-
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   show: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.38, ease: "easeOut" } }),
 };
-
-const bestMonth = MONTHLY.reduce((a, b) => (a.v > b.v ? a : b));
 
 const BarTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -61,6 +30,7 @@ const BarTooltip = ({ active, payload, label }) => {
     </div>
   );
 };
+
 const PieTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   return (
@@ -77,13 +47,19 @@ function OverviewPage() {
   useEffect(() => {
     getAdminStats()
       .then(setStats)
-      .catch(() => {}); // fail silently — page renders with zeros
+      .catch(() => {});
   }, []);
 
   const live = stats ?? {
     totalDonations: 0, totalProjects: 0, totalRequests: 0,
-    totalUsers: 0, pendingRequests: 0, recentRequests: [], recentDonations: [],
+    totalUsers: 0, pendingRequests: 0,
+    recentRequests: [], recentDonations: [],
+    monthlyDonations: [], requestsByType: [],
   };
+
+  const bestMonth = live.monthlyDonations.length > 0
+    ? live.monthlyDonations.reduce((a, b) => (a.v > b.v ? a : b))
+    : null;
 
   const today = new Date().toLocaleDateString("ar-SA", {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
@@ -101,6 +77,21 @@ function OverviewPage() {
     { label: "مراجعة الطلبات", icon: FileText, color: "#D97706", bg: "#FFFBEB", border: "#FDE68A", badge: live.pendingRequests, to: "/admin/dashboard/requests" },
     { label: "إدارة التبرعات", icon: Wallet,   color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", to: "/admin/dashboard/donations" },
   ];
+
+  const ALERTS = [
+    live.pendingRequests > 0 && {
+      level: "danger", icon: AlertCircle,
+      title: `${live.pendingRequests} طلب${live.pendingRequests > 1 ? " بانتظار" : " ينتظر"} قرار`,
+      desc: "راجع قسم الطلبات للاطلاع على الحالات العاجلة",
+      action: "مراجعة الطلبات", to: "/admin/dashboard/requests",
+    },
+    live.totalProjects > 0 && {
+      level: "warning", icon: AlertTriangle,
+      title: `${live.totalProjects} مشروع مسجّل يحتاج متابعة`,
+      desc: "راجع قسم المشاريع لمتابعة نسب الإنجاز",
+      action: "عرض المشاريع", to: "/admin/dashboard/projects",
+    },
+  ].filter(Boolean);
 
   return (
     <DashboardLayout title="نظرة عامة" showHeader={false}>
@@ -139,25 +130,27 @@ function OverviewPage() {
       </motion.div>
 
       {/* ── 2. Alert System ───────────────────────────────────── */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 22 }}>
-        {ALERTS.map((alert, i) => {
-          const Icon = alert.icon;
-          return (
-            <motion.div key={i} custom={i + 1} variants={fadeUp} initial="hidden" animate="show"
-              className={`alert-item alert-item--${alert.level}`}
-            >
-              <div className="alert-icon"><Icon size={16} strokeWidth={2.5} /></div>
-              <div className="alert-body">
-                <span className="alert-title">{alert.title}</span>
-                <span className="alert-desc">{alert.desc}</span>
-              </div>
-              <button onClick={() => navigate(alert.to)} className="alert-action">
-                {alert.action} <ArrowUpRight size={13} />
-              </button>
-            </motion.div>
-          );
-        })}
-      </div>
+      {ALERTS.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 22 }}>
+          {ALERTS.map((alert, i) => {
+            const Icon = alert.icon;
+            return (
+              <motion.div key={i} custom={i + 1} variants={fadeUp} initial="hidden" animate="show"
+                className={`alert-item alert-item--${alert.level}`}
+              >
+                <div className="alert-icon"><Icon size={16} strokeWidth={2.5} /></div>
+                <div className="alert-body">
+                  <span className="alert-title">{alert.title}</span>
+                  <span className="alert-desc">{alert.desc}</span>
+                </div>
+                <button onClick={() => navigate(alert.to)} className="alert-action">
+                  {alert.action} <ArrowUpRight size={13} />
+                </button>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── 3. Quick Actions ──────────────────────────────────── */}
       <div className="quick-actions-bar" style={{ marginBottom: 26 }}>
@@ -198,48 +191,66 @@ function OverviewPage() {
         <Card>
           <div className="card-header">
             <span style={{ fontWeight: 700, fontSize: 15 }}>التبرعات الشهرية</span>
-            <span className="card-header-badge">2024</span>
+            <span className="card-header-badge">{new Date().getFullYear()}</span>
           </div>
-          <div className="chart-insight">
-            <TrendingUp size={13} style={{ color: "#16A34A", flexShrink: 0 }} />
-            أعلى شهر: <strong style={{ color: "#1A2535" }}>{bestMonth.m}</strong> — ${bestMonth.v.toLocaleString()} · الاتجاه العام صاعد
-          </div>
-          <div style={{ padding: "4px 12px 16px" }}>
-            <ResponsiveContainer width="100%" height={175}>
-              <BarChart data={MONTHLY} barSize={17} margin={{ top: 0, right: 8, left: -12, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#EDE9E3" vertical={false} />
-                <XAxis dataKey="m" tick={{ fontSize: 10, fill: "#9AA5B5", fontFamily: "Tajawal" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#9AA5B5" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-                <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(37,99,235,0.06)", radius: 4 }} />
-                <Bar dataKey="v" radius={[6, 6, 0, 0]}>
-                  {MONTHLY.map((entry, i) => (
-                    <Cell key={i} fill={entry.m === bestMonth.m ? "#16A34A" : i === MONTHLY.length - 1 ? "#2563eb" : "#bfdbfe"} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          {live.monthlyDonations.length > 0 ? (
+            <>
+              {bestMonth && (
+                <div className="chart-insight">
+                  <TrendingUp size={13} style={{ color: "#16A34A", flexShrink: 0 }} />
+                  أعلى شهر: <strong style={{ color: "#1A2535" }}>{bestMonth.m}</strong> — ${bestMonth.v.toLocaleString()}
+                </div>
+              )}
+              <div style={{ padding: "4px 12px 16px" }}>
+                <ResponsiveContainer width="100%" height={175}>
+                  <BarChart data={live.monthlyDonations} barSize={17} margin={{ top: 0, right: 8, left: -12, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#EDE9E3" vertical={false} />
+                    <XAxis dataKey="m" tick={{ fontSize: 10, fill: "#9AA5B5", fontFamily: "Tajawal" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#9AA5B5" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                    <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(37,99,235,0.06)", radius: 4 }} />
+                    <Bar dataKey="v" radius={[6, 6, 0, 0]}>
+                      {live.monthlyDonations.map((entry, i) => (
+                        <Cell key={i} fill={bestMonth && entry.m === bestMonth.m ? "#16A34A" : i === live.monthlyDonations.length - 1 ? "#2563eb" : "#bfdbfe"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          ) : (
+            <div style={{ textAlign: "center", padding: "40px 0", color: "#94A3B8", fontSize: 13 }}>
+              لا توجد تبرعات مسجّلة هذا العام بعد
+            </div>
+          )}
         </Card>
 
         <Card>
           <div className="card-header">
             <span style={{ fontWeight: 700, fontSize: 15 }}>توزيع الطلبات</span>
           </div>
-          <div className="chart-insight">
-            <AlertCircle size={13} style={{ color: "#D97706", flexShrink: 0 }} />
-            الطلبات الطبية الأعلى — ركّز عليها أولاً
-          </div>
-          <div style={{ padding: "2px 8px 12px" }}>
-            <ResponsiveContainer width="100%" height={175}>
-              <PieChart>
-                <Pie data={REQUEST_DIST} dataKey="count" nameKey="type" cx="50%" cy="44%" innerRadius={44} outerRadius={66} paddingAngle={3}>
-                  {REQUEST_DIST.map((item, i) => <Cell key={i} fill={item.color} />)}
-                </Pie>
-                <Tooltip content={<PieTooltip />} />
-                <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ fontSize: 11, color: "#5C6B7F", fontFamily: "Tajawal" }}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          {live.requestsByType.length > 0 ? (
+            <>
+              <div className="chart-insight">
+                <AlertCircle size={13} style={{ color: "#D97706", flexShrink: 0 }} />
+                {live.requestsByType[0]?.type} — الأعلى تكراراً
+              </div>
+              <div style={{ padding: "2px 8px 12px" }}>
+                <ResponsiveContainer width="100%" height={175}>
+                  <PieChart>
+                    <Pie data={live.requestsByType} dataKey="count" nameKey="type" cx="50%" cy="44%" innerRadius={44} outerRadius={66} paddingAngle={3}>
+                      {live.requestsByType.map((item, i) => <Cell key={i} fill={item.color} />)}
+                    </Pie>
+                    <Tooltip content={<PieTooltip />} />
+                    <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ fontSize: 11, color: "#5C6B7F", fontFamily: "Tajawal" }}>{v}</span>} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          ) : (
+            <div style={{ textAlign: "center", padding: "40px 0", color: "#94A3B8", fontSize: 13 }}>
+              لا توجد طلبات بعد
+            </div>
+          )}
         </Card>
       </motion.div>
 
@@ -299,7 +310,7 @@ function OverviewPage() {
                   <div style={{ fontSize: 11, color: "#9AA5B5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.project}</div>
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 800, color: "#16A34A", flexShrink: 0 }}>
-                  ${d.amount.toLocaleString()}
+                  ${Number(d.amount).toLocaleString()}
                 </div>
               </div>
             )) : (

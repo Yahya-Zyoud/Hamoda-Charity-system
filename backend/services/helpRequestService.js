@@ -1,6 +1,7 @@
-const HelpRequest = require("../models/HelpRequest");
+const HelpRequest  = require("../models/HelpRequest");
 const Notification = require("../models/Notification");
-const logger = require("../utils/logger");
+const statsService = require("./statsService");
+const logger       = require("../utils/logger");
 
 const HELP_TYPE_AR = {
   medical:   "طبي",
@@ -37,6 +38,7 @@ exports.createHelpRequest = async ({ clerkId, fullName, nationalId, phone, email
     relatedId: helpRequest._id,
   }).catch((err) => logger.warn("Failed to create notification", { error: err.message }));
 
+  statsService.invalidateCache();
   return helpRequest;
 };
 
@@ -53,7 +55,9 @@ exports.updateHelpRequestStatus = async (id, status) => {
   if (!allowed.includes(status)) {
     throw Object.assign(new Error("قيمة الحالة غير صالحة."), { status: 400 });
   }
-  return HelpRequest.findByIdAndUpdate(id, { status }, { new: true });
+  const updated = await HelpRequest.findByIdAndUpdate(id, { status }, { new: true });
+  statsService.invalidateCache();
+  return updated;
 };
 
 exports.deleteHelpRequest = async (id) => {

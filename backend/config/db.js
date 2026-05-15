@@ -12,7 +12,11 @@ const connectDB = async () => {
   }
 
   try {
-    await mongoose.connect(uri, { family: 4 });
+    await mongoose.connect(uri, {
+      family: 4,
+      serverSelectionTimeoutMS: 30000,
+      bufferCommands: true,
+    });
     const safeUri = uri.replace(/\/\/[^@]+@/, "//***@");
     logger.info("MongoDB connected", { uri: safeUri });
   } catch (err) {
