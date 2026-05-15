@@ -9,7 +9,6 @@ const {
   getHelpRequestById,
   updateHelpRequestStatus,
   deleteHelpRequest,
-  reanalyzeHelpRequest,
 } = require("../controllers/helpRequestController");
 const { optionalAuth, requireAdmin } = require("../middleware/auth");
 
@@ -43,7 +42,6 @@ router.post("/", optionalAuth, upload.single("document"), createHelpRequest);
 router.get("/",             requireAdmin, getAllHelpRequests);
 router.get("/:id",          requireAdmin, getHelpRequestById);
 router.patch("/:id/status", requireAdmin, updateHelpRequestStatus);
-router.post("/:id/reanalyze", requireAdmin, reanalyzeHelpRequest);
 router.delete("/:id",       requireAdmin, deleteHelpRequest);
 
 module.exports = router;

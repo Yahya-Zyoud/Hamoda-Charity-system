@@ -20,13 +20,6 @@ const helpRequestSchema = new mongoose.Schema(
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
-    // Hamoda AI classification fields
-    aiSuggestedHelpType: { type: String, default: null },
-    aiUrgency:           { type: String, enum: ["low", "medium", "high", "critical"], default: null },
-    aiConfidence:        { type: Number, default: null },
-    aiSummary:           { type: String, default: "" },
-    aiModel:             { type: String, default: null },
-    aiClassifiedAt:      { type: Date,   default: null },
   },
   {
     timestamps: true,

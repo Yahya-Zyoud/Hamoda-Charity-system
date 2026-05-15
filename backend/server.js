@@ -60,18 +60,27 @@ const NODE_ENV = config.NODE_ENV;
 // Only bind an HTTP port when run directly (node server.js).
 // In Vercel serverless the module is imported — listen() must not be called.
 if (require.main === module) {
-  connectDB().then(() => {
-    app.listen(PORT, () => {
-      logger.info("Server running", {
-        port: PORT,
-        environment: NODE_ENV,
-        url: `http://localhost:${PORT}`,
-      });
+  // Start HTTP server immediately so the frontend isn't blocked.
+  // MongoDB connection is attempted in parallel; API routes that need
+  // the DB will fail gracefully if it hasn't connected yet.
+  app.listen(PORT, () => {
+    logger.info("Server running", {
+      port: PORT,
+      environment: NODE_ENV,
+      url: `http://localhost:${PORT}`,
+    });
+  });
+  connectDB().catch((err) => {
+    logger.error("MongoDB connection failed — DB routes will return errors until resolved", {
+      error: err.message,
+      hint: "Run: docker compose up -d",
     });
   });
 } else {
   // Serverless: kick off the DB connection but don't block module export.
-  connectDB();
+  connectDB().catch((err) => {
+    logger.error("MongoDB connection failed (serverless)", { error: err.message });
+  });
 }
 
 process.on("unhandledRejection", (reason, promise) => {
