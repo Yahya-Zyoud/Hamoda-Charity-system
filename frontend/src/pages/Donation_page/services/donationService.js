@@ -1,25 +1,47 @@
-// services/donationService.js
-// API layer for the Donations page.
-// Home.jsx calls submitDonation() and doesn't care how it works internally.
-//
-// RIGHT NOW: uses a fake 1.8s delay (so the app works without a backend).
-// TO CONNECT BACKEND: delete the fake block and uncomment the real fetch block.
+const BASE_URL = 'http://localhost:5000/api';
 
 export async function submitDonation(donationData) {
+  const response = await fetch(`${BASE_URL}/donations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(donationData),
+  });
 
-  // ── FAKE (delete this whole block when backend is ready) ──────────────────
-  console.log("📦 Sending to backend:", donationData);
-  await new Promise((resolve) => setTimeout(resolve, 1800));
-  return { success: true, message: "تم استلام تبرعك بنجاح!" };
-  // ─────────────────────────────────────────────────────────────────────────
+  const result = await response.json();
 
-  // ── REAL BACKEND (uncomment this when ready) ──────────────────────────────
-  // const response = await fetch("http://localhost:5000/api/donations", {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify(donationData),
-  // });
-  // if (!response.ok) throw new Error("فشل الاتصال بالخادم");
-  // return await response.json();
-  // ─────────────────────────────────────────────────────────────────────────
+  if (!response.ok) {
+    const error = new Error(result.message || 'فشل الاتصال بالخادم');
+    error.errors = result.errors || {};
+    throw error;
+  }
+
+  return result;
+}
+
+export async function fetchRecentDonations() {
+  const response = await fetch(`${BASE_URL}/donations/recent`);
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'تعذّر تحميل أحدث التبرعات');
+  }
+
+  return result.data || [];
+}
+
+export async function fetchDonationStats() {
+  const response = await fetch(`${BASE_URL}/donations/stats`);
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'تعذّر تحميل إحصائيات التبرعات');
+  }
+
+  return result.data || {
+    totalAmount: 0,
+    totalDonors: 0,
+    totalAmountFormatted: '$0',
+  };
 }
