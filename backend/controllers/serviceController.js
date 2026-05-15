@@ -8,24 +8,13 @@ exports.getServices = (req, res) => {
 
     if (!items || items.length === 0) {
       logger.warn("No services found");
-      return res.status(HTTP_STATUS.OK).json({
-        success: true,
-        message: MESSAGES.NOT_FOUND,
-        data: [],
-      });
+      return res.sendSuccess([], MESSAGES.NOT_FOUND);
     }
 
     logger.info("Services retrieved successfully", { count: items.length });
-    return res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: MESSAGES.SUCCESS,
-      data: items,
-    });
+    return res.sendSuccess(items, MESSAGES.SUCCESS);
   } catch (error) {
     logger.error("Error fetching services", { error: error.message });
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: MESSAGES.ERROR,
-    });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 };

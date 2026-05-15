@@ -1,0 +1,207 @@
+import { useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { submitHelpRequest } from "../services/api";
+import { useAppAuth } from "../contexts/AppAuthContext";
+import "./HelpRequest.css";
+
+function HelpRequest() {
+  const { user } = useAppAuth();
+  const [formData, setFormData] = useState({
+    fullName: "",
+    nationalId: "",
+    phone: "",
+    email: "",
+    city: "",
+    helpType: "",
+    description: "",
+    document: null,
+  });
+
+  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleChange(e) {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
+    setError("");
+    setSubmitted(false);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (formData.fullName.trim().length < 3) {
+      setError("الاسم الكامل يجب أن يكون 3 أحرف على الأقل.");
+      return;
+    }
+    if (!/^\d{9}$/.test(formData.nationalId)) {
+      setError("رقم الهوية يجب أن يتكون من 9 أرقام.");
+      return;
+    }
+    if (!/^05\d{8}$/.test(formData.phone)) {
+      setError("رقم الهاتف يجب أن يبدأ بـ 05 ويتكون من 10 أرقام.");
+      return;
+    }
+    if (formData.description.trim().length < 20) {
+      setError("وصف الحالة يجب أن يكون 20 حرفًا على الأقل.");
+      return;
+    }
+
+    try {
+      const payload = new FormData();
+      payload.append("fullName", formData.fullName);
+      payload.append("nationalId", formData.nationalId);
+      payload.append("phone", formData.phone);
+      payload.append("email", formData.email);
+      payload.append("city", formData.city);
+      payload.append("helpType", formData.helpType);
+      payload.append("description", formData.description);
+      if (formData.document) payload.append("document", formData.document);
+
+      await submitHelpRequest(payload, user?.id || "");
+
+      setSubmitted(true);
+      setError("");
+      setFormData({
+        fullName: "", nationalId: "", phone: "", email: "",
+        city: "", helpType: "", description: "", document: null,
+      });
+    } catch (err) {
+      setError(err.message || "تعذر الاتصال بالخادم. تأكد أن الباك إند يعمل.");
+    }
+  }
+
+  return (
+    <>
+      <Navbar />
+
+      <main className="help-request-page">
+        <img src="/images/help-request-left.png" alt="" className="help-bg-img help-bg-left" />
+        <img src="/images/help-request-right.png" alt="" className="help-bg-img help-bg-right" />
+
+        <section className="help-hero">
+          <div className="hero-decor hero-decor-right"></div>
+          <div className="hero-decor hero-decor-left"></div>
+          <div className="help-hero-content">
+            <span className="help-badge">طلب مساعدة</span>
+            <h1>نموذج طلب المساعدة</h1>
+            <p>
+              قم بتعبئة النموذج التالي بشكل واضح، وسيتم مراجعة طلبك من قبل إدارة
+              الجمعية والتواصل معك عند الحاجة.
+            </p>
+          </div>
+        </section>
+
+        <section className="help-content">
+          <aside className="help-info-card">
+            <h2>قبل إرسال الطلب</h2>
+            <p>
+              يرجى التأكد من إدخال معلومات صحيحة، وشرح الحالة بشكل واضح، وإرفاق
+              أي مستند يساعد الإدارة على مراجعة الطلب.
+            </p>
+            <div className="help-info-list">
+              <div className="help-info-item">
+                <span>1</span>
+                <p>اكتب بياناتك الشخصية بشكل صحيح.</p>
+              </div>
+              <div className="help-info-item">
+                <span>2</span>
+                <p>اختر نوع المساعدة المناسب لحالتك.</p>
+              </div>
+              <div className="help-info-item">
+                <span>3</span>
+                <p>أرفق صورة أو ملف إثبات إن وجد.</p>
+              </div>
+            </div>
+          </aside>
+
+          <section className="help-form-card">
+            <div className="form-title">
+              <h2>بيانات الطلب</h2>
+              <p>الحقول التي تحتوي على * مطلوبة.</p>
+            </div>
+
+            {error && <div className="error-message">{error}</div>}
+            {submitted && (
+              <div className="success-message">
+                تم إرسال طلبك بنجاح. سيتم مراجعته من قبل إدارة الجمعية.
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>الاسم الكامل *</label>
+                  <input type="text" name="fullName" placeholder="أدخل اسمك الكامل"
+                    value={formData.fullName} onChange={handleChange} required />
+                </div>
+                <div className="form-group">
+                  <label>رقم الهوية *</label>
+                  <input type="text" name="nationalId" placeholder="مثال: 123456789"
+                    value={formData.nationalId} onChange={handleChange} maxLength="9" required />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>رقم الهاتف *</label>
+                  <input type="tel" name="phone" placeholder="مثال: 0599000000"
+                    value={formData.phone} onChange={handleChange} maxLength="10" required />
+                </div>
+                <div className="form-group">
+                  <label>البريد الإلكتروني</label>
+                  <input type="email" name="email" placeholder="example@email.com"
+                    value={formData.email} onChange={handleChange} />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>المدينة *</label>
+                  <input type="text" name="city" placeholder="مثال: نابلس"
+                    value={formData.city} onChange={handleChange} required />
+                </div>
+                <div className="form-group">
+                  <label>نوع المساعدة *</label>
+                  <select name="helpType" value={formData.helpType} onChange={handleChange} required>
+                    <option value="">اختر نوع المساعدة</option>
+                    <option value="medical">مساعدة طبية</option>
+                    <option value="education">مساعدة تعليمية</option>
+                    <option value="food">مساعدة غذائية</option>
+                    <option value="housing">مساعدة سكنية</option>
+                    <option value="financial">مساعدة مالية</option>
+                    <option value="other">أخرى</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>وصف الحالة *</label>
+                <textarea name="description"
+                  placeholder="اشرح الحالة والظروف والاحتياج بشكل واضح..."
+                  value={formData.description} onChange={handleChange} rows="6" required />
+              </div>
+
+              <div className="form-group">
+                <label>إرفاق مستند إثبات</label>
+                <label className="custom-file-upload">
+                  <input type="file" name="document" accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={handleChange} />
+                  <span>{formData.document ? formData.document.name : "اختر ملفًا من جهازك"}</span>
+                </label>
+                <small>يمكن رفع صورة أو ملف PDF.</small>
+              </div>
+
+              <button type="submit" className="submit-btn">إرسال الطلب</button>
+            </form>
+          </section>
+        </section>
+      </main>
+
+      <Footer />
+    </>
+  );
+}
+
+export default HelpRequest;

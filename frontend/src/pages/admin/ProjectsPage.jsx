@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Pencil, Check, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Pencil, Check, Trash2, Loader2 } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
 import Btn from "../../components/admin/Btn";
@@ -7,36 +7,83 @@ import Badge from "../../components/admin/Badge";
 import Modal from "../../components/admin/Modal";
 import Input from "../../components/admin/Input";
 import Select from "../../components/admin/Select";
-import { PROJECTS_DATA } from "../../data/mockAdminData";
+import { getProjects, createProject, updateProject, deleteProject } from "../../services/api";
+
+// DB uses Arabic status & goal/raised field names — normalize at the boundary
+const DB_STATUS = { active: "نشط", completed: "مكتمل" };
+const UI_STATUS = { "نشط": "active", "مكتمل": "completed", "معلق": "active" };
+
+const dbToUi = (p) => ({
+  id:          p.id,
+  title:       p.title       || "",
+  category:    p.category    || "",
+  description: p.description || "",
+  target:      p.goal        || 0,
+  collected:   p.raised      || 0,
+  status:      UI_STATUS[p.status] || "active",
+});
+
+const uiToDb = (form) => ({
+  title:       form.title,
+  category:    form.category,
+  description: form.description,
+  goal:        +form.target,
+  status:      DB_STATUS[form.status] || "نشط",
+});
+
+const CAT_COLORS = { تعليم: "#2563eb", طبي: "#16A34A", إسكان: "#D97706", غذاء: "#8b5cf6" };
+const empty = { title: "", category: "", description: "", target: "", status: "active" };
 
 function ProjectsPage() {
-  const [list, setList] = useState(PROJECTS_DATA);
+  const [list,     setList]     = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [apiError, setApiError] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const empty = { title: "", category: "", description: "", target: "", status: "active" };
-  const [form, setForm] = useState(empty);
+  const [editing,  setEditing]  = useState(null);
+  const [form,     setForm]     = useState(empty);
 
-  const save = () => {
+  useEffect(() => {
+    getProjects()
+      .then((data) => setList(data.map(dbToUi)))
+      .catch((err)  => setApiError(err.message))
+      .finally(()   => setLoading(false));
+  }, []);
+
+  const save = async () => {
     if (!form.title.trim()) return;
-    if (editing) {
-      setList((p) => p.map((pr) => (pr.id === editing ? { ...pr, ...form, target: +form.target } : pr)));
-    } else {
-      setList((p) => [...p, { ...form, id: `PRJ-${Date.now()}`, collected: 0, target: +form.target }]);
-    }
-    setShowForm(false);
-    setEditing(null);
-    setForm(empty);
+    try {
+      if (editing) {
+        const updated = await updateProject(editing, uiToDb(form));
+        setList((p) => p.map((pr) => (pr.id === editing ? dbToUi(updated) : pr)));
+      } else {
+        const created = await createProject(uiToDb(form));
+        setList((p) => [...p, dbToUi(created)]);
+      }
+      closeForm();
+    } catch { /* leave list unchanged */ }
   };
 
-  const del = (id) => setList((p) => p.filter((pr) => pr.id !== id));
-  const complete = (id) => setList((p) => p.map((pr) => (pr.id === id ? { ...pr, status: "completed" } : pr)));
+  const del = async (id) => {
+    try {
+      await deleteProject(id);
+      setList((p) => p.filter((pr) => pr.id !== id));
+    } catch {}
+  };
+
+  const complete = async (id) => {
+    try {
+      await updateProject(id, { status: "مكتمل" });
+      setList((p) => p.map((pr) => (pr.id === id ? { ...pr, status: "completed" } : pr)));
+    } catch {}
+  };
+
   const openEdit = (pr) => {
     setEditing(pr.id);
     setForm({ title: pr.title, category: pr.category, description: pr.description, target: pr.target, status: pr.status });
     setShowForm(true);
   };
 
-  const CAT_COLORS = { تعليم: "#2563eb", طبي: "#16A34A", إسكان: "#D97706", غذاء: "#8b5cf6" };
+  const closeForm = () => { setShowForm(false); setEditing(null); setForm(empty); };
 
   return (
     <DashboardLayout title="إدارة المشاريع">
@@ -46,69 +93,73 @@ function ProjectsPage() {
         <Btn variant="primary" onClick={() => { setEditing(null); setForm(empty); setShowForm(true); }}>+ إضافة مشروع</Btn>
       </div>
 
-      {/* Projects Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 18 }}>
-        {list.map((pr) => {
-          const pct = Math.min(100, Math.round((pr.collected / pr.target) * 100));
-          const barColor = pct >= 100 ? "#16A34A" : pct > 60 ? "#2563eb" : "#D97706";
+      {loading && (
+        <div style={{ textAlign: "center", padding: "60px 20px", color: "#94A3B8", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <Loader2 size={18} className="spin" /> جاري التحميل...
+        </div>
+      )}
+      {apiError && (
+        <div style={{ background: "#FFF1F2", color: "#BE123C", border: "1px solid #FECDD3", borderRadius: 12, padding: "14px 18px", marginBottom: 16, fontWeight: 600 }}>
+          تعذّر تحميل المشاريع: {apiError}
+        </div>
+      )}
 
-          return (
-            <Card key={pr.id} className="hover-lift" style={{ overflow: "hidden" }}>
-              <div style={{ padding: "16px 18px 12px" }}>
-                {/* Title & Badge */}
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
+      {!loading && !apiError && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 18 }}>
+          {list.map((pr) => {
+            const pct = pr.target > 0 ? Math.min(100, Math.round((pr.collected / pr.target) * 100)) : 0;
+            const barColor = pct >= 100 ? "#16A34A" : pct > 60 ? "#2563eb" : "#D97706";
+
+            return (
+              <Card key={pr.id} className="hover-lift" style={{ overflow: "hidden" }}>
+                <div style={{ padding: "16px 18px 12px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6 }}>{pr.title}</div>
+                      <span style={{
+                        background: (CAT_COLORS[pr.category] || "#94A3B8") + "18",
+                        color: CAT_COLORS[pr.category] || "#94A3B8",
+                        padding: "3px 12px", borderRadius: 20, fontSize: 12, fontWeight: 500,
+                        border: `1px solid ${(CAT_COLORS[pr.category] || "#94A3B8")}30`,
+                      }}>
+                        {pr.category || "—"}
+                      </span>
+                    </div>
+                    <Badge status={pr.status} />
+                  </div>
+                  <p style={{ fontSize: 13, color: "#64748B", marginBottom: 16, lineHeight: 1.7 }}>{pr.description}</p>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6 }}>{pr.title}</div>
-                    <span style={{
-                      background: (CAT_COLORS[pr.category] || "#94A3B8") + "18",
-                      color: CAT_COLORS[pr.category] || "#94A3B8",
-                      padding: "3px 12px",
-                      borderRadius: 20,
-                      fontSize: 12,
-                      fontWeight: 500,
-                      border: `1px solid ${(CAT_COLORS[pr.category] || "#94A3B8")}30`,
-                    }}>
-                      {pr.category}
-                    </span>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748B", marginBottom: 5 }}>
+                      <span>${pr.collected.toLocaleString()}</span>
+                      <span style={{ fontWeight: 700, color: barColor }}>{pct}%</span>
+                    </div>
+                    <div className="progress-bar-track">
+                      <div className="progress-bar-fill" style={{ width: `${pct}%`, background: barColor }} />
+                    </div>
                   </div>
-                  <Badge status={pr.status} />
-                </div>
-
-                {/* Description */}
-                <p style={{ fontSize: 13, color: "#64748B", marginBottom: 16, lineHeight: 1.7 }}>{pr.description}</p>
-
-                {/* Progress */}
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#64748B", marginBottom: 5 }}>
-                    <span>${pr.collected.toLocaleString()}</span>
-                    <span style={{ fontWeight: 700, color: barColor }}>{pct}%</span>
-                  </div>
-                  <div className="progress-bar-track">
-                    <div className="progress-bar-fill" style={{ width: `${pct}%`, background: barColor }} />
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#94A3B8", marginTop: 8 }}>
+                    <span>الهدف: ${pr.target.toLocaleString()}</span>
+                    <span>#{String(pr.id).slice(-6)}</span>
                   </div>
                 </div>
-
-                {/* Footer info */}
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#94A3B8", marginTop: 8 }}>
-                  <span>الهدف: ${pr.target.toLocaleString()}</span>
-                  <span>#{pr.id}</span>
+                <div style={{ borderTop: "1px solid #F1F5F9", padding: "10px 16px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <Btn sm variant="ghost" onClick={() => openEdit(pr)}><Pencil size={13} style={{ marginLeft: 4 }} /> تعديل</Btn>
+                  {pr.status !== "completed" && (
+                    <Btn sm variant="success-light" onClick={() => complete(pr.id)}><Check size={13} style={{ marginLeft: 4 }} /> مكتمل</Btn>
+                  )}
+                  <Btn sm variant="danger-light" onClick={() => del(pr.id)}><Trash2 size={13} style={{ marginLeft: 4 }} /> حذف</Btn>
                 </div>
-              </div>
+              </Card>
+            );
+          })}
+          {list.length === 0 && (
+            <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "60px 20px", color: "#94A3B8" }}>لا توجد مشاريع حتى الآن</div>
+          )}
+        </div>
+      )}
 
-              {/* Actions */}
-              <div style={{ borderTop: "1px solid #F1F5F9", padding: "10px 16px", display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <Btn sm variant="ghost" onClick={() => openEdit(pr)}><Pencil size={13} style={{ marginLeft: 4 }} /> تعديل</Btn>
-                {pr.status !== "completed" && <Btn sm variant="success-light" onClick={() => complete(pr.id)}><Check size={13} style={{ marginLeft: 4 }} /> مكتمل</Btn>}
-                <Btn sm variant="danger-light" onClick={() => del(pr.id)}><Trash2 size={13} style={{ marginLeft: 4 }} /> حذف</Btn>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Add/Edit Modal */}
       {showForm && (
-        <Modal title={editing ? "تعديل المشروع" : "إضافة مشروع جديد"} onClose={() => { setShowForm(false); setEditing(null); }}>
+        <Modal title={editing ? "تعديل المشروع" : "إضافة مشروع جديد"} onClose={closeForm}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div>
               <label style={{ fontSize: 13, color: "#64748B", display: "block", marginBottom: 6, fontWeight: 600 }}>عنوان المشروع *</label>
@@ -131,7 +182,7 @@ function ProjectsPage() {
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
               <Btn variant="primary" onClick={save}>{editing ? "حفظ التعديلات" : "إضافة المشروع"}</Btn>
-              <Btn variant="outline" onClick={() => { setShowForm(false); setEditing(null); }}>إلغاء</Btn>
+              <Btn variant="outline" onClick={closeForm}>إلغاء</Btn>
             </div>
           </div>
         </Modal>

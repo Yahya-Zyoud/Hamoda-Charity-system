@@ -10,7 +10,7 @@ export const navItems = [
   { label: "الرئيسية", path: "/#home" },
   { label: "المشاريع", path: "/projects" },
   { label: "المنح والتبرعات", path: "/donations" },
-  { label: "طلب مساعدة", path: "/#services" },
+  { label: "طلب مساعدة", path: "/help-request" },
   { label: "الفريق", path: "/team" },
 ];
 

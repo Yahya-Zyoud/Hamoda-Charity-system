@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   DollarSign, Users, ClipboardList, CheckCircle2,
   TrendingUp, BarChart3, Calendar, AlertTriangle,
@@ -13,44 +14,41 @@ import DashboardLayout from "../../components/admin/DashboardLayout";
 import StatCard from "../../components/admin/StatCard";
 import Card from "../../components/admin/Card";
 import Badge from "../../components/admin/Badge";
-import { STATS, MONTHLY, REQUEST_DIST, REQUESTS_DATA, DONATIONS_DATA } from "../../data/mockAdminData";
+import { getAdminStats } from "../../services/api";
+
+// Chart data — requires DB aggregation; keep as static until backend analytics are built
+const MONTHLY = [
+  { m: "يناير",   v: 8200  }, { m: "فبراير", v: 11500 }, { m: "مارس",   v: 9800  },
+  { m: "أبريل",  v: 13200 }, { m: "مايو",   v: 10500 }, { m: "يونيو",  v: 14800 },
+  { m: "يوليو",  v: 12000 }, { m: "أغسطس", v: 15600 }, { m: "سبتمبر", v: 11200 },
+  { m: "أكتوبر", v: 17700 },
+];
+const REQUEST_DIST = [
+  { type: "طبي",   count: 14, color: "#2563eb" },
+  { type: "إسكان", count: 8,  color: "#16A34A" },
+  { type: "غذاء",  count: 7,  color: "#D97706" },
+  { type: "تعليم", count: 5,  color: "#0EA5E9" },
+];
+
+const ALERTS = [
+  {
+    level: "danger", icon: AlertCircle,
+    title: "طلبات طبية عاجلة بانتظار قرار",
+    desc: "راجع قسم الطلبات للاطلاع على الحالات العاجلة",
+    action: "مراجعة الطلبات", to: "/admin/dashboard/requests",
+  },
+  {
+    level: "warning", icon: AlertTriangle,
+    title: "بعض المشاريع تحتاج تمويل إضافي",
+    desc: "راجع قسم المشاريع لمتابعة نسب الإنجاز",
+    action: "عرض المشاريع", to: "/admin/dashboard/projects",
+  },
+];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   show: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.38, ease: "easeOut" } }),
 };
-
-const ALERTS = [
-  {
-    level: "danger",
-    icon: AlertCircle,
-    title: "2 طلبات طبية عاجلة بانتظار قرار",
-    desc: "مريم خالد · فاطمة نور — معلقة منذ أكثر من 5 أيام",
-    action: "مراجعة الطلبات",
-    to: "/admin/dashboard/requests",
-  },
-  {
-    level: "warning",
-    icon: AlertTriangle,
-    title: "مشروع سكن الأمل يحتاج تمويل إضافي",
-    desc: "جُمع 37٪ فقط من الهدف — 75,000$ ما زالت مطلوبة",
-    action: "عرض المشروع",
-    to: "/admin/dashboard/projects",
-  },
-];
-
-const QUICK_ACTIONS = [
-  { label: "إضافة مشروع",     icon: Plus,     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe", to: "/admin/dashboard/projects"  },
-  { label: "مراجعة الطلبات", icon: FileText,  color: "#D97706", bg: "#FFFBEB", border: "#FDE68A", badge: STATS.pendingRequests, to: "/admin/dashboard/requests"  },
-  { label: "إدارة التبرعات", icon: Wallet,    color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", to: "/admin/dashboard/donations" },
-];
-
-const STATS_CONFIG = [
-  { label: "إجمالي التبرعات",  value: `$${STATS.totalDonations.toLocaleString()}`, icon: DollarSign,    color: "#16A34A", trend: "+18%", context: "مقارنة بالشهر الماضي", to: "/admin/dashboard/donations" },
-  { label: "المستخدمون",       value: STATS.totalUsers.toLocaleString(),             icon: Users,         color: "#2563eb", trend: "+12%", context: "مستخدم مسجل",           to: "/admin/dashboard/users"     },
-  { label: "الطلبات الواردة",  value: STATS.totalRequests,                           icon: ClipboardList, color: "#D97706", trend: "+5%",  context: `${STATS.pendingRequests} قيد المراجعة`, urgent: true, to: "/admin/dashboard/requests"  },
-  { label: "المشاريع الجارية", value: STATS.totalProjects,                           icon: CheckCircle2,  color: "#8B5CF6", trend: "-2%",  context: "3 مشاريع نشطة",          to: "/admin/dashboard/projects"  },
-];
 
 const bestMonth = MONTHLY.reduce((a, b) => (a.v > b.v ? a : b));
 
@@ -63,7 +61,6 @@ const BarTooltip = ({ active, payload, label }) => {
     </div>
   );
 };
-
 const PieTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   return (
@@ -75,14 +72,40 @@ const PieTooltip = ({ active, payload }) => {
 
 function OverviewPage() {
   const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    getAdminStats()
+      .then(setStats)
+      .catch(() => {}); // fail silently — page renders with zeros
+  }, []);
+
+  const live = stats ?? {
+    totalDonations: 0, totalProjects: 0, totalRequests: 0,
+    totalUsers: 0, pendingRequests: 0, recentRequests: [], recentDonations: [],
+  };
+
   const today = new Date().toLocaleDateString("ar-SA", {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
 
+  const STATS_CONFIG = [
+    { label: "إجمالي التبرعات",  value: `$${live.totalDonations.toLocaleString()}`, icon: DollarSign,    color: "#16A34A", trend: "+18%", context: "مقارنة بالشهر الماضي", to: "/admin/dashboard/donations" },
+    { label: "المستخدمون",       value: live.totalUsers.toLocaleString(),            icon: Users,         color: "#2563eb", trend: "+12%", context: "مستخدم مسجل",           to: "/admin/dashboard/users"     },
+    { label: "الطلبات الواردة",  value: live.totalRequests,                          icon: ClipboardList, color: "#D97706", trend: "+5%",  context: `${live.pendingRequests} قيد المراجعة`, urgent: true, to: "/admin/dashboard/requests" },
+    { label: "المشاريع الجارية", value: live.totalProjects,                          icon: CheckCircle2,  color: "#8B5CF6", trend: "-2%",  context: "مشاريع مسجّلة",          to: "/admin/dashboard/projects"  },
+  ];
+
+  const QUICK_ACTIONS = [
+    { label: "إضافة مشروع",     icon: Plus,    color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe", to: "/admin/dashboard/projects"  },
+    { label: "مراجعة الطلبات", icon: FileText, color: "#D97706", bg: "#FFFBEB", border: "#FDE68A", badge: live.pendingRequests, to: "/admin/dashboard/requests" },
+    { label: "إدارة التبرعات", icon: Wallet,   color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", to: "/admin/dashboard/donations" },
+  ];
+
   return (
     <DashboardLayout title="نظرة عامة" showHeader={false}>
 
-      {/* ── 1. Mission Banner ──────────────────────────────────── */}
+      {/* ── 1. Mission Banner ─────────────────────────────────── */}
       <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="mission-banner">
         <div className="mission-banner-orb mission-banner-orb-1" />
         <div className="mission-banner-orb mission-banner-orb-2" />
@@ -94,18 +117,18 @@ function OverviewPage() {
           </div>
           <div className="mission-banner-sub">
             <span className="mission-banner-stat">
-              <span className="mission-banner-num">{STATS.pendingRequests}</span>
+              <span className="mission-banner-num">{live.pendingRequests}</span>
               طلب ينتظر مراجعتك
             </span>
             <span className="mission-banner-divider" />
             <span className="mission-banner-stat">
-              <span className="mission-banner-num">2</span>
-              حالة عاجلة تحتاج قرارًا
+              <span className="mission-banner-num">{live.totalProjects}</span>
+              مشروع جارٍ يحتاج متابعتك
             </span>
             <span className="mission-banner-divider" />
             <span className="mission-banner-stat">
-              <span className="mission-banner-num">{STATS.totalProjects}</span>
-              مشروع جارٍ يحتاج متابعتك
+              <span className="mission-banner-num">{live.totalUsers}</span>
+              مستخدم مسجّل
             </span>
           </div>
         </div>
@@ -115,7 +138,7 @@ function OverviewPage() {
         </div>
       </motion.div>
 
-      {/* ── 2. Alert System ────────────────────────────────────── */}
+      {/* ── 2. Alert System ───────────────────────────────────── */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 22 }}>
         {ALERTS.map((alert, i) => {
           const Icon = alert.icon;
@@ -123,45 +146,39 @@ function OverviewPage() {
             <motion.div key={i} custom={i + 1} variants={fadeUp} initial="hidden" animate="show"
               className={`alert-item alert-item--${alert.level}`}
             >
-              <div className="alert-icon">
-                <Icon size={16} strokeWidth={2.5} />
-              </div>
+              <div className="alert-icon"><Icon size={16} strokeWidth={2.5} /></div>
               <div className="alert-body">
                 <span className="alert-title">{alert.title}</span>
                 <span className="alert-desc">{alert.desc}</span>
               </div>
               <button onClick={() => navigate(alert.to)} className="alert-action">
-                {alert.action}
-                <ArrowUpRight size={13} />
+                {alert.action} <ArrowUpRight size={13} />
               </button>
             </motion.div>
           );
         })}
       </div>
 
-      {/* ── 3. Quick Actions ───────────────────────────────────── */}
+      {/* ── 3. Quick Actions ──────────────────────────────────── */}
       <div className="quick-actions-bar" style={{ marginBottom: 26 }}>
         {QUICK_ACTIONS.map((a, i) => {
           const Icon = a.icon;
           return (
-            <motion.button
-              key={i} custom={i + 3} variants={fadeUp} initial="hidden" animate="show"
-              onClick={() => navigate(a.to)}
-              className="action-btn"
+            <motion.button key={i} custom={i + 3} variants={fadeUp} initial="hidden" animate="show"
+              onClick={() => navigate(a.to)} className="action-btn"
               style={{ "--btn-color": a.color, "--btn-bg": a.bg, "--btn-border": a.border }}
             >
               <span className="action-btn-icon"><Icon size={15} strokeWidth={2.2} /></span>
               {a.label}
-              {a.badge != null && <span className="action-btn-badge">{a.badge}</span>}
+              {a.badge != null && a.badge > 0 && <span className="action-btn-badge">{a.badge}</span>}
             </motion.button>
           );
         })}
       </div>
 
-      {/* ── 4. Stats Grid ──────────────────────────────────────── */}
+      {/* ── 4. Stats Grid ─────────────────────────────────────── */}
       <div className="section-label" style={{ marginBottom: 14 }}>
-        <TrendingUp size={13} />
-        مؤشرات الأثر
+        <TrendingUp size={13} /> مؤشرات الأثر
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 28 }}>
         {STATS_CONFIG.map((s, i) => (
@@ -171,10 +188,9 @@ function OverviewPage() {
         ))}
       </div>
 
-      {/* ── 5. Charts ──────────────────────────────────────────── */}
+      {/* ── 5. Charts ─────────────────────────────────────────── */}
       <div className="section-label" style={{ marginBottom: 14 }}>
-        <BarChart3 size={13} />
-        تحليل الأثر
+        <BarChart3 size={13} /> تحليل الأثر
       </div>
       <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show"
         style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 18, marginBottom: 24 }}
@@ -217,20 +233,19 @@ function OverviewPage() {
             <ResponsiveContainer width="100%" height={175}>
               <PieChart>
                 <Pie data={REQUEST_DIST} dataKey="count" nameKey="type" cx="50%" cy="44%" innerRadius={44} outerRadius={66} paddingAngle={3}>
-                  {REQUEST_DIST.map((item, i) => (<Cell key={i} fill={item.color} />))}
+                  {REQUEST_DIST.map((item, i) => <Cell key={i} fill={item.color} />)}
                 </Pie>
                 <Tooltip content={<PieTooltip />} />
-                <Legend iconType="circle" iconSize={8} formatter={(v) => (<span style={{ fontSize: 11, color: "#5C6B7F", fontFamily: "Tajawal" }}>{v}</span>)} />
+                <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ fontSize: 11, color: "#5C6B7F", fontFamily: "Tajawal" }}>{v}</span>} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </Card>
       </motion.div>
 
-      {/* ── 6. Recent Activity ─────────────────────────────────── */}
+      {/* ── 6. Recent Activity ────────────────────────────────── */}
       <div className="section-label" style={{ marginBottom: 14 }}>
-        <Calendar size={13} />
-        آخر النشاطات
+        <Calendar size={13} /> آخر النشاطات
       </div>
       <motion.div custom={9} variants={fadeUp} initial="hidden" animate="show"
         style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}
@@ -246,16 +261,20 @@ function OverviewPage() {
             </button>
           </div>
           <div style={{ padding: "8px 16px 14px", display: "grid", gap: 2 }}>
-            {REQUESTS_DATA.slice(0, 5).map((r) => (
+            {live.recentRequests.length > 0 ? live.recentRequests.map((r) => (
               <div key={r.id} className="recent-row">
-                <div className="recent-avatar" style={{ background: "linear-gradient(135deg, #2563eb, #3b82f6)" }}>{r.name[0]}</div>
+                <div className="recent-avatar" style={{ background: "linear-gradient(135deg, #2563eb, #3b82f6)" }}>
+                  {(r.name?.[0] || "؟")}
+                </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: 13 }}>{r.name}</div>
-                  <div style={{ fontSize: 11, color: "#9AA5B5" }}>{r.type} — {r.id}</div>
+                  <div style={{ fontSize: 11, color: "#9AA5B5" }}>{r.type}</div>
                 </div>
                 <Badge status={r.status} />
               </div>
-            ))}
+            )) : (
+              <div style={{ textAlign: "center", padding: "20px 0", color: "#94A3B8", fontSize: 13 }}>لا توجد طلبات حتى الآن</div>
+            )}
           </div>
         </Card>
 
@@ -270,9 +289,11 @@ function OverviewPage() {
             </button>
           </div>
           <div style={{ padding: "8px 16px 14px", display: "grid", gap: 2 }}>
-            {DONATIONS_DATA.slice(0, 5).map((d) => (
+            {live.recentDonations.length > 0 ? live.recentDonations.map((d) => (
               <div key={d.id} className="recent-row">
-                <div className="recent-avatar" style={{ background: "linear-gradient(135deg, #16A34A, #22C55E)" }}>{d.donor[0]}</div>
+                <div className="recent-avatar" style={{ background: "linear-gradient(135deg, #16A34A, #22C55E)" }}>
+                  {(d.donor?.[0] || "م")}
+                </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: 13 }}>{d.donor}</div>
                   <div style={{ fontSize: 11, color: "#9AA5B5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.project}</div>
@@ -281,7 +302,9 @@ function OverviewPage() {
                   ${d.amount.toLocaleString()}
                 </div>
               </div>
-            ))}
+            )) : (
+              <div style={{ textAlign: "center", padding: "20px 0", color: "#94A3B8", fontSize: 13 }}>لا توجد تبرعات حتى الآن</div>
+            )}
           </div>
         </Card>
       </motion.div>

@@ -11,4 +11,6 @@ module.exports = {
   UPLOAD_DIR: "public/uploads",
   MAX_FILE_SIZE: 5 * 1024 * 1024,
   ALLOWED_FILE_TYPES: ["image/jpeg", "image/png", "image/webp"],
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || "",
+  FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
 };

@@ -33,8 +33,12 @@ const upload = multer({
   },
 });
 
-router.get("/profile", userController.getProfile);
-router.put("/profile", validateProfileUpdate, userController.updateProfile);
-router.post("/upload", upload.single("image"), userController.uploadImage);
+router.get("/",               userController.getUsers);
+router.get("/activity",       userController.getUserActivity);
+router.get("/profile",        userController.getProfile);
+router.put("/profile",        validateProfileUpdate, userController.updateProfile);
+router.post("/upload",        upload.single("image"), userController.uploadImage);
+router.put("/:id/role",       userController.updateUserRole);
+router.put("/:id/status",     userController.updateUserStatus);
 
 module.exports = router;

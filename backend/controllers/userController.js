@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const HelpRequest = require("../models/HelpRequest");
+const Donation = require("../models/Donation");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const { getFileUrl, deleteFile } = require("../utils/fileHandler");
 const logger = require("../utils/logger");
@@ -16,6 +18,43 @@ const DEFAULT_PROFILE = {
   avatar: "",
   cover: "",
   joinDate: "يناير 2024",
+};
+
+exports.getUsers = async (req, res) => {
+  try {
+    if (!isDBReady()) return res.sendSuccess([]);
+    const users = await User.find().sort({ createdAt: -1 });
+    return res.sendSuccess(users);
+  } catch (error) {
+    logger.error("Error fetching users", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.updateUserRole = async (req, res) => {
+  try {
+    if (!isDBReady()) return res.sendError("Database not connected", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { role } = req.body;
+    const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true });
+    if (!user) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    return res.sendSuccess(user);
+  } catch (error) {
+    logger.error("Error updating user role", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.updateUserStatus = async (req, res) => {
+  try {
+    if (!isDBReady()) return res.sendError("Database not connected", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { status } = req.body;
+    const user = await User.findByIdAndUpdate(req.params.id, { status }, { new: true });
+    if (!user) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    return res.sendSuccess(user);
+  } catch (error) {
+    logger.error("Error updating user status", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
 };
 
 exports.getProfile = async (req, res) => {
@@ -57,6 +96,39 @@ exports.updateProfile = async (req, res) => {
     return res.sendSuccess(user);
   } catch (error) {
     logger.error("Error updating user profile", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
+exports.getUserActivity = async (req, res) => {
+  try {
+    const clerkId = req.headers["x-user-id"] || "guest";
+
+    if (!isDBReady()) {
+      return res.sendSuccess({ helpRequests: [], donations: [], stats: { totalRequests: 0, totalDonations: 0, totalProjects: 0, donationAmount: 0 } });
+    }
+
+    const [helpRequests, donations] = await Promise.all([
+      HelpRequest.find({ clerkId }).sort({ createdAt: -1 }).limit(10).lean(),
+      Donation.find({ userId: clerkId }).populate("projectId", "title").sort({ createdAt: -1 }).limit(10).lean(),
+    ]);
+
+    const uniqueProjects = new Set(
+      donations.filter((d) => d.projectId).map((d) => String(d.projectId._id || d.projectId))
+    ).size;
+
+    return res.sendSuccess({
+      helpRequests,
+      donations,
+      stats: {
+        totalRequests: helpRequests.length,
+        totalDonations: donations.length,
+        totalProjects: uniqueProjects,
+        donationAmount: donations.reduce((s, d) => s + (d.amount || 0), 0),
+      },
+    });
+  } catch (error) {
+    logger.error("Error fetching user activity", { error: error.message });
     return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 };
