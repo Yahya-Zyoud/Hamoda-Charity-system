@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
-const logger = require("./utils/logger");
+const logger = require("../utils/logger");
 
 const connectDB = async () => {
   const uri = process.env.MONGO_URI;
   if (!uri) {
-    logger.warn("MONGO_URI not set — running without database (JSON fallback active)");
+    logger.warn("MONGO_URI not set — running without database");
     return;
   }
 
@@ -13,8 +13,7 @@ const connectDB = async () => {
     const safeUri = uri.replace(/\/\/[^@]+@/, "//***@");
     logger.info("MongoDB connected", { uri: safeUri });
   } catch (err) {
-    logger.error("MongoDB connection failed — running with JSON fallback", { error: err.message });
-    // Don't exit; controllers will fall back to JSON files when isDBReady() returns false
+    logger.error("MongoDB connection failed", { error: err.message });
   }
 };
 

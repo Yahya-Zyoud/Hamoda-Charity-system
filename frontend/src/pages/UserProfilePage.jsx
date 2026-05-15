@@ -57,8 +57,8 @@ export default function UserProfilePage() {
     if (!user) { setLoading(false); return; }
 
     Promise.all([
-      getUserProfile(user.id),
-      getUserActivity(user.id),
+      getUserProfile(),
+      getUserActivity(),
     ])
       .then(([prof, act]) => {
         setProfile(prof);
@@ -78,7 +78,7 @@ export default function UserProfilePage() {
     if (!user) return;
     setSaving(true);
     try {
-      const updated = await updateUserProfile(user.id, form);
+      const updated = await updateUserProfile(form);
       setProfile(updated);
       setEditing(false);
       setSaveMsg("تم حفظ التغييرات بنجاح");

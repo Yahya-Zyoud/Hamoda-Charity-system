@@ -11,7 +11,7 @@ const HELP_TYPE_AR = {
 
 async function createHelpRequest(req, res) {
   try {
-    const clerkId = req.headers["x-user-id"] || "";
+    const clerkId = req.userId || "";
     const { fullName, nationalId, phone, email, city, helpType, description } = req.body;
 
     if (!fullName || !nationalId || !phone || !city || !helpType || !description) {

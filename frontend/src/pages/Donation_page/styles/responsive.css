@@ -1,0 +1,52 @@
+/* ── Donation page — responsive breakpoints ──────────────────────────────── */
+
+@media (max-width: 900px) {
+  .dp-layout {
+    grid-template-columns: 1fr;
+    margin-top: -20px;
+  }
+
+  /* Move summary above form on tablet */
+  .dp-layout > .dp-summary {
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .dp-hero {
+    padding: 48px 16px 40px;
+  }
+
+  .dp-layout {
+    padding: 0 12px;
+    margin-bottom: 48px;
+  }
+
+  .dp-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .dp-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dp-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dp-summary {
+    border-radius: 12px;
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .dp-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .dp-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

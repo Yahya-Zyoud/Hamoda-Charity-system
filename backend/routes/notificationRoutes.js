@@ -6,10 +6,11 @@ const {
   markAllRead,
   deleteOne,
 } = require("../controllers/notificationController");
+const { requireAdmin } = require("../middleware/auth");
 
-router.get("/",              getAll);
-router.patch("/read-all",    markAllRead);
-router.patch("/:id/read",    markRead);
-router.delete("/:id",        deleteOne);
+router.get("/",              requireAdmin, getAll);
+router.patch("/read-all",    requireAdmin, markAllRead);
+router.patch("/:id/read",    requireAdmin, markRead);
+router.delete("/:id",        requireAdmin, deleteOne);
 
 module.exports = router;

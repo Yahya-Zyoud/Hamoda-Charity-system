@@ -12,11 +12,12 @@ import { getDonations } from "../../services/api";
 
 const normalize = (d) => ({
   id:      d.id,
-  donor:   d.donor                 || "متبرع",
-  email:   d.email                 || "—",
+  donor:   d.donorName             || d.donor || "متبرع",
+  email:   d.donorEmail            || d.email || "—",
   amount:  d.amount,
   project: d.projectId?.title      || "—",
-  method:  d.method                || "—",
+  method:  d.paymentMethod         || d.method || "—",
+  type:    d.donationType          || "—",
   date:    new Date(d.createdAt).toLocaleDateString("ar-SA"),
   status:  d.status,
 });
@@ -138,6 +139,7 @@ function DonationsPage() {
           <div style={{ display: "grid", gap: 2 }}>
             <DetailRow label="المتبرع"           value={selected.donor} />
             <DetailRow label="البريد الإلكتروني" value={<span style={{ direction: "ltr", display: "inline-block" }}>{selected.email}</span>} />
+            <DetailRow label="نوع التبرع"        value={selected.type} />
             <DetailRow label="المبلغ"            value={<span style={{ fontWeight: 700, color: "#16A34A", fontSize: 18 }}>${selected.amount.toLocaleString()}</span>} />
             <DetailRow label="المشروع"           value={selected.project} />
             <DetailRow label="طريقة الدفع"       value={selected.method} />

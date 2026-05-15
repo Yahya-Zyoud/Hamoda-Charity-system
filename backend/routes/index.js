@@ -6,6 +6,7 @@ router.use("/services",  require("./serviceRoutes"));
 router.use("/stats",     require("./statRoutes"));
 router.use("/partners",  require("./partnerRoutes"));
 router.use("/stories",   require("./storyRoutes"));
+router.use("/team",      require("./teamRoutes"));
 router.use("/subscribe", require("./subscriptionRoutes"));
 router.use("/user",           require("./userRoutes"));
 router.use("/help-requests",  require("./helpRequestRoutes"));

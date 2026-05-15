@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { submitHelpRequest } from "../services/api";
 import { useAppAuth } from "../contexts/AppAuthContext";
-import "./HelpRequest.css";
+import "./helpRequest/HelpRequest.css";
 
 function HelpRequest() {
   const { user } = useAppAuth();
@@ -59,7 +59,7 @@ function HelpRequest() {
       payload.append("description", formData.description);
       if (formData.document) payload.append("document", formData.document);
 
-      await submitHelpRequest(payload, user?.id || "");
+      await submitHelpRequest(payload);
 
       setSubmitted(true);
       setError("");

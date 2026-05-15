@@ -59,7 +59,7 @@ exports.updateUserStatus = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
-    const clerkId = req.headers["x-user-id"] || "guest";
+    const clerkId = req.userId;
 
     if (!isDBReady()) {
       return res.sendSuccess({ ...DEFAULT_PROFILE, clerkId });
@@ -80,7 +80,7 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const clerkId = req.headers["x-user-id"] || "guest";
+    const clerkId = req.userId;
 
     if (!isDBReady()) {
       return res.sendSuccess({ ...DEFAULT_PROFILE, ...req.body, clerkId });
@@ -102,7 +102,7 @@ exports.updateProfile = async (req, res) => {
 
 exports.getUserActivity = async (req, res) => {
   try {
-    const clerkId = req.headers["x-user-id"] || "guest";
+    const clerkId = req.userId;
 
     if (!isDBReady()) {
       return res.sendSuccess({ helpRequests: [], donations: [], stats: { totalRequests: 0, totalDonations: 0, totalProjects: 0, donationAmount: 0 } });
@@ -139,7 +139,7 @@ exports.uploadImage = async (req, res) => {
       return res.sendError("لم يتم اختيار ملف", HTTP_STATUS.BAD_REQUEST);
     }
 
-    const clerkId = req.headers["x-user-id"] || "guest";
+    const clerkId = req.userId;
     const url = getFileUrl(req.file.filename);
     const type = req.body.type || "avatar";
 

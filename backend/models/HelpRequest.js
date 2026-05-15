@@ -20,25 +20,13 @@ const helpRequestSchema = new mongoose.Schema(
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
-
-    // ----- حمودة (Hamoda) AI fields -----
-    // These are populated automatically by the Hamoda AI helper after a
-    // request is created. They are optional so the app works fine even
-    // when OPENAI_API_KEY is not configured.
-    aiSuggestedHelpType: {
-      type: String,
-      enum: ["medical", "education", "food", "housing", "financial", "other", null],
-      default: null,
-    },
-    aiSummary:     { type: String, default: "" },
-    aiUrgency: {
-      type: String,
-      enum: ["low", "medium", "high", "critical", null],
-      default: null,
-    },
-    aiConfidence:  { type: Number, default: null }, // 0..1
-    aiClassifiedAt:{ type: Date, default: null },
-    aiModel:       { type: String, default: "" },
+    // Hamoda AI classification fields
+    aiSuggestedHelpType: { type: String, default: null },
+    aiUrgency:           { type: String, enum: ["low", "medium", "high", "critical"], default: null },
+    aiConfidence:        { type: Number, default: null },
+    aiSummary:           { type: String, default: "" },
+    aiModel:             { type: String, default: null },
+    aiClassifiedAt:      { type: Date,   default: null },
   },
   {
     timestamps: true,

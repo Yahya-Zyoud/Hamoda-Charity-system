@@ -3,7 +3,6 @@ const HelpRequest = require("../models/HelpRequest");
 const Project = require("../models/Project");
 const Donation = require("../models/Donation");
 const User = require("../models/User");
-const { loadData } = require("../utils/dataLoader");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
@@ -17,11 +16,9 @@ const HELP_TYPE_AR = {
 exports.getAdminStats = async (req, res) => {
   try {
     if (!isDBReady()) {
-      const projects = loadData("projects");
       return res.sendSuccess({
         totalRequests: 0, pendingRequests: 0,
-        totalProjects: projects.length,
-        totalUsers: 0, totalDonations: 0,
+        totalProjects: 0, totalUsers: 0, totalDonations: 0,
         recentRequests: [], recentDonations: [],
       });
     }
@@ -55,8 +52,8 @@ exports.getAdminStats = async (req, res) => {
       })),
       recentDonations: recentDonations.map((d) => ({
         id:        d._id,
-        donor:     d.donor   || "متبرع",
-        project:   d.projectId?.title || "—",
+        donor:     d.donorName || d.donor || "متبرع",
+        project:   d.projectId?.title || d.donationType || "—",
         amount:    d.amount,
         createdAt: d.createdAt,
       })),
