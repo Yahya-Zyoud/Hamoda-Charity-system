@@ -10,7 +10,7 @@ Team of 5: Murad, Hamza, Ahmed, Yahya (you), Mohammad.
 | Layer | Technology |
 |---|---|
 | Frontend | React 18 + Vite, Tailwind CSS, React Router v6, Lucide React, Framer Motion |
-| Auth | Clerk (lazy-loaded; app works without it if `VITE_CLERK_PUBLISHABLE_KEY` is missing) |
+| Auth | Clerk (lazy-loade--d; app works without it if `VITE_CLERK_PUBLISHABLE_KEY` is missing) |
 | Backend | Node.js + Express, JSON-file data (→ migrating to MongoDB) |
 | Database | **Docker (local dev)** → **MongoDB Atlas M0 (production)** |
 | ORM | Mongoose (to be added in DB migration phase) |

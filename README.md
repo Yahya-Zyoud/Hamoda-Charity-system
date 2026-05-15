@@ -10,11 +10,12 @@ This project is an academic web application developed to create a digital charit
 - Admin dashboard for managing requests and projects
 
 # Tech Stack
-- Frontend: React.js, HTML, CSS, JavaScript
-- Backend: Node.js
-- Database: MySQL
-- APIs: Stripe / PayPal, OpenAI
- 
+- Frontend: React.js, Tailwind CSS, Vite
+- Backend: Node.js, Express.js
+- Database: MongoDB (with JSON fallback for local dev)
+- Auth: Clerk
+- APIs: OpenAI
+
 # Team
 - Murad Hisham Aydi
 - Hamza Nael Hubeisha
