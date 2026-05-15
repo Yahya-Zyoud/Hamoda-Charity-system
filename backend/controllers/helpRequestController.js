@@ -2,7 +2,6 @@ const HelpRequest = require("../models/HelpRequest");
 const Notification = require("../models/Notification");
 const { HTTP_STATUS } = require("../config/constants");
 const logger = require("../utils/logger");
-const hamoda = require("../utils/hamoda");
 
 const HELP_TYPE_AR = {
   medical: "طبي", education: "تعليمي", food: "غذائي",
@@ -41,12 +40,6 @@ async function createHelpRequest(req, res) {
       msg:       `طلب مساعدة جديد من ${fullName} (${HELP_TYPE_AR[helpType] || helpType})`,
       relatedId: helpRequest._id,
     }).catch((err) => logger.warn("Failed to create notification", { error: err.message }));
-
-    // حمودة — fire-and-forget AI classification + summary.
-    // We don't await this so the user gets an instant response.
-    hamoda.analyzeAndSave(helpRequest).catch((err) =>
-      logger.warn("Hamoda analyzeAndSave failed", { error: err.message })
-    );
 
     res.sendSuccess(helpRequest, "تم إرسال طلب المساعدة بنجاح.", HTTP_STATUS.CREATED);
   } catch (error) {
@@ -111,32 +104,10 @@ async function deleteHelpRequest(req, res) {
   }
 }
 
-/**
- * Re-run حمودة (Hamoda) AI analysis on an existing help request.
- * Useful for the admin dashboard: a "Re-analyze with Hamoda" button.
- */
-async function reanalyzeHelpRequest(req, res) {
-  try {
-    const request = await HelpRequest.findById(req.params.id);
-    if (!request) return res.sendError("الطلب غير موجود.", HTTP_STATUS.NOT_FOUND);
-
-    const updated = await hamoda.analyzeAndSave(request);
-    if (!updated) {
-      return res.sendError("تعذّر تحليل الطلب بواسطة حمودة.", HTTP_STATUS.INTERNAL_SERVER_ERROR);
-    }
-
-    res.sendSuccess(updated, "تم تحليل الطلب بواسطة حمودة بنجاح.");
-  } catch (error) {
-    logger.error("Reanalyze help request error:", error);
-    res.sendError("حدث خطأ أثناء تحليل الطلب.", HTTP_STATUS.INTERNAL_SERVER_ERROR);
-  }
-}
-
 module.exports = {
   createHelpRequest,
   getAllHelpRequests,
   getHelpRequestById,
   updateHelpRequestStatus,
   deleteHelpRequest,
-  reanalyzeHelpRequest,
 };
