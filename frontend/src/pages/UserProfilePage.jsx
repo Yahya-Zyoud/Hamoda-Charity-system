@@ -56,22 +56,24 @@ export default function UserProfilePage() {
     if (!isLoaded) return;
     if (!user) { setLoading(false); return; }
 
-    Promise.all([
+    Promise.allSettled([
       getUserProfile(),
       getUserActivity(),
-    ])
-      .then(([prof, act]) => {
+    ]).then(([profResult, actResult]) => {
+      if (profResult.status === "fulfilled" && profResult.value) {
+        const prof = profResult.value;
         setProfile(prof);
-        setActivity(act);
         setForm({
           name:  prof.name  || "",
           phone: prof.phone || "",
           city:  prof.city  || "",
           bio:   prof.bio   || "",
         });
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      }
+      if (actResult.status === "fulfilled" && actResult.value) {
+        setActivity(actResult.value);
+      }
+    }).finally(() => setLoading(false));
   }, [isLoaded, user]);
 
   const handleSave = async () => {
@@ -213,7 +215,7 @@ export default function UserProfilePage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 28 }}>
             <StatCard icon={HelpCircle}  label="طلبات المساعدة"  value={stats.totalRequests}  color="#0E7490" />
             <StatCard icon={Heart}       label="التبرعات"         value={stats.totalDonations}  color="#DC2626" />
-            <StatCard icon={FolderOpen}  label="مشاريع مدعومة"   value={stats.totalProjects}   color="#7C3AED" />
+            <StatCard icon={FolderOpen}  label="أنواع التبرعات"   value={stats.totalProjects}   color="#7C3AED" />
             <StatCard icon={DollarSign}  label="إجمالي التبرعات" value={`$${stats.donationAmount.toLocaleString()}`} color="#16A34A" />
           </div>
 
