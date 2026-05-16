@@ -27,7 +27,7 @@ const uiToDb = (form) => ({
   title:       form.title,
   category:    form.category,
   description: form.description,
-  goal:        +form.target,
+  goal:        parseFloat(String(form.target).replace(/[^\d.]/g, "")) || 0,
   status:      DB_STATUS[form.status] || "نشط",
 });
 
@@ -183,7 +183,7 @@ function ProjectsPage() {
             </div>
             <div>
               <label style={{ fontSize: 13, color: "#64748B", display: "block", marginBottom: 6, fontWeight: 600 }}>المبلغ المستهدف ($)</label>
-              <Input placeholder="0" value={form.target} onChange={(e) => setForm((p) => ({ ...p, target: e.target.value }))} />
+              <Input type="number" min="0" placeholder="0" value={form.target} onChange={(e) => setForm((p) => ({ ...p, target: e.target.value }))} />
             </div>
             {saveError && (
               <div style={{ background: "#FFF1F2", color: "#BE123C", border: "1px solid #FECDD3", borderRadius: 8, padding: "10px 14px", fontSize: 13, fontWeight: 600 }}>
