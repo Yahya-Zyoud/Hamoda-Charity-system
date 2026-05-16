@@ -4,10 +4,12 @@ import {
   FolderOpen,
   HelpCircle,
   Heart,
+  Info,
 } from "lucide-react";
 
 export const navItems = [
   { label: "الرئيسية", path: "/#home" },
+  { label: "من نحن", path: "/about" },
   { label: "المشاريع", path: "/projects" },
   { label: "المنح والتبرعات", path: "/donations" },
   { label: "طلب مساعدة", path: "/help-request" },
@@ -17,6 +19,7 @@ export const navItems = [
 export const getNavIcon = (label) => {
   const iconMap = {
     الرئيسية: Home,
+    "من نحن": Info,
     الفريق: Users,
     المشاريع: FolderOpen,
     "المنح والتبرعات": Heart,
