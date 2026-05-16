@@ -1,4 +1,5 @@
 const Donation     = require("../models/Donation");
+const Project      = require("../models/Project");
 const Notification = require("../models/Notification");
 const statsService = require("./statsService");
 const logger       = require("../utils/logger");
@@ -29,41 +30,80 @@ exports.createDirectDonation = async ({ donationType, amount, donorName, donorEm
     relatedId: donation._id,
   }).catch((err) => logger.warn("Failed to create donation notification", { error: err.message }));
 
-  // A new donation changes the donors count and totalAmount — bust the cache
   statsService.invalidateCache();
   return donation;
 };
 
-/** Returns the 50 most recent donations, newest first. */
+/** Returns all donations newest-first, with project title populated. */
 exports.getAllDonations = async () =>
-  Donation.find().sort({ createdAt: -1 }).limit(50).populate("projectId", "title");
+  Donation.find().sort({ createdAt: -1 }).limit(200).populate("projectId", "title");
 
 exports.getDonationById = async (id) =>
   Donation.findById(id).populate("projectId", "title");
 
 /**
- * Updates a donation's status.
- * Throws a 400 error (not 500) for invalid status values so the controller
- * can surface a descriptive message to the client instead of a generic error.
+ * Updates a donation's status and keeps project.raised in sync.
+ *
+ * Rules to prevent duplicate counting:
+ *  - changing TO "accepted":   add donation.amount to project.raised
+ *  - changing FROM "accepted": subtract donation.amount from project.raised (floor 0)
+ *  - any other transition:     no project change
  */
 exports.updateDonationStatus = async (id, status) => {
-  const VALID = ["pending", "completed", "failed"];
+  const VALID = ["pending", "accepted", "rejected"];
   if (!status || !VALID.includes(status)) {
     const err = new Error(`الحالة يجب أن تكون: ${VALID.join(" | ")}`);
     err.status = 400;
     throw err;
   }
-  return Donation.findByIdAndUpdate(id, { status }, { new: true, runValidators: true });
+
+  const existing = await Donation.findById(id);
+  if (!existing) return null;
+
+  const wasAccepted = existing.status === "accepted";
+  const becomesAccepted = status === "accepted";
+
+  const donation = await Donation.findByIdAndUpdate(id, { status }, { new: true, runValidators: true });
+
+  // Keep project.raised in sync when a project-linked donation changes acceptance state
+  if (donation.projectId) {
+    if (becomesAccepted && !wasAccepted) {
+      await Project.findByIdAndUpdate(donation.projectId, { $inc: { raised: donation.amount } });
+    } else if (!becomesAccepted && wasAccepted) {
+      // Use aggregation pipeline to safely floor at 0
+      await Project.findByIdAndUpdate(donation.projectId, [
+        { $set: { raised: { $max: [0, { $subtract: ["$raised", donation.amount] }] } } },
+      ]);
+    }
+  }
+
+  statsService.invalidateCache();
+  return donation;
+};
+
+/** Hard-deletes a donation record. If it was accepted, reverses project.raised. */
+exports.deleteDonation = async (id) => {
+  const donation = await Donation.findById(id);
+  if (!donation) return null;
+
+  // Reverse project funding if this was an accepted donation
+  if (donation.status === "accepted" && donation.projectId) {
+    await Project.findByIdAndUpdate(donation.projectId, [
+      { $set: { raised: { $max: [0, { $subtract: ["$raised", donation.amount] }] } } },
+    ]);
+  }
+
+  await Donation.findByIdAndDelete(id);
+  statsService.invalidateCache();
+  return donation;
 };
 
 /**
- * Returns recent non-failed donations formatted for display widgets.
- * Limit is capped at 50 regardless of the query param to prevent
- * accidental full-collection scans from public-facing callers.
+ * Returns recent non-rejected donations formatted for display widgets.
  */
 exports.getRecentDonations = async (limit = 6) => {
   const safeLimit = Math.min(Number(limit) || 6, 50);
-  const donations = await Donation.find({ status: { $ne: "failed" } })
+  const donations = await Donation.find({ status: { $ne: "rejected" } })
     .sort({ createdAt: -1 })
     .limit(safeLimit)
     .select("donorName donationType amount paymentMethod createdAt");
@@ -78,10 +118,10 @@ exports.getRecentDonations = async (limit = 6) => {
   }));
 };
 
-/** Aggregates total amount and donor count, excluding failed donations. */
+/** Aggregates total amount and donor count from accepted donations only. */
 exports.getDonationStats = async () => {
   const result = await Donation.aggregate([
-    { $match: { status: { $ne: "failed" } } },
+    { $match: { status: "accepted" } },
     { $group: { _id: null, totalAmount: { $sum: "$amount" }, totalDonors: { $sum: 1 } } },
   ]);
   const stats = result[0] || { totalAmount: 0, totalDonors: 0 };

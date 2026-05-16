@@ -26,7 +26,7 @@ async function computeStats() {
     donationAgg,
   ] = await Promise.all([
     // distinct() dedups by email so one donor with multiple donations counts once
-    Donation.distinct("donorEmail", { status: { $ne: "failed" } }),
+    Donation.distinct("donorEmail", { status: "accepted" }),
 
     Project.countDocuments(),
 
@@ -42,7 +42,7 @@ async function computeStats() {
     Team.countDocuments(),
 
     Donation.aggregate([
-      { $match: { status: { $ne: "failed" } } },
+      { $match: { status: "accepted" } },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]),
   ]);

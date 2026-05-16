@@ -6,11 +6,13 @@ import DonationTypeSelector from "./components/DonationTypeSelector";
 import ProjectPicker from "./components/ProjectPicker";
 import DonationAmountSelector from "./components/DonationAmountSelector";
 import DonorInfoForm from "./components/DonorInfoForm";
+import PaymentMethodSelector from "./components/PaymentMethodSelector";
 import DonationSummary from "./components/DonationSummary";
 import DonationSubmitButton from "./components/DonationSubmitButton";
 import { validateDonationForm } from "./utils/validation";
 import { createDirectDonation } from "./services/donationService";
 import { useAppAuth } from "../../contexts/AppAuthContext";
+import { useToast, ToastContainer } from "../../components/Toast";
 import "./styles/donations.css";
 import "./styles/responsive.css";
 
@@ -28,19 +30,19 @@ function DonationPage() {
   const [donationMode,     setDonationMode]     = useState("");           // "project" | "general"
   const [selectedProject,  setSelectedProject]  = useState(null);
   const [donationType,     setDonationType]     = useState("");
+  const [paymentMethod,    setPaymentMethod]    = useState("");
   const [amount,           setAmount]           = useState(null);
   const [donorInfo,        setDonorInfo]        = useState(INITIAL_DONOR);
   const [fieldErrors,      setFieldErrors]      = useState({});
-  const [submitError,      setSubmitError]      = useState("");
-  const [success,          setSuccess]          = useState(false);
   const [loading,          setLoading]          = useState(false);
+
+  const { addToast, toasts, remove } = useToast();
 
   function handleModeChange(mode) {
     setDonationMode(mode);
     setSelectedProject(null);
     setDonationType("");
     setFieldErrors({});
-    setSubmitError("");
   }
 
   function handleDonorChange(e) {
@@ -51,12 +53,12 @@ function DonationPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setSubmitError("");
 
     const { errors, isValid } = validateDonationForm({
       donationMode,
       donationType,
       selectedProject,
+      paymentMethod,
       amount,
       donorInfo,
     });
@@ -77,17 +79,19 @@ function DonationPage() {
         donorPhone:      donorInfo.donorPhone,
         donorCity:       donorInfo.donorCity,
         note:            donorInfo.note,
-        paymentMethod:   "cash",
+        paymentMethod,
         userId:          user?.id || "",
       });
-      setSuccess(true);
+      addToast("تم استلام طلب تبرعك بنجاح! شكراً لدعمك ❤️", "success");
       setDonationMode("");
       setSelectedProject(null);
       setDonationType("");
+      setPaymentMethod("");
       setAmount(null);
       setDonorInfo(INITIAL_DONOR);
+      setFieldErrors({});
     } catch (err) {
-      setSubmitError(err.message || "حدث خطأ، يرجى المحاولة مرة أخرى.");
+      addToast(err.message || "حدث خطأ، يرجى المحاولة مرة أخرى.", "error");
     } finally {
       setLoading(false);
     }
@@ -96,6 +100,7 @@ function DonationPage() {
   return (
     <>
       <Navbar />
+      <ToastContainer toasts={toasts} remove={remove} />
 
       <main className="dp-page">
         <section className="dp-hero">
@@ -111,15 +116,6 @@ function DonationPage() {
           <form onSubmit={handleSubmit} noValidate>
             <div className="dp-card">
               <h2 className="dp-card-title">تفاصيل التبرع</h2>
-
-              {submitError && (
-                <div className="dp-alert dp-alert-error">⚠ {submitError}</div>
-              )}
-              {success && (
-                <div className="dp-alert dp-alert-success">
-                  ✓ تم استلام طلب تبرعك بنجاح. سيتواصل معك فريقنا لإتمام التحويل. شكراً لدعمك!
-                </div>
-              )}
 
               {/* Step 1 — pick mode */}
               <DonationModeSelector mode={donationMode} onChange={handleModeChange} />
@@ -147,7 +143,7 @@ function DonationPage() {
                 />
               )}
 
-              {/* Step 3 — amount (only after mode selected) */}
+              {/* Steps 3-5 — amount, donor info, payment method */}
               {donationMode && (
                 <>
                   <DonationAmountSelector
@@ -165,6 +161,15 @@ function DonationPage() {
                     errors={fieldErrors}
                   />
 
+                  <PaymentMethodSelector
+                    paymentMethod={paymentMethod}
+                    onChange={(val) => {
+                      setPaymentMethod(val);
+                      setFieldErrors((p) => ({ ...p, paymentMethod: "" }));
+                    }}
+                    error={fieldErrors.paymentMethod}
+                  />
+
                   <DonationSubmitButton loading={loading} />
                 </>
               )}
@@ -176,6 +181,7 @@ function DonationPage() {
               donationMode={donationMode}
               selectedProject={selectedProject}
               donationType={donationType}
+              paymentMethod={paymentMethod}
               amount={amount}
               donorInfo={donorInfo}
             />

@@ -111,7 +111,8 @@ export const getDonations          = ()             => makeRequest("/donations")
 export const createDirectDonation  = (payload)      => makeRequest("/donations", { method: "POST", body: JSON.stringify(payload) });
 export const getDonationStats      = ()             => makeRequest("/donations/stats");
 export const getRecentDonations    = (limit = 10)   => makeRequest(`/donations/recent?limit=${limit}`);
-export const updateDonationStatus  = (id, status)   => makeRequest(`/donations/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) });
+export const updateDonationStatus  = (id, status)   => makeRequest(`/donations/${id}/status`, { method: "PATCH",  body: JSON.stringify({ status }) });
+export const deleteDonation        = (id)            => makeRequest(`/donations/${id}`,         { method: "DELETE" });
 
 // ── Users admin ───────────────────────────────────────────────────────────
 export const getUsers              = ()           => makeRequest("/user");

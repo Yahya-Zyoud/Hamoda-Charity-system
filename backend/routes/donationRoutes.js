@@ -9,6 +9,7 @@ const {
   getDonationStats,
   getDonationById,
   updateDonationStatus,
+  deleteDonation,
 } = require("../controllers/donationController");
 
 // Public stats + recent widget
@@ -22,5 +23,6 @@ router.post("/", optionalAuth, validateDonation, createDonation);
 router.get("/",             requireAdmin, getAllDonations);
 router.get("/:id",          requireAdmin, getDonationById);
 router.patch("/:id/status", requireAdmin, updateDonationStatus);
+router.delete("/:id",       requireAdmin, deleteDonation);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-export function validateDonationForm({ donationMode, donationType, selectedProject, amount, donorInfo }) {
+export function validateDonationForm({ donationMode, donationType, selectedProject, paymentMethod, amount, donorInfo }) {
   const errors = {};
 
   if (!donationMode) {
@@ -23,6 +23,10 @@ export function validateDonationForm({ donationMode, donationType, selectedProje
 
   if (donorInfo.donorPhone && !/^05\d{8}$/.test(donorInfo.donorPhone)) {
     errors.donorPhone = "رقم الهاتف يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
+  }
+
+  if (!paymentMethod) {
+    errors.paymentMethod = "يرجى اختيار طريقة الدفع";
   }
 
   return { errors, isValid: Object.keys(errors).length === 0 };

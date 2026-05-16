@@ -47,6 +47,18 @@ exports.updateDonationStatus = async (req, res) => {
   }
 };
 
+exports.deleteDonation = async (req, res) => {
+  try {
+    const donation = await donationService.deleteDonation(req.params.id);
+    if (!donation) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    logger.info("Donation deleted", { id: req.params.id });
+    return res.sendSuccess(null, "تم حذف التبرع بنجاح");
+  } catch (error) {
+    logger.error("Error deleting donation", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
+
 exports.getRecentDonations = async (req, res) => {
   try {
     const donations = await donationService.getRecentDonations(req.query.limit);

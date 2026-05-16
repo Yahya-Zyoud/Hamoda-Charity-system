@@ -1,4 +1,6 @@
-function DonationSummary({ donationMode, selectedProject, donationType, amount, donorInfo }) {
+const PAYMENT_LABELS = { stripe: "بطاقة ائتمانية", cash: "كاش / تحويل" };
+
+function DonationSummary({ donationMode, selectedProject, donationType, paymentMethod, amount, donorInfo }) {
   const typeLabel =
     donationMode === "project"
       ? (selectedProject?.title || "—")
@@ -32,7 +34,7 @@ function DonationSummary({ donationMode, selectedProject, donationType, amount, 
         </li>
         <li className="dp-summary-item">
           <span className="dp-summary-key">طريقة الدفع</span>
-          <span className="dp-summary-val">تحويل بنكي / كاش</span>
+          <span className="dp-summary-val">{PAYMENT_LABELS[paymentMethod] || "—"}</span>
         </li>
       </ul>
     </div>
