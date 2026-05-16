@@ -1,7 +1,11 @@
-export function validateDonationForm({ donationType, amount, donorInfo }) {
+export function validateDonationForm({ donationMode, donationType, selectedProject, amount, donorInfo }) {
   const errors = {};
 
-  if (!donationType) {
+  if (!donationMode) {
+    errors.donationMode = "يرجى اختيار طريقة التبرع";
+  } else if (donationMode === "project" && !selectedProject) {
+    errors.project = "يرجى اختيار مشروع لتدعمه";
+  } else if (donationMode === "general" && !donationType) {
     errors.donationType = "يرجى اختيار نوع التبرع";
   }
 

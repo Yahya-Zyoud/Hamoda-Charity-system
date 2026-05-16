@@ -1,7 +1,9 @@
 import { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import DonationModeSelector from "./components/DonationModeSelector";
 import DonationTypeSelector from "./components/DonationTypeSelector";
+import ProjectPicker from "./components/ProjectPicker";
 import DonationAmountSelector from "./components/DonationAmountSelector";
 import DonorInfoForm from "./components/DonorInfoForm";
 import DonationSummary from "./components/DonationSummary";
@@ -22,13 +24,24 @@ const INITIAL_DONOR = {
 
 function DonationPage() {
   const { user } = useAppAuth();
-  const [donationType, setDonationType] = useState("");
-  const [amount,       setAmount]       = useState(null);
-  const [donorInfo,    setDonorInfo]    = useState(INITIAL_DONOR);
-  const [fieldErrors,  setFieldErrors]  = useState({});
-  const [submitError,  setSubmitError]  = useState("");
-  const [success,      setSuccess]      = useState(false);
-  const [loading,      setLoading]      = useState(false);
+
+  const [donationMode,     setDonationMode]     = useState("");           // "project" | "general"
+  const [selectedProject,  setSelectedProject]  = useState(null);
+  const [donationType,     setDonationType]     = useState("");
+  const [amount,           setAmount]           = useState(null);
+  const [donorInfo,        setDonorInfo]        = useState(INITIAL_DONOR);
+  const [fieldErrors,      setFieldErrors]      = useState({});
+  const [submitError,      setSubmitError]      = useState("");
+  const [success,          setSuccess]          = useState(false);
+  const [loading,          setLoading]          = useState(false);
+
+  function handleModeChange(mode) {
+    setDonationMode(mode);
+    setSelectedProject(null);
+    setDonationType("");
+    setFieldErrors({});
+    setSubmitError("");
+  }
 
   function handleDonorChange(e) {
     const { name, value } = e.target;
@@ -40,7 +53,13 @@ function DonationPage() {
     e.preventDefault();
     setSubmitError("");
 
-    const { errors, isValid } = validateDonationForm({ donationType, amount, donorInfo });
+    const { errors, isValid } = validateDonationForm({
+      donationMode,
+      donationType,
+      selectedProject,
+      amount,
+      donorInfo,
+    });
     if (!isValid) {
       setFieldErrors(errors);
       return;
@@ -49,17 +68,21 @@ function DonationPage() {
     setLoading(true);
     try {
       await createDirectDonation({
-        donationType,
+        donationType:    donationMode === "project" ? "تبرع مشروع" : donationType,
+        projectId:       selectedProject?.id || selectedProject?._id || null,
+        projectTitle:    selectedProject?.title || null,
         amount,
-        donorName:     donorInfo.donorName,
-        donorEmail:    donorInfo.donorEmail,
-        donorPhone:    donorInfo.donorPhone,
-        donorCity:     donorInfo.donorCity,
-        note:          donorInfo.note,
-        paymentMethod: "cash",
-        userId:        user?.id || "",
+        donorName:       donorInfo.donorName,
+        donorEmail:      donorInfo.donorEmail,
+        donorPhone:      donorInfo.donorPhone,
+        donorCity:       donorInfo.donorCity,
+        note:            donorInfo.note,
+        paymentMethod:   "cash",
+        userId:          user?.id || "",
       });
       setSuccess(true);
+      setDonationMode("");
+      setSelectedProject(null);
       setDonationType("");
       setAmount(null);
       setDonorInfo(INITIAL_DONOR);
@@ -79,7 +102,7 @@ function DonationPage() {
           <span className="dp-hero-badge">تبرع الآن</span>
           <h1>ساهم في صنع الفرق</h1>
           <p>
-            تبرعك يصل مباشرة إلى من يحتاجه. اختر نوع التبرع والمبلغ وأكمل
+            تبرعك يصل مباشرة إلى من يحتاجه. اختر طريقة التبرع والمبلغ وأكمل
             بياناتك لنتمكن من توصيل مساهمتك بأمان.
           </p>
         </section>
@@ -98,36 +121,60 @@ function DonationPage() {
                 </div>
               )}
 
-              <DonationTypeSelector
-                donationType={donationType}
-                onChange={(val) => {
-                  setDonationType(val);
-                  setFieldErrors((p) => ({ ...p, donationType: "" }));
-                }}
-                error={fieldErrors.donationType}
-              />
+              {/* Step 1 — pick mode */}
+              <DonationModeSelector mode={donationMode} onChange={handleModeChange} />
 
-              <DonationAmountSelector
-                amount={amount}
-                onChange={(val) => {
-                  setAmount(val);
-                  setFieldErrors((p) => ({ ...p, amount: "" }));
-                }}
-                error={fieldErrors.amount}
-              />
+              {/* Step 2 — project picker or general type */}
+              {donationMode === "project" && (
+                <ProjectPicker
+                  selectedId={selectedProject?.id || selectedProject?._id}
+                  onSelect={(p) => {
+                    setSelectedProject(p);
+                    setFieldErrors((prev) => ({ ...prev, project: "" }));
+                  }}
+                  error={fieldErrors.project}
+                />
+              )}
 
-              <DonorInfoForm
-                donorInfo={donorInfo}
-                onChange={handleDonorChange}
-                errors={fieldErrors}
-              />
+              {donationMode === "general" && (
+                <DonationTypeSelector
+                  donationType={donationType}
+                  onChange={(val) => {
+                    setDonationType(val);
+                    setFieldErrors((p) => ({ ...p, donationType: "" }));
+                  }}
+                  error={fieldErrors.donationType}
+                />
+              )}
 
-              <DonationSubmitButton loading={loading} />
+              {/* Step 3 — amount (only after mode selected) */}
+              {donationMode && (
+                <>
+                  <DonationAmountSelector
+                    amount={amount}
+                    onChange={(val) => {
+                      setAmount(val);
+                      setFieldErrors((p) => ({ ...p, amount: "" }));
+                    }}
+                    error={fieldErrors.amount}
+                  />
+
+                  <DonorInfoForm
+                    donorInfo={donorInfo}
+                    onChange={handleDonorChange}
+                    errors={fieldErrors}
+                  />
+
+                  <DonationSubmitButton loading={loading} />
+                </>
+              )}
             </div>
           </form>
 
           <aside>
             <DonationSummary
+              donationMode={donationMode}
+              selectedProject={selectedProject}
               donationType={donationType}
               amount={amount}
               donorInfo={donorInfo}
