@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Eye, Search, Loader2 } from "lucide-react";
+import { Eye, Search, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
 import Input from "../../components/admin/Input";
@@ -8,7 +8,7 @@ import Btn from "../../components/admin/Btn";
 import Badge from "../../components/admin/Badge";
 import Modal from "../../components/admin/Modal";
 import { Th, Td, TableRow } from "../../components/admin/TableParts";
-import { getDonations } from "../../services/api";
+import { getDonations, updateDonationStatus } from "../../services/api";
 
 const normalize = (d) => ({
   id:      d.id,
@@ -29,6 +29,8 @@ function DonationsPage() {
   const [search,       setSearch]       = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [selected,     setSelected]     = useState(null);
+  const [updating,     setUpdating]     = useState(false);
+  const [actionError,  setActionError]  = useState("");
 
   useEffect(() => {
     getDonations()
@@ -45,6 +47,20 @@ function DonationsPage() {
   });
 
   const total = filtered.reduce((s, d) => s + d.amount, 0);
+
+  const handleStatus = async (id, status) => {
+    setUpdating(true);
+    setActionError("");
+    try {
+      await updateDonationStatus(id, status);
+      setList((prev) => prev.map((d) => d.id === id ? { ...d, status } : d));
+      setSelected((prev) => prev ? { ...prev, status } : prev);
+    } catch (err) {
+      setActionError(err?.message || "تعذّر تحديث الحالة");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <DashboardLayout title="إدارة التبرعات">
@@ -135,7 +151,7 @@ function DonationsPage() {
 
       {/* Detail Modal */}
       {selected && (
-        <Modal title={`تفاصيل التبرع — ${String(selected.id).slice(-6)}`} onClose={() => setSelected(null)}>
+        <Modal title={`تفاصيل التبرع — ${String(selected.id).slice(-6)}`} onClose={() => { setSelected(null); setActionError(""); }}>
           <div style={{ display: "grid", gap: 2 }}>
             <DetailRow label="المتبرع"           value={selected.donor} />
             <DetailRow label="البريد الإلكتروني" value={<span style={{ direction: "ltr", display: "inline-block" }}>{selected.email}</span>} />
@@ -146,6 +162,35 @@ function DonationsPage() {
             <DetailRow label="التاريخ"           value={selected.date} />
             <DetailRow label="الحالة"            value={<Badge status={selected.status} />} />
           </div>
+
+          {actionError && (
+            <div style={{ marginTop: 14, background: "#FFF1F2", color: "#BE123C", border: "1px solid #FECDD3", borderRadius: 8, padding: "10px 14px", fontSize: 13, fontWeight: 600 }}>
+              {actionError}
+            </div>
+          )}
+
+          {selected.status === "pending" && (
+            <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
+              <Btn
+                variant="success-light"
+                onClick={() => handleStatus(selected.id, "completed")}
+                disabled={updating}
+                style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+              >
+                {updating ? <Loader2 size={14} className="spin" /> : <CheckCircle2 size={14} />}
+                قبول التبرع
+              </Btn>
+              <Btn
+                variant="danger-light"
+                onClick={() => handleStatus(selected.id, "failed")}
+                disabled={updating}
+                style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+              >
+                {updating ? <Loader2 size={14} className="spin" /> : <XCircle size={14} />}
+                رفض التبرع
+              </Btn>
+            </div>
+          )}
         </Modal>
       )}
     </DashboardLayout>
