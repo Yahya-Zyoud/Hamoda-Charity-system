@@ -4,6 +4,10 @@ import { Users, Briefcase, Heart, Activity } from "lucide-react";
 import { StatCard } from "../../../components/cards";
 import { getStats } from "../../../services/api";
 
+/**
+ * Display config lives here — backend only returns plain numbers.
+ * Reorder or rename by editing this array, zero backend changes needed.
+ */
 const STATS_CONFIG = [
   { key: "beneficiaries", icon: Users,     label: "إجمالي المستفيدين", suffix: "+", color: "text-blue-600",    bg: "bg-blue-50"    },
   { key: "projects",      icon: Briefcase, label: "مشروع منجز",        suffix: "+", color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -22,8 +26,8 @@ function SkeletonCard() {
 }
 
 export default function StatsSection() {
-  const [data,   setData]   = useState(null);
-  const [failed, setFailed] = useState(false);
+  const [data,    setData]    = useState(null);  // null = loading, {} = loaded
+  const [failed,  setFailed]  = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,6 +36,7 @@ export default function StatsSection() {
       getStats()
         .then((res) => {
           if (cancelled) return;
+          // Backend now returns a plain object { donors, projects, beneficiaries, team, totalAmount }
           if (res && typeof res === "object" && !Array.isArray(res)) {
             setData(res);
           } else {
@@ -57,6 +62,7 @@ export default function StatsSection() {
     value: data?.[cfg.key] ?? 0,
   }));
 
+  // Don't render the section at all if load permanently failed with 0s everywhere
   if (failed && stats.every((s) => s.value === 0)) return null;
 
   return (

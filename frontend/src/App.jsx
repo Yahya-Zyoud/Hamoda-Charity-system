@@ -17,6 +17,7 @@ function App() {
     <BrowserRouter>
       <ScrollToHash />
       <Routes>
+        {/* Public — with Navbar + Footer */}
         <Route path="/" element={
           <>
             <Navbar />
