@@ -1,15 +1,17 @@
 import { motion } from "framer-motion";
 
-export default function Stats({ members = [] }) {
-  const totalMembers  = members.length;
-  const uniqueRoles   = new Set(members.map((m) => m.role).filter(Boolean)).size;
-  const activeMembers = members.filter((m) => m.active !== false).length;
+export default function Stats({ team = [] }) {
+  const totalMembers          = team.length;
+  const uniqueRoles           = new Set(team.map((m) => m.role).filter(Boolean)).size;
+  const uniqueSpecializations = new Set(team.map((m) => m.title).filter(Boolean)).size;
 
-  const stats = [
-    { value: totalMembers  || "—", label: "أعضاء الفريق"    },
-    { value: uniqueRoles   || "—", label: "التخصصات"        },
-    { value: activeMembers || "—", label: "الأعضاء النشطون" },
+  const items = [
+    { value: totalMembers,          label: "عضو في الفريق" },
+    { value: uniqueRoles,           label: "دور مختلف"      },
+    { value: uniqueSpecializations, label: "تخصص"           },
   ];
+
+  if (totalMembers === 0) return null;
 
   return (
     <motion.div
@@ -23,12 +25,12 @@ export default function Stats({ members = [] }) {
         borderBottom: "1px solid rgba(24,86,255,0.12)",
       }}
     >
-      {stats.map((s, i) => (
+      {items.map((s, i) => (
         <div
           key={i}
           className="px-10 py-5 text-center"
           style={{
-            borderRight: i < stats.length - 1 ? "1px solid rgba(24,86,255,0.1)" : "none",
+            borderRight: i < items.length - 1 ? "1px solid rgba(24,86,255,0.1)" : "none",
           }}
         >
           <div className="text-3xl font-extrabold" style={{ color: "#1856FF" }}>

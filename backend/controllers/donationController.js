@@ -4,7 +4,7 @@ const logger = require("../utils/logger");
 
 exports.createDonation = async (req, res) => {
   try {
-    const donation = await donationService.createDirectDonation({ ...req.body, userId: req.userId });
+    const donation = await donationService.createDirectDonation({ ...req.body, userId: req.userId || req.body.userId || "" });
     logger.info("Donation created", { id: donation._id, amount: donation.amount });
     return res.sendSuccess(donation, "تم استلام تبرعك بنجاح، سيتواصل معك فريقنا قريباً");
   } catch (error) {

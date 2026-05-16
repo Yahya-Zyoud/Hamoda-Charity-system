@@ -8,6 +8,7 @@ import DonationSummary from "./components/DonationSummary";
 import DonationSubmitButton from "./components/DonationSubmitButton";
 import { validateDonationForm } from "./utils/validation";
 import { createDirectDonation } from "./services/donationService";
+import { useAppAuth } from "../../contexts/AppAuthContext";
 import "./styles/donations.css";
 import "./styles/responsive.css";
 
@@ -20,6 +21,7 @@ const INITIAL_DONOR = {
 };
 
 function DonationPage() {
+  const { user } = useAppAuth();
   const [donationType, setDonationType] = useState("");
   const [amount,       setAmount]       = useState(null);
   const [donorInfo,    setDonorInfo]    = useState(INITIAL_DONOR);
@@ -55,6 +57,7 @@ function DonationPage() {
         donorCity:     donorInfo.donorCity,
         note:          donorInfo.note,
         paymentMethod: "cash",
+        userId:        user?.id || "",
       });
       setSuccess(true);
       setDonationType("");

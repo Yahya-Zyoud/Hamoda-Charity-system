@@ -46,7 +46,7 @@ export default function TeamWork() {
 
       <main className="flex-1">
         <Hero />
-        <Stats members={team} />
+        <Stats team={team} />
 
         <div className="max-w-6xl mx-auto px-5 py-8 space-y-6">
           <SearchBar search={search} setSearch={setSearch} />

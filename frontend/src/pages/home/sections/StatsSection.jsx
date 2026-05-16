@@ -4,38 +4,60 @@ import { Users, Briefcase, Heart, Activity } from "lucide-react";
 import { StatCard } from "../../../components/cards";
 import { getStats } from "../../../services/api";
 
-const STAT_SHAPE = [
-  { key: "activeVolunteers",    name: "متطوع نشط",          icon: Activity, color: "text-amber-600",   bg: "bg-amber-50"   },
-  { key: "totalDonors",         name: "متبرع كريم",          icon: Heart,    color: "text-rose-600",    bg: "bg-rose-50"    },
-  { key: "completedProjects",   name: "مشروع منجز",          icon: Briefcase,color: "text-emerald-600", bg: "bg-emerald-50" },
-  { key: "totalBeneficiaries",  name: "إجمالي المستفيدين",   icon: Users,    color: "text-blue-600",    bg: "bg-blue-50"    },
+const STATS_CONFIG = [
+  { key: "beneficiaries", icon: Users,     label: "إجمالي المستفيدين", suffix: "+", color: "text-blue-600",    bg: "bg-blue-50"    },
+  { key: "projects",      icon: Briefcase, label: "مشروع منجز",        suffix: "+", color: "text-emerald-600", bg: "bg-emerald-50" },
+  { key: "donors",        icon: Heart,     label: "متبرع كريم",         suffix: "+", color: "text-rose-600",    bg: "bg-rose-50"    },
+  { key: "team",          icon: Activity,  label: "متطوع نشط",          suffix: "+", color: "text-amber-600",   bg: "bg-amber-50"   },
 ];
 
+function SkeletonCard() {
+  return (
+    <div className="flex flex-col items-center justify-center text-center relative z-10 animate-pulse">
+      <div className="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] bg-slate-200 mb-6" />
+      <div className="h-10 w-24 bg-slate-200 rounded-lg mb-3" />
+      <div className="h-4 w-20 bg-slate-100 rounded-lg" />
+    </div>
+  );
+}
+
 export default function StatsSection() {
-  const [stats, setStats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [data,   setData]   = useState(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    getStats()
-      .then((data) => {
-        if (!data || typeof data !== "object" || Array.isArray(data)) return;
-        setStats(
-          STAT_SHAPE.map((shape, i) => ({
-            id:     shape.key,
-            name:   shape.name,
-            value:  data[shape.key] ?? 0,
-            suffix: "+",
-            icon:   shape.icon,
-            color:  shape.color,
-            bg:     shape.bg,
-          }))
-        );
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    let cancelled = false;
+
+    const load = (attempt = 1) => {
+      getStats()
+        .then((res) => {
+          if (cancelled) return;
+          if (res && typeof res === "object" && !Array.isArray(res)) {
+            setData(res);
+          } else {
+            setFailed(true);
+          }
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (attempt < 4) {
+            setTimeout(() => load(attempt + 1), attempt * 3000);
+          } else {
+            setFailed(true);
+          }
+        });
+    };
+
+    load();
+    return () => { cancelled = true; };
   }, []);
 
-  if (loading || stats.length === 0) return null;
+  const stats = STATS_CONFIG.map((cfg) => ({
+    ...cfg,
+    value: data?.[cfg.key] ?? 0,
+  }));
+
+  if (failed && stats.every((s) => s.value === 0)) return null;
 
   return (
     <section
@@ -54,9 +76,12 @@ export default function StatsSection() {
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-blue-500/5 via-emerald-500/5 to-rose-500/5 blur-3xl pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />
 
-          {stats.map((stat, index) => (
-            <StatCard key={stat.id} stat={stat} index={index} />
-          ))}
+          {data === null
+            ? STATS_CONFIG.map((_, i) => <SkeletonCard key={i} />)
+            : stats.map((stat, index) => (
+                <StatCard key={stat.key} stat={stat} index={index} />
+              ))
+          }
         </motion.div>
       </div>
     </section>

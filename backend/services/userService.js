@@ -1,77 +1,102 @@
-const mongoose = require("mongoose");
-const User = require("../models/User");
+const User        = require("../models/User");
 const HelpRequest = require("../models/HelpRequest");
-const Donation = require("../models/Donation");
+const Donation    = require("../models/Donation");
 const { getFileUrl, deleteFile } = require("../utils/fileHandler");
 
-const isDBReady = () => mongoose.connection.readyState === 1;
+/** Returns all users sorted newest-first for the admin users table. */
+exports.getUsers = async () =>
+  User.find().sort({ createdAt: -1 });
 
-exports.getUsers = async () => {
-  if (!isDBReady()) return [];
-  return User.find().sort({ createdAt: -1 });
-};
+exports.updateUserRole   = async (id, role)   => User.findByIdAndUpdate(id, { role },   { new: true });
+exports.updateUserStatus = async (id, status) => User.findByIdAndUpdate(id, { status }, { new: true });
 
-exports.updateUserRole = async (id, role) => {
-  if (!isDBReady()) throw new Error("Database not connected");
-  return User.findByIdAndUpdate(id, { role }, { new: true });
-};
-
-exports.updateUserStatus = async (id, status) => {
-  if (!isDBReady()) throw new Error("Database not connected");
-  return User.findByIdAndUpdate(id, { status }, { new: true });
-};
-
+/**
+ * Returns the user's MongoDB profile, creating a bare record on first access.
+ * Clerk is the source of truth for identity — this document holds only the
+ * extra profile fields (phone, city, bio, avatar) that Clerk doesn't store.
+ */
 exports.getProfile = async (clerkId) => {
-  if (!isDBReady()) throw new Error("Database not connected");
   let user = await User.findOne({ clerkId });
   if (!user) user = await User.create({ clerkId });
   return user;
 };
 
-exports.updateProfile = async (clerkId, data) => {
-  if (!isDBReady()) throw new Error("Database not connected");
-  return User.findOneAndUpdate(
+/**
+ * Updates profile fields with upsert: true so a profile document is created
+ * if the user somehow reaches this endpoint before getProfile has run.
+ */
+exports.updateProfile = async (clerkId, data) =>
+  User.findOneAndUpdate(
     { clerkId },
     { $set: data },
-    { new: true, upsert: true, runValidators: true }
+    { new: true, upsert: true }
   );
-};
 
+/**
+ * Returns the user's help requests, donations, and summary statistics.
+ *
+ * Donation matching uses a phone-number fallback because users can donate
+ * anonymously (userId: "") before signing in. Once they save their phone in
+ * their profile, those earlier donations are linked retroactively.
+ */
 exports.getUserActivity = async (clerkId) => {
-  if (!isDBReady()) {
-    return { helpRequests: [], donations: [], stats: { totalRequests: 0, totalDonations: 0, totalProjects: 0, donationAmount: 0 } };
-  }
+  const userProfile = await User.findOne({ clerkId }).select("phone").lean();
+  const userPhone   = userProfile?.phone?.trim() || null;
 
-  const [helpRequests, donations] = await Promise.all([
+  // When a phone is available, match donations by userId OR donorPhone.
+  // Without a phone we can only match by userId (logged-in donations only).
+  const donationFilter = userPhone
+    ? { $or: [{ userId: clerkId }, { donorPhone: userPhone }] }
+    : { userId: clerkId };
+
+  const donationStatsFilter = userPhone
+    ? { $or: [{ userId: clerkId }, { donorPhone: userPhone }], status: { $ne: "failed" } }
+    : { userId: clerkId, status: { $ne: "failed" } };
+
+  const [
+    helpRequests,
+    donations,
+    totalRequests,
+    donationAgg,
+    uniqueProjectIds,
+  ] = await Promise.all([
     HelpRequest.find({ clerkId }).sort({ createdAt: -1 }).limit(10).lean(),
-    Donation.find({ userId: clerkId }).populate("projectId", "title").sort({ createdAt: -1 }).limit(10).lean(),
+    Donation.find(donationFilter).populate("projectId", "title").sort({ createdAt: -1 }).limit(10).lean(),
+    HelpRequest.countDocuments({ clerkId }),
+    Donation.aggregate([
+      { $match: donationStatsFilter },
+      { $group: { _id: null, count: { $sum: 1 }, total: { $sum: "$amount" } } },
+    ]),
+    // distinct donationType — used as "types donated" count on the profile card
+    Donation.distinct("donationType", donationFilter),
   ]);
 
-  const uniqueProjects = new Set(
-    donations.filter((d) => d.projectId).map((d) => String(d.projectId._id || d.projectId))
-  ).size;
+  const agg = donationAgg[0] || { count: 0, total: 0 };
 
   return {
     helpRequests,
     donations,
     stats: {
-      totalRequests:  helpRequests.length,
-      totalDonations: donations.length,
-      totalProjects:  uniqueProjects,
-      donationAmount: donations.reduce((s, d) => s + (d.amount || 0), 0),
+      totalRequests:  totalRequests,
+      totalDonations: agg.count,
+      totalProjects:  uniqueProjectIds.length,
+      donationAmount: agg.total,
     },
   };
 };
 
+/**
+ * Saves an uploaded image to the user's profile.
+ * Deletes the previous file from disk before storing the new URL
+ * so orphaned uploads don't accumulate in /uploads.
+ */
 exports.uploadImage = async (clerkId, file, type = "avatar") => {
   if (!file) throw Object.assign(new Error("لم يتم اختيار ملف"), { status: 400 });
-  const url = getFileUrl(file.filename);
-  if (isDBReady()) {
-    const existing = await User.findOne({ clerkId });
-    if (existing && existing[type]) {
-      deleteFile(existing[type].split("/").pop());
-    }
-    await User.findOneAndUpdate({ clerkId }, { $set: { [type]: url } }, { upsert: true });
+  const url      = getFileUrl(file.filename);
+  const existing = await User.findOne({ clerkId });
+  if (existing && existing[type]) {
+    deleteFile(existing[type].split("/").pop());
   }
+  await User.findOneAndUpdate({ clerkId }, { $set: { [type]: url } }, { upsert: true });
   return { url };
 };

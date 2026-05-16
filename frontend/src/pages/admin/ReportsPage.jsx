@@ -46,6 +46,7 @@ function buildProjectPerf(projects) {
 
 function ReportsPage() {
   const [stats,    setStats]    = useState(null);
+  const [monthly,  setMonthly]  = useState([]);
   const [reqDist,  setReqDist]  = useState([]);
   const [projPerf, setProjPerf] = useState([]);
   const [loading,  setLoading]  = useState(true);
@@ -54,6 +55,7 @@ function ReportsPage() {
     Promise.all([getAdminStats(), getHelpRequests(), getProjects()])
       .then(([adminStats, requests, projects]) => {
         setStats(adminStats);
+        setMonthly(adminStats.monthlyDonations || []);
         setReqDist(buildRequestDist(requests));
         setProjPerf(buildProjectPerf(projects));
       })
@@ -61,6 +63,7 @@ function ReportsPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const maxVal = monthly.length > 0 ? Math.max(...monthly.map((m) => m.v)) : 1;
   const totalDonationsDisplay = stats ? `$${(stats.totalDonations || 0).toLocaleString()}` : "—";
 
   return (
@@ -104,9 +107,30 @@ function ReportsPage() {
           <Card style={{ marginBottom: 20 }}>
             <div style={{ padding: "16px 20px 10px", borderBottom: "1px solid #F1F5F9" }}>
               <span style={{ fontWeight: 700, fontSize: 15 }}>التبرعات الشهرية</span>
+              <span style={{ fontSize: 13, color: "#94A3B8" }}>{new Date().getFullYear()}</span>
             </div>
-            <div style={{ textAlign: "center", padding: "40px 20px", color: "#94A3B8" }}>
-              <p style={{ fontSize: 13 }}>سيتم عرض الرسم البياني بعد إضافة نقطة البيانات الشهرية من الخادم</p>
+            <div style={{ padding: "16px 20px 20px" }}>
+              {monthly.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "40px 0", color: "#94A3B8", fontSize: 13 }}>لا توجد تبرعات مسجّلة هذا العام بعد</div>
+              ) : (
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 200 }}>
+                {monthly.map((m) => {
+                  const h = Math.round((m.v / maxVal) * 170);
+                  return (
+                    <div key={m.m} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontSize: 11, color: "#94A3B8", marginBottom: 2 }}>${(m.v / 1000).toFixed(1)}k</span>
+                      <div
+                        title={`$${m.v.toLocaleString()}`}
+                        style={{ width: "100%", height: h, background: "linear-gradient(to top, #2563eb, #60a5fa)", borderRadius: "5px 5px 0 0", cursor: "pointer", transition: "opacity 0.15s, transform 0.15s" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.opacity = ".8"; e.currentTarget.style.transform = "scaleY(1.02)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scaleY(1)"; }}
+                      />
+                      <span style={{ fontSize: 11, color: "#64748B" }}>{m.m.slice(0, 3)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              )}
             </div>
           </Card>
 
