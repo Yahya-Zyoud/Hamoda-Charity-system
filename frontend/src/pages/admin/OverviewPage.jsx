@@ -6,15 +6,15 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell, Legend,
+} from "recharts";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import StatCard from "../../components/admin/StatCard";
 import Card from "../../components/admin/Card";
 import Badge from "../../components/admin/Badge";
 import { getAdminStats } from "../../services/api";
-import {
-  ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis,
-  Tooltip, Bar, Cell, PieChart, Pie, Legend,
-} from "recharts";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -39,7 +39,6 @@ const PieTooltip = ({ active, payload }) => {
     </div>
   );
 };
-
 
 function OverviewPage() {
   const navigate = useNavigate();
@@ -186,7 +185,9 @@ function OverviewPage() {
       <div className="section-label" style={{ marginBottom: 14 }}>
         <BarChart3 size={13} /> تحليل الأثر
       </div>
-      <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" style={{ marginBottom: 24 }}>
+      <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show"
+        style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 18, marginBottom: 24 }}
+      >
         <Card>
           <div className="card-header">
             <span style={{ fontWeight: 700, fontSize: 15 }}>التبرعات الشهرية</span>

@@ -50,29 +50,13 @@ const forbidden = (res) =>
 
 // ── Middleware exports ─────────────────────────────────────────────────────
 
-// Decode the `sub` claim from a JWT without verifying the signature.
-// Safe for dev-bypass only — never trust unverified JWTs in production.
-function _extractJwtSub(authHeader) {
-  try {
-    const token = (authHeader || "").slice(7); // strip "Bearer "
-    const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
-    return payload.sub || null;
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Sets req.userId if a valid Clerk JWT is present; always calls next().
  * Use on routes that accept both authenticated and anonymous users.
  */
 const optionalAuth = (req, res, next) => {
   if (!IS_CLERK_READY) {
-    if (req.headers["x-user-id"]) {
-      req.userId = req.headers["x-user-id"];
-    } else {
-      req.userId = _extractJwtSub(req.headers.authorization);
-    }
+    req.userId = req.headers["x-user-id"] || null;
     return next();
   }
   const { userId } = _getAuth(req);
@@ -85,13 +69,8 @@ const optionalAuth = (req, res, next) => {
  */
 const requireAuth = (req, res, next) => {
   if (!IS_CLERK_READY) {
-    if (req.headers["x-user-id"]) {
-      req.userId = req.headers["x-user-id"];
-      return next();
-    }
-    const sub = _extractJwtSub(req.headers.authorization);
-    if (!sub) return unauth(res);
-    req.userId = sub;
+    req.userId = req.headers["x-user-id"] || null;
+    if (!req.userId) return unauth(res);
     return next();
   }
   const { userId } = _getAuth(req);

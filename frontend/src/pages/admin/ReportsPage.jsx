@@ -103,9 +103,9 @@ function ReportsPage() {
             ))}
           </div>
 
-          {/* Monthly Chart — pending backend aggregation endpoint */}
+          {/* Monthly Chart */}
           <Card style={{ marginBottom: 20 }}>
-            <div style={{ padding: "16px 20px 10px", borderBottom: "1px solid #F1F5F9" }}>
+            <div style={{ padding: "16px 20px 10px", borderBottom: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontWeight: 700, fontSize: 15 }}>التبرعات الشهرية</span>
               <span style={{ fontSize: 13, color: "#94A3B8" }}>{new Date().getFullYear()}</span>
             </div>

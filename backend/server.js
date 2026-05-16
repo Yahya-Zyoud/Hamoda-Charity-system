@@ -32,6 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(config.UPLOAD_DIR));
 ensureUploadDir();
 
+// Mount Clerk JWT verification before routes (no-op when CLERK_SECRET_KEY is absent)
 const clerkMw = clerkSetup();
 if (clerkMw) app.use(clerkMw);
 
@@ -56,7 +57,12 @@ app.use(handleAllErrors);
 const PORT = config.PORT;
 const NODE_ENV = config.NODE_ENV;
 
+// Only bind an HTTP port when run directly (node server.js).
+// In Vercel serverless the module is imported — listen() must not be called.
 if (require.main === module) {
+  // Start HTTP server immediately so the frontend isn't blocked.
+  // MongoDB connection is attempted in parallel; API routes that need
+  // the DB will fail gracefully if it hasn't connected yet.
   const server = app.listen(PORT, () => {
     logger.info("Server running", {
       port: PORT,
@@ -90,6 +96,7 @@ if (require.main === module) {
   process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
   process.on("SIGINT",  () => gracefulShutdown("SIGINT"));
 } else {
+  // Serverless: kick off the DB connection but don't block module export.
   connectDB().catch((err) => {
     logger.error("MongoDB connection failed (serverless)", { error: err.message });
   });
