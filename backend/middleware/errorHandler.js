@@ -1,5 +1,13 @@
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 
+const handleValidationError = (error, req, res, next) => {
+  return res.status(HTTP_STATUS.BAD_REQUEST).json({
+    success: false,
+    message: MESSAGES.INVALID_INPUT,
+    error: error.message,
+  });
+};
+
 const handleFileUploadError = (error, req, res, next) => {
   return res.status(HTTP_STATUS.BAD_REQUEST).json({
     success: false,
@@ -39,5 +47,6 @@ const handleNotFound = (req, res) => {
 module.exports = {
   errorHandler: handleAllErrors,
   notFoundHandler: handleNotFound,
+  handleValidationError,
   handleFileUploadError,
 };

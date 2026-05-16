@@ -6,12 +6,15 @@ import Btn from "../../components/admin/Btn";
 import Modal from "../../components/admin/Modal";
 import Input from "../../components/admin/Input";
 import { Th, Td, TableRow } from "../../components/admin/TableParts";
+import Select from "../../components/admin/Select";
 import {
   getTeam,
   createTeamMember,
   updateTeamMember,
   deleteTeamMember,
 } from "../../services/api";
+
+const ROLES = ["إدارة", "موظف", "دكتور", "متطوع", "سيكيورتي"];
 
 const empty = { name: "", title: "", role: "", description: "", email: "", phone: "", order: 0 };
 
@@ -24,6 +27,7 @@ function UsersPage() {
   const [editing,  setEditing]  = useState(null);
   const [form,     setForm]     = useState(empty);
   const [saving,   setSaving]   = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     getTeam()
@@ -40,11 +44,12 @@ function UsersPage() {
     setForm({ name: m.name, title: m.title, role: m.role, description: m.description || "", email: m.email || "", phone: m.phone || "", order: m.order ?? 0 });
     setShowForm(true);
   };
-  const closeForm = () => { setShowForm(false); setEditing(null); setForm(empty); };
+  const closeForm = () => { setShowForm(false); setEditing(null); setForm(empty); setSaveError(""); };
 
   const save = async () => {
     if (!form.name.trim() || !form.title.trim() || !form.role.trim()) return;
     setSaving(true);
+    setSaveError("");
     try {
       const payload = { ...form, order: Number(form.order) || 0 };
       if (editing) {
@@ -55,8 +60,8 @@ function UsersPage() {
         setList((p) => [...p, created]);
       }
       closeForm();
-    } catch {
-      // leave list unchanged on error
+    } catch (err) {
+      setSaveError(err?.message || "حدث خطأ أثناء الحفظ، حاول مجدداً");
     } finally {
       setSaving(false);
     }
@@ -205,7 +210,10 @@ function UsersPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <div>
                 <label style={{ fontSize: 13, color: "#64748B", display: "block", marginBottom: 6, fontWeight: 600 }}>الدور *</label>
-                <Input placeholder="مثال: مدير، متطوع، محاسب" value={form.role} onChange={field("role")} />
+                <Select value={form.role} onChange={field("role")} style={{ width: "100%" }}>
+                  <option value="">-- اختر الدور --</option>
+                  {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                </Select>
               </div>
               <div>
                 <label style={{ fontSize: 13, color: "#64748B", display: "block", marginBottom: 6, fontWeight: 600 }}>الترتيب</label>
@@ -228,6 +236,12 @@ function UsersPage() {
                 <Input placeholder="+966 5x xxx xxxx" value={form.phone} onChange={field("phone")} />
               </div>
             </div>
+
+            {saveError && (
+              <div style={{ background: "#FFF1F2", color: "#BE123C", border: "1px solid #FECDD3", borderRadius: 8, padding: "10px 14px", fontSize: 13, fontWeight: 600 }}>
+                {saveError}
+              </div>
+            )}
 
             <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
               <Btn variant="primary" onClick={save} disabled={saving}>

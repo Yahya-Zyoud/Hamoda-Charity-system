@@ -38,6 +38,7 @@ const projectSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
       transform(doc, ret) {
+        if (ret.id == null) ret.id = ret._id;
         delete ret.__v;
         return ret;
       },

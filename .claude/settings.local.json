@@ -9,7 +9,11 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\user\\\\Desktop\\\\Hamoda-Charity-system\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(git checkout *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(node -e \"require\\('./backend/controllers/statController.js'\\)\")",
+      "Bash(node -e \"require\\('./backend/services/userService.js'\\)\")",
+      "Bash(git rm *)"
     ]
   }
 }

@@ -36,7 +36,7 @@ function App() {
         {/* User profile */}
         <Route path="/profile" element={<UserProfilePage />} />
 
-        {/* Admin dashboard */}
+        {/* Admin dashboard — only for users with role: "admin" in Clerk metadata */}
         <Route path="/admin/dashboard/*" element={
           <AdminRoute>
             <AdminDashboard />
