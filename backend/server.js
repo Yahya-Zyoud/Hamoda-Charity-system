@@ -44,7 +44,7 @@ const subscribeLimiter = rateLimit({
   message: { success: false, message: "Too many subscribe requests" },
 });
 app.use(`${config.API_PREFIX}/subscribe`, subscribeLimiter);
-
+  
 app.use(config.API_PREFIX, apiRoutes);
 
 app.get("/health", (req, res) => {
