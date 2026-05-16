@@ -3,6 +3,11 @@ const Notification = require("../models/Notification");
 const statsService = require("./statsService");
 const logger       = require("../utils/logger");
 
+/**
+ * Creates a donation record and fires a notification to the admin panel.
+ * The notification is intentionally fire-and-forget (.catch instead of await)
+ * so a notification failure never rolls back a successful donation.
+ */
 exports.createDirectDonation = async ({ donationType, amount, donorName, donorEmail, donorPhone, donorCity, paymentMethod, userId }) => {
   const donation = await Donation.create({
     donationType,
@@ -22,16 +27,23 @@ exports.createDirectDonation = async ({ donationType, amount, donorName, donorEm
     relatedId: donation._id,
   }).catch((err) => logger.warn("Failed to create donation notification", { error: err.message }));
 
+  // A new donation changes the donors count and totalAmount — bust the cache
   statsService.invalidateCache();
   return donation;
 };
 
+/** Returns the 50 most recent donations, newest first. */
 exports.getAllDonations = async () =>
   Donation.find().sort({ createdAt: -1 }).limit(50).populate("projectId", "title");
 
 exports.getDonationById = async (id) =>
   Donation.findById(id).populate("projectId", "title");
 
+/**
+ * Updates a donation's status.
+ * Throws a 400 error (not 500) for invalid status values so the controller
+ * can surface a descriptive message to the client instead of a generic error.
+ */
 exports.updateDonationStatus = async (id, status) => {
   const VALID = ["pending", "completed", "failed"];
   if (!status || !VALID.includes(status)) {
@@ -42,6 +54,11 @@ exports.updateDonationStatus = async (id, status) => {
   return Donation.findByIdAndUpdate(id, { status }, { new: true, runValidators: true });
 };
 
+/**
+ * Returns recent non-failed donations formatted for display widgets.
+ * Limit is capped at 50 regardless of the query param to prevent
+ * accidental full-collection scans from public-facing callers.
+ */
 exports.getRecentDonations = async (limit = 6) => {
   const safeLimit = Math.min(Number(limit) || 6, 50);
   const donations = await Donation.find({ status: { $ne: "failed" } })
@@ -59,6 +76,7 @@ exports.getRecentDonations = async (limit = 6) => {
   }));
 };
 
+/** Aggregates total amount and donor count, excluding failed donations. */
 exports.getDonationStats = async () => {
   const result = await Donation.aggregate([
     { $match: { status: { $ne: "failed" } } },

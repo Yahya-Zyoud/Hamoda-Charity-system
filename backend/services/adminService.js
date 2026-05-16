@@ -3,11 +3,13 @@ const Project     = require("../models/Project");
 const Donation    = require("../models/Donation");
 const User        = require("../models/User");
 
+// Index 0 is intentionally empty — $month returns 1-based integers (1 = January)
 const MONTH_AR = [
   "", "يناير","فبراير","مارس","أبريل","مايو","يونيو",
   "يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر",
 ];
 
+// Colors are consumed by the recharts PieChart in OverviewPage
 const TYPE_COLOR = {
   medical:   "#2563eb",
   education: "#0EA5E9",
@@ -26,6 +28,18 @@ const TYPE_AR = {
   other:     "أخرى",
 };
 
+/**
+ * Returns all data needed by the admin Overview page in a single round-trip.
+ * All nine queries run in parallel via Promise.all to minimise latency.
+ *
+ * monthlyDonations  — current-year donation totals grouped by month (bar chart)
+ * requestsByType    — help-request counts grouped by type (pie chart)
+ * recentRequests    — last 5 requests for the activity feed
+ * recentDonations   — last 5 donations for the activity feed
+ *
+ * "accepted" is normalised to "approved" in recentRequests because the
+ * frontend Badge component uses "approved" as its display value.
+ */
 exports.getAdminStats = async () => {
   const currentYear = new Date().getFullYear();
   const yearStart   = new Date(`${currentYear}-01-01`);
@@ -51,6 +65,7 @@ exports.getAdminStats = async () => {
     ]),
     HelpRequest.find().sort({ createdAt: -1 }).limit(5).lean(),
     Donation.find().sort({ createdAt: -1 }).limit(5).populate("projectId", "title").lean(),
+    // Group by calendar month for the current year only
     Donation.aggregate([
       { $match: { createdAt: { $gte: yearStart }, status: { $ne: "failed" } } },
       { $group: { _id: { $month: "$createdAt" }, total: { $sum: "$amount" } } },
