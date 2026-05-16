@@ -8,7 +8,7 @@ const logger       = require("../utils/logger");
  * The notification is intentionally fire-and-forget (.catch instead of await)
  * so a notification failure never rolls back a successful donation.
  */
-exports.createDirectDonation = async ({ donationType, amount, donorName, donorEmail, donorPhone, donorCity, paymentMethod, userId }) => {
+exports.createDirectDonation = async ({ donationType, amount, donorName, donorEmail, donorPhone, donorCity, paymentMethod, userId, projectId, note }) => {
   const donation = await Donation.create({
     donationType,
     amount:        Number(amount),
@@ -19,6 +19,8 @@ exports.createDirectDonation = async ({ donationType, amount, donorName, donorEm
     paymentMethod: paymentMethod || "cash",
     status:        "pending",
     userId:        userId || "",
+    ...(projectId && { projectId }),
+    note:          (note || "").trim(),
   });
 
   Notification.create({

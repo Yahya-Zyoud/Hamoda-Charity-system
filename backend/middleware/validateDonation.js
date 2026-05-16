@@ -1,4 +1,4 @@
-const VALID_TYPES    = ["صدقة", "زكاة", "إغاثة", "إسكان", "علاج", "تعليم"];
+const VALID_TYPES    = ["صدقة", "زكاة", "إغاثة", "إسكان", "علاج", "تعليم", "تبرع مشروع"];
 const VALID_PAYMENTS = ["stripe", "paypal", "cash"];
 
 module.exports = function validateDonation(req, res, next) {
@@ -30,8 +30,12 @@ module.exports = function validateDonation(req, res, next) {
     errors.donorEmail = "يرجى إدخال بريد إلكتروني صحيح";
   }
 
-  if (!donorPhone || String(donorPhone).trim() === "") {
-    errors.donorPhone = "رقم الهاتف مطلوب";
+  // phone is optional — only validate format when provided
+  if (donorPhone && String(donorPhone).trim() !== "") {
+    const phoneRegex = /^[\d\s\-\+\(\)]{7,}$/;
+    if (!phoneRegex.test(String(donorPhone).trim())) {
+      errors.donorPhone = "رقم الهاتف غير صحيح";
+    }
   }
 
   if (!paymentMethod) {

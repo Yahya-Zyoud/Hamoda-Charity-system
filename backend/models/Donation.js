@@ -6,7 +6,7 @@ const donationSchema = new mongoose.Schema(
     donationType: {
       type: String,
       required: [true, "نوع التبرع مطلوب"],
-      enum: ["صدقة", "زكاة", "إغاثة", "إسكان", "علاج", "تعليم"],
+      enum: ["صدقة", "زكاة", "إغاثة", "إسكان", "علاج", "تعليم", "تبرع مشروع"],
     },
     amount: {
       type: Number,
