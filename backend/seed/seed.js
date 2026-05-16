@@ -6,7 +6,6 @@ const fs = require("fs");
 const Partner  = require("../models/Partner");
 const Service  = require("../models/Service");
 const Stat     = require("../models/Stat");
-const Story    = require("../models/Story");
 const Project  = require("../models/Project");
 const Team     = require("../models/Team");
 
@@ -37,7 +36,6 @@ async function seed() {
   await seedCollection(Partner, "partners.json", "Partners");
   await seedCollection(Service, "services.json", "Services");
   await seedCollection(Stat,    "stats.json",    "Stats");
-  await seedCollection(Story,   "stories.json",  "Stories");
   await seedCollection(Project, "projects.json", "Projects");
   await seedCollection(Team,    "team.json",     "Team");
 

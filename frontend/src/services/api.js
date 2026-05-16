@@ -49,7 +49,6 @@ async function makeRequest(endpoint, options = {}) {
 // ── Public home-page endpoints ────────────────────────────────────────────
 export const getProjects  = ()      => makeRequest("/projects");
 export const getStats     = ()      => makeRequest("/stats");
-export const getStories   = ()      => makeRequest("/stories");
 export const getPartners  = ()      => makeRequest("/partners");
 export const getServices  = ()      => makeRequest("/services");
 export const subscribeEmail = (email) =>
