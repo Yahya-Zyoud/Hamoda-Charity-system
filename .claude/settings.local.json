@@ -5,7 +5,9 @@
       "Bash(git fetch *)",
       "Bash(node -e \"require\\('dotenv'\\).config\\({path:'backend/.env'}\\); const mongoose=require\\('mongoose'\\); mongoose.connect\\(process.env.MONGO_URI\\).then\\(\\(\\)=>{console.log\\('CONNECTED'\\);process.exit\\(0\\)}\\).catch\\(e=>{console.log\\('FAILED:',e.message\\);process.exit\\(1\\)}\\)\")",
       "Bash(node data/seed.js)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\user\\\\Desktop\\\\Hamoda-Charity-system\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

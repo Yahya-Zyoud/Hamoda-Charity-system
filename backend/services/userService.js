@@ -6,18 +6,6 @@ const { getFileUrl, deleteFile } = require("../utils/fileHandler");
 
 const isDBReady = () => mongoose.connection.readyState === 1;
 
-const DEFAULT_PROFILE = {
-  name:     "محمد أحمد الخالدي",
-  role:     "متبرع بلاتيني",
-  email:    "mohammed@example.com",
-  phone:    "0599 123 456",
-  city:     "رام الله",
-  bio:      "عضو متفاعل وداعم للمبادرات الخيرية منذ عام 2024.",
-  avatar:   "",
-  cover:    "",
-  joinDate: "يناير 2024",
-};
-
 exports.getUsers = async () => {
   if (!isDBReady()) return [];
   return User.find().sort({ createdAt: -1 });
@@ -34,14 +22,14 @@ exports.updateUserStatus = async (id, status) => {
 };
 
 exports.getProfile = async (clerkId) => {
-  if (!isDBReady()) return { ...DEFAULT_PROFILE, clerkId };
+  if (!isDBReady()) throw new Error("Database not connected");
   let user = await User.findOne({ clerkId });
-  if (!user) user = await User.create({ clerkId, ...DEFAULT_PROFILE });
+  if (!user) user = await User.create({ clerkId });
   return user;
 };
 
 exports.updateProfile = async (clerkId, data) => {
-  if (!isDBReady()) return { ...DEFAULT_PROFILE, ...data, clerkId };
+  if (!isDBReady()) throw new Error("Database not connected");
   return User.findOneAndUpdate(
     { clerkId },
     { $set: data },

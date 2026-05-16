@@ -6,13 +6,6 @@ import Badge from "../../components/admin/Badge";
 import Btn from "../../components/admin/Btn";
 import { getAdminStats, getHelpRequests, getProjects } from "../../services/api";
 
-const MONTHLY = [
-  { m: "يناير",   v: 8200  }, { m: "فبراير", v: 11500 }, { m: "مارس",   v: 9800  },
-  { m: "أبريل",  v: 13200 }, { m: "مايو",   v: 10500 }, { m: "يونيو",  v: 14800 },
-  { m: "يوليو",  v: 12000 }, { m: "أغسطس", v: 15600 }, { m: "سبتمبر", v: 11200 },
-  { m: "أكتوبر", v: 17700 },
-];
-
 const HELP_TYPE_AR = {
   medical: "طبي", education: "تعليم", food: "غذاء",
   housing: "إسكان", financial: "مالي", other: "أخرى",
@@ -68,7 +61,6 @@ function ReportsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const maxVal = Math.max(...MONTHLY.map((m) => m.v));
   const totalDonationsDisplay = stats ? `$${(stats.totalDonations || 0).toLocaleString()}` : "—";
 
   return (
@@ -108,30 +100,13 @@ function ReportsPage() {
             ))}
           </div>
 
-          {/* Monthly Chart */}
+          {/* Monthly Chart — pending backend aggregation endpoint */}
           <Card style={{ marginBottom: 20 }}>
-            <div style={{ padding: "16px 20px 10px", borderBottom: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ padding: "16px 20px 10px", borderBottom: "1px solid #F1F5F9" }}>
               <span style={{ fontWeight: 700, fontSize: 15 }}>التبرعات الشهرية</span>
-              <span style={{ fontSize: 13, color: "#94A3B8" }}>2024 — بيانات تقديرية</span>
             </div>
-            <div style={{ padding: "16px 20px 20px" }}>
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 200 }}>
-                {MONTHLY.map((m) => {
-                  const h = Math.round((m.v / maxVal) * 170);
-                  return (
-                    <div key={m.m} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                      <span style={{ fontSize: 11, color: "#94A3B8", marginBottom: 2 }}>${(m.v / 1000).toFixed(1)}k</span>
-                      <div
-                        title={`$${m.v.toLocaleString()}`}
-                        style={{ width: "100%", height: h, background: "linear-gradient(to top, #2563eb, #60a5fa)", borderRadius: "5px 5px 0 0", cursor: "pointer", transition: "opacity 0.15s, transform 0.15s" }}
-                        onMouseEnter={(e) => { e.currentTarget.style.opacity = ".8"; e.currentTarget.style.transform = "scaleY(1.02)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scaleY(1)"; }}
-                      />
-                      <span style={{ fontSize: 11, color: "#64748B" }}>{m.m.slice(0, 3)}</span>
-                    </div>
-                  );
-                })}
-              </div>
+            <div style={{ textAlign: "center", padding: "40px 20px", color: "#94A3B8" }}>
+              <p style={{ fontSize: 13 }}>سيتم عرض الرسم البياني بعد إضافة نقطة البيانات الشهرية من الخادم</p>
             </div>
           </Card>
 

@@ -6,29 +6,11 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell, Legend,
-} from "recharts";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import StatCard from "../../components/admin/StatCard";
 import Card from "../../components/admin/Card";
 import Badge from "../../components/admin/Badge";
 import { getAdminStats } from "../../services/api";
-
-// Chart data — requires DB aggregation; keep as static until backend analytics are built
-const MONTHLY = [
-  { m: "يناير",   v: 8200  }, { m: "فبراير", v: 11500 }, { m: "مارس",   v: 9800  },
-  { m: "أبريل",  v: 13200 }, { m: "مايو",   v: 10500 }, { m: "يونيو",  v: 14800 },
-  { m: "يوليو",  v: 12000 }, { m: "أغسطس", v: 15600 }, { m: "سبتمبر", v: 11200 },
-  { m: "أكتوبر", v: 17700 },
-];
-const REQUEST_DIST = [
-  { type: "طبي",   count: 14, color: "#2563eb" },
-  { type: "إسكان", count: 8,  color: "#16A34A" },
-  { type: "غذاء",  count: 7,  color: "#D97706" },
-  { type: "تعليم", count: 5,  color: "#0EA5E9" },
-];
 
 const ALERTS = [
   {
@@ -48,26 +30,6 @@ const ALERTS = [
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   show: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.38, ease: "easeOut" } }),
-};
-
-const bestMonth = MONTHLY.reduce((a, b) => (a.v > b.v ? a : b));
-
-const BarTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{ background: "#0f172a", color: "#fff", padding: "8px 14px", borderRadius: 8, fontSize: 13, fontWeight: 600, boxShadow: "0 4px 16px rgba(0,0,0,0.3)" }}>
-      <div style={{ color: "#9AA5B5", fontSize: 11, marginBottom: 2 }}>{label}</div>
-      <div>${payload[0].value.toLocaleString()}</div>
-    </div>
-  );
-};
-const PieTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{ background: "#0f172a", color: "#fff", padding: "7px 13px", borderRadius: 8, fontSize: 13, fontWeight: 600 }}>
-      {payload[0].name}: {payload[0].value} طلب
-    </div>
-  );
 };
 
 function OverviewPage() {
@@ -192,53 +154,12 @@ function OverviewPage() {
       <div className="section-label" style={{ marginBottom: 14 }}>
         <BarChart3 size={13} /> تحليل الأثر
       </div>
-      <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show"
-        style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 18, marginBottom: 24 }}
-      >
+      <motion.div custom={8} variants={fadeUp} initial="hidden" animate="show" style={{ marginBottom: 24 }}>
         <Card>
-          <div className="card-header">
-            <span style={{ fontWeight: 700, fontSize: 15 }}>التبرعات الشهرية</span>
-            <span className="card-header-badge">2024</span>
-          </div>
-          <div className="chart-insight">
-            <TrendingUp size={13} style={{ color: "#16A34A", flexShrink: 0 }} />
-            أعلى شهر: <strong style={{ color: "#1A2535" }}>{bestMonth.m}</strong> — ${bestMonth.v.toLocaleString()} · الاتجاه العام صاعد
-          </div>
-          <div style={{ padding: "4px 12px 16px" }}>
-            <ResponsiveContainer width="100%" height={175}>
-              <BarChart data={MONTHLY} barSize={17} margin={{ top: 0, right: 8, left: -12, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#EDE9E3" vertical={false} />
-                <XAxis dataKey="m" tick={{ fontSize: 10, fill: "#9AA5B5", fontFamily: "Tajawal" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#9AA5B5" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-                <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(37,99,235,0.06)", radius: 4 }} />
-                <Bar dataKey="v" radius={[6, 6, 0, 0]}>
-                  {MONTHLY.map((entry, i) => (
-                    <Cell key={i} fill={entry.m === bestMonth.m ? "#16A34A" : i === MONTHLY.length - 1 ? "#2563eb" : "#bfdbfe"} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="card-header">
-            <span style={{ fontWeight: 700, fontSize: 15 }}>توزيع الطلبات</span>
-          </div>
-          <div className="chart-insight">
-            <AlertCircle size={13} style={{ color: "#D97706", flexShrink: 0 }} />
-            الطلبات الطبية الأعلى — ركّز عليها أولاً
-          </div>
-          <div style={{ padding: "2px 8px 12px" }}>
-            <ResponsiveContainer width="100%" height={175}>
-              <PieChart>
-                <Pie data={REQUEST_DIST} dataKey="count" nameKey="type" cx="50%" cy="44%" innerRadius={44} outerRadius={66} paddingAngle={3}>
-                  {REQUEST_DIST.map((item, i) => <Cell key={i} fill={item.color} />)}
-                </Pie>
-                <Tooltip content={<PieTooltip />} />
-                <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ fontSize: 11, color: "#5C6B7F", fontFamily: "Tajawal" }}>{v}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "#94A3B8" }}>
+            <BarChart3 size={32} style={{ margin: "0 auto 12px", opacity: 0.4 }} />
+            <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>الرسوم البيانية قيد التطوير</p>
+            <p style={{ fontSize: 13 }}>سيتم عرض بيانات التبرعات الشهرية وتوزيع الطلبات بعد إضافة نقاط البيانات من الخادم</p>
           </div>
         </Card>
       </motion.div>

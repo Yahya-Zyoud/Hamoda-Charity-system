@@ -25,7 +25,7 @@ const rules = {
   PHONE_REGEX: /^[\d\s\-\+\(\)]{7,}$/,
   MIN_NAME_LENGTH: 2,
   MAX_NAME_LENGTH: 100,
-  MIN_BIO_LENGTH: 10,
+  MIN_BIO_LENGTH: 0,
   MAX_BIO_LENGTH: 500,
 };
 

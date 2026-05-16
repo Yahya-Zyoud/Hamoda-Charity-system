@@ -1,12 +1,16 @@
 import { motion } from "framer-motion";
 
-const STATS = [
-  { value: "48",   label: "Team Members"   },
-  { value: "12+",  label: "Specializations" },
-  { value: "50K+", label: "Lives Impacted"  },
-];
+export default function Stats({ members = [] }) {
+  const totalMembers  = members.length;
+  const uniqueRoles   = new Set(members.map((m) => m.role).filter(Boolean)).size;
+  const activeMembers = members.filter((m) => m.active !== false).length;
 
-export default function Stats() {
+  const stats = [
+    { value: totalMembers  || "—", label: "أعضاء الفريق"    },
+    { value: uniqueRoles   || "—", label: "التخصصات"        },
+    { value: activeMembers || "—", label: "الأعضاء النشطون" },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -19,12 +23,12 @@ export default function Stats() {
         borderBottom: "1px solid rgba(24,86,255,0.12)",
       }}
     >
-      {STATS.map((s, i) => (
+      {stats.map((s, i) => (
         <div
           key={i}
           className="px-10 py-5 text-center"
           style={{
-            borderRight: i < STATS.length - 1 ? "1px solid rgba(24,86,255,0.1)" : "none",
+            borderRight: i < stats.length - 1 ? "1px solid rgba(24,86,255,0.1)" : "none",
           }}
         >
           <div className="text-3xl font-extrabold" style={{ color: "#1856FF" }}>

@@ -14,7 +14,7 @@ const projectSchema = new mongoose.Schema(
     details: { type: String },
     category: {
       type: String,
-      enum: ["صحة", "تعليم", "إغاثة", "بنية تحتية", "دعم نفسي", "أخرى"],
+      enum: ["صحة", "تعليم", "إغاثة", "بنية تحتية", "دعم نفسي", "غذاء", "مياه", "رعاية", "أضاحي", "إسكان", "أخرى"],
       default: "أخرى",
     },
     status: {

@@ -4,41 +4,38 @@ import { Users, Briefcase, Heart, Activity } from "lucide-react";
 import { StatCard } from "../../../components/cards";
 import { getStats } from "../../../services/api";
 
-const ICON_MAP = { Users, Briefcase, Heart, Activity };
-const COLOR_MAP = [
-  { color: "text-blue-600",    bg: "bg-blue-50" },
-  { color: "text-emerald-600", bg: "bg-emerald-50" },
-  { color: "text-rose-600",    bg: "bg-rose-50" },
-  { color: "text-amber-600",   bg: "bg-amber-50" },
-];
-
-const FALLBACK = [
-  { id: 1, name: "إجمالي المستفيدين", value: 50430, suffix: "+", icon: Users,    ...COLOR_MAP[0] },
-  { id: 2, name: "مشروع منجز",        value: 1250,  suffix: "+", icon: Briefcase,...COLOR_MAP[1] },
-  { id: 3, name: "متبرع كريم",         value: 8300,  suffix: "+", icon: Heart,    ...COLOR_MAP[2] },
-  { id: 4, name: "متطوع نشط",          value: 340,   suffix: "+", icon: Activity, ...COLOR_MAP[3] },
+const STAT_SHAPE = [
+  { key: "activeVolunteers",    name: "متطوع نشط",          icon: Activity, color: "text-amber-600",   bg: "bg-amber-50"   },
+  { key: "totalDonors",         name: "متبرع كريم",          icon: Heart,    color: "text-rose-600",    bg: "bg-rose-50"    },
+  { key: "completedProjects",   name: "مشروع منجز",          icon: Briefcase,color: "text-emerald-600", bg: "bg-emerald-50" },
+  { key: "totalBeneficiaries",  name: "إجمالي المستفيدين",   icon: Users,    color: "text-blue-600",    bg: "bg-blue-50"    },
 ];
 
 export default function StatsSection() {
-  const [stats, setStats] = useState(FALLBACK);
+  const [stats, setStats] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getStats()
       .then((data) => {
-        if (!Array.isArray(data) || data.length === 0) return;
+        if (!data || typeof data !== "object" || Array.isArray(data)) return;
         setStats(
-          data.map((s, i) => ({
-            id:     s._id || i,
-            name:   s.label,
-            value:  s.value,
-            suffix: s.suffix || "+",
-            icon:   ICON_MAP[s.icon] || Activity,
-            ...(COLOR_MAP[i % COLOR_MAP.length]),
+          STAT_SHAPE.map((shape, i) => ({
+            id:     shape.key,
+            name:   shape.name,
+            value:  data[shape.key] ?? 0,
+            suffix: "+",
+            icon:   shape.icon,
+            color:  shape.color,
+            bg:     shape.bg,
           }))
         );
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading || stats.length === 0) return null;
 
   return (
     <section
@@ -58,7 +55,7 @@ export default function StatsSection() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-blue-500/5 via-emerald-500/5 to-rose-500/5 blur-3xl pointer-events-none transition-opacity duration-700 opacity-50 group-hover:opacity-100" />
 
           {stats.map((stat, index) => (
-            <StatCard key={index} stat={stat} index={index} />
+            <StatCard key={stat.id} stat={stat} index={index} />
           ))}
         </motion.div>
       </div>

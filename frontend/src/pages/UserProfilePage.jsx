@@ -52,6 +52,13 @@ export default function UserProfilePage() {
   const [saveMsg, setSaveMsg]   = useState("");
   const [activeTab, setActiveTab] = useState("requests");
 
+  const buildForm = (prof) => ({
+    name:  prof?.name  || user?.fullName || "",
+    phone: prof?.phone || "",
+    city:  prof?.city  || "",
+    bio:   prof?.bio   || "",
+  });
+
   useEffect(() => {
     if (!isLoaded) return;
     if (!user) { setLoading(false); return; }
@@ -63,12 +70,7 @@ export default function UserProfilePage() {
       .then(([prof, act]) => {
         setProfile(prof);
         setActivity(act);
-        setForm({
-          name:  prof.name  || "",
-          phone: prof.phone || "",
-          city:  prof.city  || "",
-          bio:   prof.bio   || "",
-        });
+        setForm(buildForm(prof));
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -78,17 +80,28 @@ export default function UserProfilePage() {
     if (!user) return;
     setSaving(true);
     try {
-      const updated = await updateUserProfile(form);
+      const payload = {
+        ...form,
+        email: user.primaryEmailAddress?.emailAddress || form.email || "",
+      };
+      const updated = await updateUserProfile(payload);
       setProfile(updated);
+      setForm(buildForm(updated));
       setEditing(false);
       setSaveMsg("تم حفظ التغييرات بنجاح");
       setTimeout(() => setSaveMsg(""), 3000);
-    } catch {
-      setSaveMsg("تعذر الحفظ، حاول مجدداً");
-      setTimeout(() => setSaveMsg(""), 3000);
+    } catch (err) {
+      const msg = err?.message || "";
+      setSaveMsg(msg || "تعذر الحفظ، حاول مجدداً");
+      setTimeout(() => setSaveMsg(""), 4000);
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCancel = () => {
+    setForm(buildForm(profile));
+    setEditing(false);
   };
 
   if (!isLoaded || loading) {
@@ -202,7 +215,7 @@ export default function UserProfilePage() {
                 <button onClick={handleSave} disabled={saving} style={{ display: "flex", alignItems: "center", gap: 6, background: "#0E7490", color: "#fff", border: "none", borderRadius: 10, padding: "8px 20px", cursor: "pointer", fontWeight: 600, fontSize: 13, opacity: saving ? 0.7 : 1 }}>
                   {saving ? <Loader2 size={14} className="spin" /> : <Save size={14} />} حفظ
                 </button>
-                <button onClick={() => setEditing(false)} style={{ display: "flex", alignItems: "center", gap: 6, background: "#F1F5F9", color: "#475569", border: "none", borderRadius: 10, padding: "8px 20px", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
+                <button onClick={handleCancel} style={{ display: "flex", alignItems: "center", gap: 6, background: "#F1F5F9", color: "#475569", border: "none", borderRadius: 10, padding: "8px 20px", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
                   <X size={14} /> إلغاء
                 </button>
               </div>
