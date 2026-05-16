@@ -12,8 +12,8 @@ exports.getProjectById = async (id) =>
 exports.getProjectStats = async () => {
   const [total, active, completed] = await Promise.all([
     Project.countDocuments(),
-    Project.countDocuments({ status: "active" }),
-    Project.countDocuments({ status: "completed" }),
+    Project.countDocuments({ status: "نشط" }),
+    Project.countDocuments({ status: "مكتمل" }),
   ]);
   return { total, active, completed };
 };
