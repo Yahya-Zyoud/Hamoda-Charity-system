@@ -1,5 +1,11 @@
 const Team = require("../models/Team");
 
+const ALLOWED_FIELDS = ["name", "title", "role", "description", "email", "phone", "order", "image", "initials"];
+
+function pick(obj, keys) {
+  return keys.reduce((acc, k) => { if (k in obj) acc[k] = obj[k]; return acc; }, {});
+}
+
 exports.getTeam = async () =>
   Team.find().sort({ order: 1, createdAt: 1 });
 
@@ -7,10 +13,10 @@ exports.getTeamMember = async (id) =>
   Team.findById(id);
 
 exports.createTeamMember = async (data) =>
-  Team.create(data);
+  Team.create(pick(data, ALLOWED_FIELDS));
 
 exports.updateTeamMember = async (id, data) =>
-  Team.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+  Team.findByIdAndUpdate(id, pick(data, ALLOWED_FIELDS), { new: true, runValidators: true });
 
 exports.deleteTeamMember = async (id) =>
   Team.findByIdAndDelete(id);

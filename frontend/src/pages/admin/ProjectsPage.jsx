@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Pencil, Check, Trash2, Loader2 } from "lucide-react";
+import { useToast, ToastContainer } from "../../components/Toast";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
 import Btn from "../../components/admin/Btn";
@@ -32,7 +33,7 @@ const uiToDb = (form) => ({
 });
 
 const CATEGORIES = ["صحة", "تعليم", "إغاثة", "بنية تحتية", "دعم نفسي", "غذاء", "مياه", "رعاية", "أضاحي", "إسكان", "أخرى"];
-const CAT_COLORS = { تعليم: "#2563eb", صحة: "#16A34A", إسكان: "#D97706", غذاء: "#8b5cf6", إغاثة: "#DC2626", غذاء: "#8b5cf6" };
+const CAT_COLORS = { تعليم: "#2563eb", صحة: "#16A34A", إسكان: "#D97706", غذاء: "#8b5cf6", إغاثة: "#DC2626", مياه: "#0EA5E9", رعاية: "#F59E0B", أضاحي: "#7C3AED" };
 const empty = { title: "", category: "", description: "", target: "", status: "active" };
 
 function ProjectsPage() {
@@ -43,6 +44,7 @@ function ProjectsPage() {
   const [editing,    setEditing]    = useState(null);
   const [form,       setForm]       = useState(empty);
   const [saveError,  setSaveError]  = useState("");
+  const { toasts, addToast, remove: removeToast } = useToast();
 
   useEffect(() => {
     getProjects()
@@ -72,14 +74,20 @@ function ProjectsPage() {
     try {
       await deleteProject(id);
       setList((p) => p.filter((pr) => pr.id !== id));
-    } catch {}
+      addToast("تم حذف المشروع بنجاح", "success");
+    } catch (err) {
+      addToast(err?.message || "تعذّر حذف المشروع", "error");
+    }
   };
 
   const complete = async (id) => {
     try {
       await updateProject(id, { status: "مكتمل" });
       setList((p) => p.map((pr) => (pr.id === id ? { ...pr, status: "completed" } : pr)));
-    } catch {}
+      addToast("تم تعيين المشروع كمكتمل", "success");
+    } catch (err) {
+      addToast(err?.message || "تعذّر تحديث المشروع", "error");
+    }
   };
 
   const openEdit = (pr) => {
@@ -92,6 +100,7 @@ function ProjectsPage() {
 
   return (
     <DashboardLayout title="إدارة المشاريع">
+      <ToastContainer toasts={toasts} remove={removeToast} />
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div />

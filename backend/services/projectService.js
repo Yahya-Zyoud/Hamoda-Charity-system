@@ -21,14 +21,23 @@ exports.getProjectStats = async () => {
 // Cache is invalidated on every write because project count and beneficiaries
 // both feed into the public home-page stats section.
 
+const ALLOWED_CREATE_FIELDS = ["title", "description", "details", "category", "status", "goal", "beneficiaries", "image", "location", "startDate", "endDate", "tags", "manager", "logoType"];
+const ALLOWED_UPDATE_FIELDS = [...ALLOWED_CREATE_FIELDS];
+
+function pick(obj, keys) {
+  return keys.reduce((acc, k) => { if (k in obj) acc[k] = obj[k]; return acc; }, {});
+}
+
 exports.createProject = async (data) => {
-  const project = await Project.create(data);
+  const safe = pick(data, ALLOWED_CREATE_FIELDS);
+  const project = await Project.create(safe);
   statsService.invalidateCache();
   return project;
 };
 
 exports.updateProject = async (id, data) => {
-  const project = await Project.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+  const safe = pick(data, ALLOWED_UPDATE_FIELDS);
+  const project = await Project.findByIdAndUpdate(id, safe, { new: true, runValidators: true });
   statsService.invalidateCache();
   return project;
 };

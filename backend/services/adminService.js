@@ -60,14 +60,14 @@ exports.getAdminStats = async () => {
     Project.countDocuments(),
     User.countDocuments(),
     Donation.aggregate([
-      { $match: { status: { $ne: "failed" } } },
+      { $match: { status: "accepted" } },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]),
     HelpRequest.find().sort({ createdAt: -1 }).limit(5).lean(),
-    Donation.find().sort({ createdAt: -1 }).limit(5).populate("projectId", "title").lean(),
-    // Group by calendar month for the current year only
+    Donation.find({ status: { $ne: "rejected" } }).sort({ createdAt: -1 }).limit(5).populate("projectId", "title").lean(),
+    // Group by calendar month for the current year — accepted donations only
     Donation.aggregate([
-      { $match: { createdAt: { $gte: yearStart }, status: { $ne: "failed" } } },
+      { $match: { createdAt: { $gte: yearStart }, status: "accepted" } },
       { $group: { _id: { $month: "$createdAt" }, total: { $sum: "$amount" } } },
       { $sort: { _id: 1 } },
     ]),

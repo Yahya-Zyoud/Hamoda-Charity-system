@@ -2,6 +2,18 @@ const donationService = require("../services/donationService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
+function resolveError(error) {
+  if (error.status) return { message: error.message, status: error.status };
+  if (error.name === "ValidationError") {
+    const msg = Object.values(error.errors).map((e) => e.message).join("، ");
+    return { message: msg || MESSAGES.INVALID_INPUT, status: HTTP_STATUS.BAD_REQUEST };
+  }
+  if (error.name === "CastError") {
+    return { message: "معرّف غير صالح", status: HTTP_STATUS.BAD_REQUEST };
+  }
+  return { message: MESSAGES.ERROR, status: HTTP_STATUS.INTERNAL_SERVER_ERROR };
+}
+
 exports.createDonation = async (req, res) => {
   try {
     const donation = await donationService.createDirectDonation({ ...req.body, userId: req.userId || req.body.userId || "" });
@@ -9,8 +21,8 @@ exports.createDonation = async (req, res) => {
     return res.sendSuccess(donation, "تم استلام تبرعك بنجاح، سيتواصل معك فريقنا قريباً");
   } catch (error) {
     logger.error("Error creating donation", { error: error.message });
-    return res.sendError(error.status === 400 ? error.message : MESSAGES.ERROR,
-      error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { message, status } = resolveError(error);
+    return res.sendError(message, status);
   }
 };
 

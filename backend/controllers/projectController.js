@@ -34,6 +34,17 @@ exports.getProjectStats = async (req, res) => {
   }
 };
 
+function resolveError(error) {
+  if (error.name === "ValidationError") {
+    const msg = Object.values(error.errors).map((e) => e.message).join("، ");
+    return { message: msg || MESSAGES.INVALID_INPUT, status: HTTP_STATUS.BAD_REQUEST };
+  }
+  if (error.name === "CastError") {
+    return { message: "معرّف غير صالح", status: HTTP_STATUS.BAD_REQUEST };
+  }
+  return { message: MESSAGES.ERROR, status: HTTP_STATUS.INTERNAL_SERVER_ERROR };
+}
+
 exports.createProject = async (req, res) => {
   try {
     const project = await projectService.createProject(req.body);
@@ -41,7 +52,8 @@ exports.createProject = async (req, res) => {
     return res.sendSuccess(project, MESSAGES.SUCCESS, HTTP_STATUS.CREATED);
   } catch (error) {
     logger.error("Error creating project", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { message, status } = resolveError(error);
+    return res.sendError(message, status);
   }
 };
 
@@ -53,7 +65,8 @@ exports.updateProject = async (req, res) => {
     return res.sendSuccess(project);
   } catch (error) {
     logger.error("Error updating project", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { message, status } = resolveError(error);
+    return res.sendError(message, status);
   }
 };
 
@@ -65,6 +78,7 @@ exports.deleteProject = async (req, res) => {
     return res.sendSuccess(null, MESSAGES.SUCCESS);
   } catch (error) {
     logger.error("Error deleting project", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { message, status } = resolveError(error);
+    return res.sendError(message, status);
   }
 };

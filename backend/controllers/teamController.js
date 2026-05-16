@@ -24,6 +24,17 @@ exports.getTeamMember = async (req, res) => {
   }
 };
 
+function resolveError(error) {
+  if (error.name === "ValidationError") {
+    const msg = Object.values(error.errors).map((e) => e.message).join("، ");
+    return { message: msg || MESSAGES.INVALID_INPUT, status: HTTP_STATUS.BAD_REQUEST };
+  }
+  if (error.name === "CastError") {
+    return { message: "معرّف غير صالح", status: HTTP_STATUS.BAD_REQUEST };
+  }
+  return { message: MESSAGES.ERROR, status: HTTP_STATUS.INTERNAL_SERVER_ERROR };
+}
+
 exports.createTeamMember = async (req, res) => {
   try {
     const member = await teamService.createTeamMember(req.body);
@@ -31,7 +42,8 @@ exports.createTeamMember = async (req, res) => {
     return res.sendSuccess(member, MESSAGES.SUCCESS, HTTP_STATUS.CREATED);
   } catch (error) {
     logger.error("Error creating team member", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { message, status } = resolveError(error);
+    return res.sendError(message, status);
   }
 };
 
@@ -43,7 +55,8 @@ exports.updateTeamMember = async (req, res) => {
     return res.sendSuccess(member);
   } catch (error) {
     logger.error("Error updating team member", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { message, status } = resolveError(error);
+    return res.sendError(message, status);
   }
 };
 
@@ -55,6 +68,7 @@ exports.deleteTeamMember = async (req, res) => {
     return res.sendSuccess(null, MESSAGES.SUCCESS);
   } catch (error) {
     logger.error("Error deleting team member", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const { message, status } = resolveError(error);
+    return res.sendError(message, status);
   }
 };

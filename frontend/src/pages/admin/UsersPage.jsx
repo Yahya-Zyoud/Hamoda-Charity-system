@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Loader2 } from "lucide-react";
+import { useToast, ToastContainer } from "../../components/Toast";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
 import Btn from "../../components/admin/Btn";
@@ -28,6 +29,7 @@ function UsersPage() {
   const [form,     setForm]     = useState(empty);
   const [saving,   setSaving]   = useState(false);
   const [saveError, setSaveError] = useState("");
+  const { toasts, addToast, remove: removeToast } = useToast();
 
   useEffect(() => {
     getTeam()
@@ -59,6 +61,7 @@ function UsersPage() {
         const created = await createTeamMember(payload);
         setList((p) => [...p, created]);
       }
+      addToast(editing ? "تم تحديث بيانات الموظف" : "تمت إضافة الموظف بنجاح", "success");
       closeForm();
     } catch (err) {
       setSaveError(err?.message || "حدث خطأ أثناء الحفظ، حاول مجدداً");
@@ -71,7 +74,10 @@ function UsersPage() {
     try {
       await deleteTeamMember(id);
       setList((p) => p.filter((m) => (m._id || m.id) !== id));
-    } catch {}
+      addToast("تم حذف الموظف بنجاح", "success");
+    } catch (err) {
+      addToast(err?.message || "تعذّر حذف الموظف", "error");
+    }
   };
 
   const filtered = list.filter((m) => {
@@ -88,6 +94,7 @@ function UsersPage() {
 
   return (
     <DashboardLayout title="إدارة الفريق">
+      <ToastContainer toasts={toasts} remove={removeToast} />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div />
         <Btn variant="primary" onClick={openAdd}>+ إضافة موظف</Btn>

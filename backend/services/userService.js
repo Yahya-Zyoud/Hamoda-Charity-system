@@ -50,8 +50,8 @@ exports.getUserActivity = async (clerkId) => {
     : { userId: clerkId };
 
   const donationStatsFilter = userPhone
-    ? { $or: [{ userId: clerkId }, { donorPhone: userPhone }], status: { $ne: "failed" } }
-    : { userId: clerkId, status: { $ne: "failed" } };
+    ? { $or: [{ userId: clerkId }, { donorPhone: userPhone }], status: { $ne: "rejected" } }
+    : { userId: clerkId, status: { $ne: "rejected" } };
 
   const [
     helpRequests,

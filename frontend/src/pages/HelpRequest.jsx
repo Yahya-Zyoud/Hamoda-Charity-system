@@ -18,8 +18,9 @@ function HelpRequest() {
     document: null,
   });
 
-  const [error, setError] = useState("");
+  const [error,     setError]     = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading,   setLoading]   = useState(false);
 
   function handleChange(e) {
     const { name, value, files } = e.target;
@@ -48,6 +49,7 @@ function HelpRequest() {
       return;
     }
 
+    setLoading(true);
     try {
       const payload = new FormData();
       payload.append("fullName", formData.fullName);
@@ -69,6 +71,8 @@ function HelpRequest() {
       });
     } catch (err) {
       setError(err.message || "تعذر الاتصال بالخادم. تأكد أن الباك إند يعمل.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -193,7 +197,9 @@ function HelpRequest() {
                 <small>يمكن رفع صورة أو ملف PDF.</small>
               </div>
 
-              <button type="submit" className="submit-btn">إرسال الطلب</button>
+              <button type="submit" className="submit-btn" disabled={loading}>
+                {loading ? "جاري الإرسال..." : "إرسال الطلب"}
+              </button>
             </form>
           </section>
         </section>
