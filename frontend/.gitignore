@@ -20,4 +20,9 @@ build/
 # editor files
 .vscode/
 .idea/
+<<<<<<< HEAD
 .DS_Store
+=======
+.DS_Store
+.claude
+>>>>>>> MuradBranch

@@ -10,12 +10,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
+=======
+    "@clerk/clerk-react": "^5.61.5",
+>>>>>>> MuradBranch
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-icons": "^5.6.0",
+<<<<<<< HEAD
     "react-router-dom": "^7.14.0"
+=======
+    "react-is": "^19.2.5",
+    "react-router-dom": "^7.14.0",
+    "recharts": "^3.8.1"
+>>>>>>> MuradBranch
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
@@ -31,6 +41,10 @@
     "globals": "^17.4.0",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2",
+<<<<<<< HEAD
     "vite": "^8.0.0"
+=======
+    "vite": "^8.0.13"
+>>>>>>> MuradBranch
   }
 }

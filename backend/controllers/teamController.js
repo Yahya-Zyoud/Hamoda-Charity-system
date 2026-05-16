@@ -1,49 +1,60 @@
-const Team = require("../models/Team");
-const asyncHandler = require("../utils/asyncHandler");
+const teamService = require("../services/teamService");
+const { HTTP_STATUS, MESSAGES } = require("../config/constants");
+const logger = require("../utils/logger");
 
-const createApiError = (status, message) => {
-  const error = new Error(message);
-  error.statusCode = status;
-  return error;
+exports.getTeam = async (req, res) => {
+  try {
+    const members = await teamService.getTeam();
+    logger.info("Team retrieved", { count: members.length });
+    return res.sendSuccess(members);
+  } catch (error) {
+    logger.error("Error fetching team", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
 };
 
-// GET /api/team
-const getTeam = asyncHandler(async (req, res) => {
-  const members = await Team.find({ active: true })
-    .select("-__v -createdAt -updatedAt")
-    .sort({ role: 1, order: 1 });
+exports.getTeamMember = async (req, res) => {
+  try {
+    const member = await teamService.getTeamMember(req.params.id);
+    if (!member) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    return res.sendSuccess(member);
+  } catch (error) {
+    logger.error("Error fetching team member", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
 
-  res.json(members);
-});
+exports.createTeamMember = async (req, res) => {
+  try {
+    const member = await teamService.createTeamMember(req.body);
+    logger.info("Team member created", { id: member._id });
+    return res.sendSuccess(member, MESSAGES.SUCCESS, HTTP_STATUS.CREATED);
+  } catch (error) {
+    logger.error("Error creating team member", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
 
-// GET /api/team/:id
-const getMember = asyncHandler(async (req, res) => {
-  const member = await Team.findById(req.params.id);
-  if (!member) throw createApiError(404, "العضو غير موجود");
-  res.json(member);
-});
+exports.updateTeamMember = async (req, res) => {
+  try {
+    const member = await teamService.updateTeamMember(req.params.id, req.body);
+    if (!member) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    logger.info("Team member updated", { id: req.params.id });
+    return res.sendSuccess(member);
+  } catch (error) {
+    logger.error("Error updating team member", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};
 
-// POST /api/team
-const addMember = asyncHandler(async (req, res) => {
-  const member = await Team.create(req.body);
-  res.status(201).json(member);
-});
-
-// PUT /api/team/:id
-const updateMember = asyncHandler(async (req, res) => {
-  const updated = await Team.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!updated) throw createApiError(404, "العضو غير موجود");
-  res.json(updated);
-});
-
-// DELETE /api/team/:id
-const deleteMember = asyncHandler(async (req, res) => {
-  const deleted = await Team.findByIdAndDelete(req.params.id);
-  if (!deleted) throw createApiError(404, "العضو غير موجود");
-  res.json({ message: "تم حذف العضو بنجاح" });
-});
-
-module.exports = { getTeam, getMember, addMember, updateMember, deleteMember };
+exports.deleteTeamMember = async (req, res) => {
+  try {
+    const member = await teamService.deleteTeamMember(req.params.id);
+    if (!member) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    logger.info("Team member deleted", { id: req.params.id });
+    return res.sendSuccess(null, MESSAGES.SUCCESS);
+  } catch (error) {
+    logger.error("Error deleting team member", { error: error.message });
+    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  }
+};

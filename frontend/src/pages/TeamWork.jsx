@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+<<<<<<< HEAD
 import Navbar    from "../Components/Navbar";
 import Footer    from "../Components/Footer";
 
@@ -53,6 +54,19 @@ const DEMO_TEAM = [
 
 export default function TeamWork() {
   const [team,    setTeam]    = useState(DEMO_TEAM);
+=======
+import Navbar    from "../components/Navbar";
+import Footer    from "../components/Footer";
+
+import Hero      from "../components/team/Hero";
+import Stats     from "../components/team/Stats";
+import SearchBar from "../components/team/SearchBar";
+import TeamGrid  from "../components/team/TeamGrid";
+import * as api  from "../services/api";
+
+export default function TeamWork() {
+  const [team,    setTeam]    = useState([]);
+>>>>>>> MuradBranch
   const [search,  setSearch]  = useState("");
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
@@ -62,20 +76,32 @@ export default function TeamWork() {
       setLoading(true);
       setError(null);
       const data = await api.getTeam();
+<<<<<<< HEAD
       setTeam(Array.isArray(data) && data.length ? data : DEMO_TEAM);
     } catch (err) {
       setTeam(DEMO_TEAM);
       setError(err.message || "لا يمكن جلب بيانات الفريق من الخادم، يتم عرض بيانات تجريبية.");
+=======
+      setTeam(Array.isArray(data) ? data : []);
+    } catch {
+      setError("تعذّر تحميل بيانات الفريق. تأكد من تشغيل الخادم.");
+      setTeam([]);
+>>>>>>> MuradBranch
     } finally {
       setLoading(false);
     }
   };
 
+<<<<<<< HEAD
   useEffect(() => {
     loadTeam();
   }, []);
 
   // ── تصفية البحث ─────────────────────────────────────────
+=======
+  useEffect(() => { loadTeam(); }, []);
+
+>>>>>>> MuradBranch
   const filtered = team.filter((m) => {
     const q = search.toLowerCase();
     return (
@@ -88,6 +114,7 @@ export default function TeamWork() {
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: "#f0f9ff" }}>
+<<<<<<< HEAD
 
       <Navbar />
 
@@ -95,10 +122,17 @@ export default function TeamWork() {
 
         <Hero />
 
+=======
+      <Navbar />
+
+      <main className="flex-1">
+        <Hero />
+>>>>>>> MuradBranch
         <Stats />
 
         <div className="max-w-6xl mx-auto px-5 py-8 space-y-6">
           <SearchBar search={search} setSearch={setSearch} />
+<<<<<<< HEAD
 
           {error && (
             <div
@@ -111,6 +145,10 @@ export default function TeamWork() {
         </div>
 
         {/* Loading */}
+=======
+        </div>
+
+>>>>>>> MuradBranch
         {loading && (
           <div className="flex justify-center items-center gap-3 py-24">
             <svg
@@ -124,6 +162,7 @@ export default function TeamWork() {
               <path className="opacity-75" fill="currentColor"
                 d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z" />
             </svg>
+<<<<<<< HEAD
             <span className="text-sm" style={{ color: "#64748b" }}>
               جاري تحميل بيانات الفريق...
             </span>
@@ -142,3 +181,44 @@ export default function TeamWork() {
     </div>
   );
 }
+=======
+            <span className="text-sm" style={{ color: "#64748b" }}>جاري تحميل بيانات الفريق...</span>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="flex flex-col items-center gap-4 py-24 text-center px-6">
+            <span style={{ fontSize: "3rem" }}>⚠️</span>
+            <p style={{ color: "#ef4444", fontWeight: 700, fontSize: "1.1rem" }}>{error}</p>
+            <button
+              onClick={loadTeam}
+              style={{
+                background: "#2563eb", color: "white", border: "none",
+                borderRadius: "0.5rem", padding: "0.6rem 1.5rem",
+                fontWeight: 700, cursor: "pointer",
+              }}
+            >
+              إعادة المحاولة
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && filtered.length === 0 && (
+          <div className="flex flex-col items-center gap-4 py-24 text-center px-6">
+            <span style={{ fontSize: "3rem" }}>👥</span>
+            <p style={{ color: "#64748b", fontWeight: 600, fontSize: "1.1rem" }}>
+              لا يوجد أعضاء في الفريق حالياً
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && filtered.length > 0 && (
+          <TeamGrid members={filtered} />
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+>>>>>>> MuradBranch
