@@ -1,22 +1,37 @@
+/* =============================================
+   اسم الملف: db.js
+   الوظيفة: إنشاء الاتصال بقاعدة بيانات MongoDB عبر Mongoose
+   ملاحظة: Mongoose يُخزّن الطلبات (buffer) حتى يتم الاتصال،
+           لذا يمكن تشغيل السيرفر قبل اكتمال الاتصال بقاعدة البيانات
+   ============================================= */
+
+// dns — مكتبة Node.js لتحليل أسماء النطاقات (DNS lookup)
 const dns = require("dns");
+
+// mongoose — المكتبة الرئيسية للتعامل مع MongoDB في Node.js
 const mongoose = require("mongoose");
+
+// نستورد الـ logger لتسجيل نجاح أو فشل الاتصال
 const logger = require("../utils/logger");
 
-// Node 18+ changed the default DNS result order to prefer IPv6 (verbatim),
-// which breaks Atlas SRV lookups on some systems. Force IPv4-first to match
-// the explicit `family: 4` option passed to mongoose.connect below.
+// Node 18+ غيّر ترتيب DNS ليُفضّل IPv6، وهذا يكسر اتصالات Atlas SRV
+// نُجبره على استخدام IPv4 أولاً لضمان عمل المشروع على كل الأنظمة
 dns.setDefaultResultOrder("ipv4first");
 
 /**
- * Connects to MongoDB using MONGO_URI from the environment.
- * Safe to call before the HTTP server starts — Mongoose buffers
- * model operations until the connection is ready.
+ * connectDB — دالة الاتصال بقاعدة البيانات MongoDB
  *
- * Logs a warning instead of throwing when MONGO_URI is absent so the
- * app can still boot in CI or local runs without a database.
+ * تستخدم MONGO_URI من متغيرات البيئة (.env)
+ * إذا لم يكن MONGO_URI موجوداً، تُسجّل تحذيراً وتُكمل البرنامج بدون DB
+ * هذا مفيد في بيئات CI/CD أو عند اختبار الكود بدون قاعدة بيانات
+ *
+ * @returns {Promise<void>}
  */
 const connectDB = async () => {
+  // نقرأ الرابط من متغيرات البيئة
   const uri = process.env.MONGO_URI;
+
+  // إذا لم يُعرَّف الرابط، نُحذّر ونكمل بدون قاعدة بيانات
   if (!uri) {
     logger.warn("MONGO_URI not set — running without database");
     return;
@@ -24,15 +39,19 @@ const connectDB = async () => {
 
   try {
     await mongoose.connect(uri, {
-      family: 4,                      // force IPv4 — Atlas SRV requires it on Node 18+
-      serverSelectionTimeoutMS: 30000, // give Atlas 30 s to wake from auto-pause
-      bufferCommands: true,           // queue model ops until the connection is ready
+      family: 4,                       // نُجبر IPv4 — ضروري للاتصال بـ Atlas SRV على Node 18+
+      serverSelectionTimeoutMS: 30000, // ننتظر 30 ثانية قبل التخلي (Atlas قد ينام وتحتاج وقتاً لإيقاظه)
+      bufferCommands: true,            // نُخزّن الأوامر في queue حتى يتم الاتصال
     });
+
+    // نخفي كلمة المرور من الرابط قبل طباعته في الـ logs (أمان)
     const safeUri = uri.replace(/\/\/[^@]+@/, "//***@");
     logger.info("MongoDB connected", { uri: safeUri });
   } catch (err) {
+    // نسجّل الخطأ لكن لا نُوقف البرنامج هنا — server.js يتولى ذلك
     logger.error("MongoDB connection failed", { error: err.message });
   }
 };
 
+// نُصدّر الدالة لاستخدامها في server.js
 module.exports = connectDB;
