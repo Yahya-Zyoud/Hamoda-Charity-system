@@ -1,6 +1,4 @@
 @import "tailwindcss";
-<<<<<<< HEAD
-=======
 
 @layer base {
   * {
@@ -23,7 +21,6 @@
     font-family: "Cairo", "Tajawal", sans-serif;
     line-height: 1.7;
     letter-spacing: 0.3px;
-    color: #1a202c;
     font-weight: 500;
     width: 100%;
     margin: 0;
@@ -36,7 +33,6 @@
     overflow-x: hidden;
   }
 
-  
   h1 {
     font-family: "Tajawal", sans-serif;
     font-weight: 900;
@@ -92,7 +88,6 @@
     color: #6b7280;
   }
 
-  
   p {
     margin: 0;
     line-height: 1.8;
@@ -106,7 +101,6 @@
     line-height: 1.65;
   }
 
-  
   a {
     color: #2563eb;
     font-weight: 600;
@@ -126,7 +120,6 @@
     border-radius: 4px;
   }
 
-  
   button {
     cursor: pointer !important;
     font-weight: 600;
@@ -139,7 +132,6 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
   }
 
-  
   strong,
   b {
     font-weight: 700;
@@ -150,7 +142,6 @@
     font-style: italic;
   }
 
-  
   ul,
   ol {
     margin: 0;
@@ -162,7 +153,6 @@
     line-height: 1.75;
   }
 
-  
   code,
   pre {
     background-color: #f3f4f6;
@@ -178,7 +168,6 @@
     overflow-x: auto;
   }
 
-  
   blockquote {
     border-right: 4px solid #3b82f6;
     padding-left: 1rem;
@@ -188,13 +177,11 @@
     margin: 2rem 0;
   }
 
-  
   hr {
     border-color: #d1d5db;
     margin: 2rem 0;
   }
 
-  
   ::selection {
     background-color: #bfdbfe;
     color: #1f2937;
@@ -205,7 +192,6 @@
     color: #1f2937;
   }
 
-  
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -226,7 +212,6 @@
 }
 
 @layer components {
-  
   .heading-xl {
     font-family: "Tajawal", sans-serif;
     font-weight: 900;
@@ -256,7 +241,6 @@
     font-size: clamp(1.125rem, 2vw, 1.5rem);
   }
 
-  
   .text-body {
     font-size: 1rem;
     line-height: 1.8;
@@ -284,7 +268,6 @@
     font-size: 0.875rem;
   }
 
-  
   .btn-primary {
     padding: 0.75rem 1.5rem;
     background-color: #2563eb;
@@ -329,7 +312,6 @@
     background-color: #eff6ff;
   }
 
-  
   .card {
     background-color: white;
     border-radius: 0.75rem;
@@ -356,7 +338,6 @@
     box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   }
 
-  
   .section-padding {
     padding: 4rem 1rem;
   }
@@ -389,7 +370,6 @@
     }
   }
 
-  
   .text-gradient {
     background: linear-gradient(to right, currentColor);
     -webkit-background-clip: text;
@@ -397,7 +377,6 @@
     background-clip: text;
   }
 
-  
   .focus-ring {
     outline: none;
     border-radius: 4px;
@@ -435,7 +414,6 @@
     color: #4b5563;
   }
 
-  
   .gap-comfortable {
     gap: 1.5rem;
   }
@@ -446,7 +424,6 @@
     }
   }
 
-  
   .shadow-sm-custom {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
@@ -459,7 +436,6 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
 
-  
   .text-responsive {
     font-size: clamp(1rem, 2.5vw, 1.5rem);
   }
@@ -468,4 +444,3 @@
     font-size: clamp(1.5rem, 4vw, 2.5rem);
   }
 }
->>>>>>> MuradBranch
