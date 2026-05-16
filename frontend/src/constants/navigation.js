@@ -4,6 +4,7 @@ import {
   FolderOpen,
   HelpCircle,
   Heart,
+  Info,
 } from "lucide-react";
 
 export const navItems = [
@@ -11,6 +12,7 @@ export const navItems = [
   { label: "المشاريع", path: "/projects" },
   { label: "المنح والتبرعات", path: "/donations" },
   { label: "طلب مساعدة", path: "/help-request" },
+  { label: "من نحن", path: "/about" },
   { label: "الفريق", path: "/team" },
 ];
 
@@ -21,6 +23,7 @@ export const getNavIcon = (label) => {
     المشاريع: FolderOpen,
     "المنح والتبرعات": Heart,
     "طلب مساعدة": HelpCircle,
+    "من نحن": Info,
   };
 
   return iconMap[label] || null;

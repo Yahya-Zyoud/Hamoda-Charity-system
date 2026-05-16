@@ -1,18 +1,28 @@
 const helpRequestService = require("../services/helpRequestService");
 const { HTTP_STATUS } = require("../config/constants");
 const logger = require("../utils/logger");
+const { cleanObject } = require("../utils/sanitize");
 
 async function createHelpRequest(req, res) {
   try {
+    const clean = cleanObject(req.body) || {};
     const helpRequest = await helpRequestService.createHelpRequest({
       clerkId: req.userId || "",
-      ...req.body,
+      ...clean,
       file: req.file,
     });
     res.sendSuccess(helpRequest, "تم إرسال طلب المساعدة بنجاح.", HTTP_STATUS.CREATED);
   } catch (error) {
     logger.error("Create help request error:", error);
-    res.sendError(error.message, error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    // Mongoose validation and cast failures are caller mistakes — surface as 400.
+    if (error.name === "ValidationError" || error.name === "CastError") {
+      return res.sendError("بيانات الطلب غير صالحة.", HTTP_STATUS.BAD_REQUEST);
+    }
+    const status = error.status && error.status < 500 ? error.status : HTTP_STATUS.INTERNAL_SERVER_ERROR;
+    const message = status === HTTP_STATUS.INTERNAL_SERVER_ERROR
+      ? "حدث خطأ أثناء معالجة الطلب."
+      : error.message;
+    res.sendError(message, status);
   }
 }
 

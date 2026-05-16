@@ -41,7 +41,8 @@ describe("auth middleware (Clerk configured)", () => {
   let optionalAuth, requireAuth, requireAdmin;
 
   beforeAll(() => {
-    process.env.CLERK_SECRET_KEY = "sk_test_fake";
+    process.env.CLERK_SECRET_KEY      = "sk_test_fake";
+    process.env.CLERK_PUBLISHABLE_KEY = "pk_test_fake";
     // Re-require auth to pick up the env var (module is cached per jest run,
     // so we isolate this suite with jest.isolateModules).
     jest.isolateModules(() => {
@@ -51,6 +52,7 @@ describe("auth middleware (Clerk configured)", () => {
 
   afterAll(() => {
     delete process.env.CLERK_SECRET_KEY;
+    delete process.env.CLERK_PUBLISHABLE_KEY;
   });
 
   describe("optionalAuth", () => {
@@ -133,14 +135,21 @@ describe("auth middleware (Clerk configured)", () => {
 
 // ── Tests WITHOUT CLERK_SECRET_KEY (dev-bypass mode) ─────────────────────────
 
-describe("auth middleware (dev-bypass mode — no CLERK_SECRET_KEY)", () => {
+describe("auth middleware (dev-bypass mode — ALLOW_DEV_AUTH_BYPASS=1, no Clerk keys)", () => {
   let optionalAuth, requireAuth, requireAdmin;
 
   beforeAll(() => {
     delete process.env.CLERK_SECRET_KEY;
+    delete process.env.CLERK_PUBLISHABLE_KEY;
+    process.env.ALLOW_DEV_AUTH_BYPASS = "1";
+    process.env.NODE_ENV = "development";
     jest.isolateModules(() => {
       ({ optionalAuth, requireAuth, requireAdmin } = require("../middleware/auth"));
     });
+  });
+
+  afterAll(() => {
+    delete process.env.ALLOW_DEV_AUTH_BYPASS;
   });
 
   it("optionalAuth: uses x-user-id header and calls next", () => {
@@ -163,9 +172,55 @@ describe("auth middleware (dev-bypass mode — no CLERK_SECRET_KEY)", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it("requireAdmin: passes through regardless (dev bypass)", async () => {
-    const { req, res, next } = buildReqRes();
+  it("requireAdmin: 403 without explicit x-admin-bypass header", async () => {
+    const { req, res, next } = buildReqRes({ headers: { "x-user-id": "local_user" } });
+    await requireAdmin(req, res, next);
+    expect(res._status).toBe(403);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("requireAdmin: passes with x-admin-bypass=1", async () => {
+    const { req, res, next } = buildReqRes({
+      headers: { "x-user-id": "local_user", "x-admin-bypass": "1" },
+    });
     await requireAdmin(req, res, next);
     expect(next).toHaveBeenCalled();
+  });
+});
+
+describe("auth middleware (no Clerk keys, bypass NOT enabled)", () => {
+  let optionalAuth, requireAuth, requireAdmin;
+
+  beforeAll(() => {
+    delete process.env.CLERK_SECRET_KEY;
+    delete process.env.CLERK_PUBLISHABLE_KEY;
+    delete process.env.ALLOW_DEV_AUTH_BYPASS;
+    process.env.NODE_ENV = "development";
+    jest.isolateModules(() => {
+      ({ optionalAuth, requireAuth, requireAdmin } = require("../middleware/auth"));
+    });
+  });
+
+  it("requireAuth: returns 401 even with x-user-id header", () => {
+    const { req, res, next } = buildReqRes({ headers: { "x-user-id": "anyone" } });
+    requireAuth(req, res, next);
+    expect(res._status).toBe(401);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("requireAdmin: returns 401 with no header", async () => {
+    const { req, res, next } = buildReqRes();
+    await requireAdmin(req, res, next);
+    expect(res._status).toBe(401);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it("requireAdmin: still 401 even with x-admin-bypass header (bypass disabled)", async () => {
+    const { req, res, next } = buildReqRes({
+      headers: { "x-user-id": "anyone", "x-admin-bypass": "1" },
+    });
+    await requireAdmin(req, res, next);
+    expect(res._status).toBe(401);
+    expect(next).not.toHaveBeenCalled();
   });
 });

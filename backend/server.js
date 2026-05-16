@@ -40,15 +40,24 @@ app.use(formatResponse);
 
 const subscribeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
-  message: { success: false, message: "Too many subscribe requests" },
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: "عدد محاولات الاشتراك كبير، حاول لاحقاً." },
 });
 app.use(`${config.API_PREFIX}/subscribe`, subscribeLimiter);
 
 app.use(config.API_PREFIX, apiRoutes);
 
 app.get("/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date().toISOString() });
+  const mongoose = require("mongoose");
+  const dbState  = ["disconnected", "connected", "connecting", "disconnecting"][mongoose.connection.readyState] || "unknown";
+  const healthy  = dbState === "connected";
+  res.status(healthy ? 200 : 503).json({
+    status:    healthy ? "OK" : "DEGRADED",
+    db:        dbState,
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.use(handleNotFound);

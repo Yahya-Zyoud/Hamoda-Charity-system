@@ -5,6 +5,7 @@ import {
   Briefcase,
   HandCoins,
   UserCog,
+  Users,
   BarChart3,
   Bell,
   Heart,
@@ -18,7 +19,8 @@ const NAV_ITEMS = [
   { to: "/admin/dashboard/requests",      label: "الطلبات",          icon: ClipboardList,   color: "#FBBF24" },
   { to: "/admin/dashboard/projects",      label: "المشاريع",         icon: Briefcase,       color: "#A78BFA" },
   { to: "/admin/dashboard/donations",     label: "التبرعات",         icon: HandCoins,       color: "#34D399" },
-  { to: "/admin/dashboard/users",         label: "الفريق",           icon: UserCog,         color: "#38BDF8" },
+  { to: "/admin/dashboard/users",            label: "الفريق",              icon: UserCog, color: "#38BDF8" },
+  { to: "/admin/dashboard/registered-users", label: "المستخدمون",          icon: Users,   color: "#818CF8" },
   { to: "/admin/dashboard/reports",       label: "التقارير",         icon: BarChart3,       color: "#F87171" },
   { to: "/admin/dashboard/notifications", label: "الإشعارات",        icon: Bell,            color: "#FB923C" },
 ];

@@ -5,6 +5,7 @@ import RequestsPage from "./RequestsPage";
 import ProjectsPage from "./ProjectsPage";
 import DonationsPage from "./DonationsPage";
 import UsersPage from "./UsersPage";
+import RegisteredUsersPage from "./RegisteredUsersPage";
 import NotificationsPage from "./NotificationsPage";
 import ReportsPage from "./ReportsPage";
 
@@ -17,6 +18,7 @@ function AdminDashboard() {
       <Route path="projects" element={<ProjectsPage />} />
       <Route path="donations" element={<DonationsPage />} />
       <Route path="users" element={<UsersPage />} />
+      <Route path="registered-users" element={<RegisteredUsersPage />} />
       <Route path="notifications" element={<NotificationsPage />} />
       <Route path="reports" element={<ReportsPage />} />
     </Routes>

@@ -11,6 +11,7 @@ import HelpRequest from "./pages/HelpRequest";
 import AboutUs from "./pages/AboutUs";
 import UserProfilePage from "./pages/UserProfilePage";
 import DonationPage from "./pages/Donation_page/Home";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -48,7 +49,7 @@ function App() {
         <Route path="/admin" element={<Navigate to="/" replace />} />
         <Route path="/donations" element={<DonationPage />} />
         <Route path="/help" element={<Navigate to="/help-request" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

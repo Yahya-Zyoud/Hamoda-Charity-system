@@ -8,7 +8,7 @@ import Btn from "../../components/admin/Btn";
 import Badge from "../../components/admin/Badge";
 import Modal from "../../components/admin/Modal";
 import { Th, Td, TableRow } from "../../components/admin/TableParts";
-import { getDonations } from "../../services/api";
+import { getDonations, updateDonationStatus } from "../../services/api";
 
 const normalize = (d) => ({
   id:      d.id,
@@ -36,6 +36,16 @@ function DonationsPage() {
       .catch((err)  => setApiError(err.message))
       .finally(()   => setLoading(false));
   }, []);
+
+  const changeStatus = async (id, status) => {
+    try {
+      await updateDonationStatus(id, status);
+      setList((prev) => prev.map((d) => d.id === id ? { ...d, status } : d));
+      setSelected((prev) => prev ? { ...prev, status } : prev);
+    } catch {
+      // leave list unchanged on failure
+    }
+  };
 
   const filtered = list.filter((d) => {
     const matchSearch =
@@ -145,6 +155,17 @@ function DonationsPage() {
             <DetailRow label="طريقة الدفع"       value={selected.method} />
             <DetailRow label="التاريخ"           value={selected.date} />
             <DetailRow label="الحالة"            value={<Badge status={selected.status} />} />
+          </div>
+          <div style={{ display: "flex", gap: 10, marginTop: 20, flexWrap: "wrap" }}>
+            {selected.status !== "completed" && (
+              <Btn variant="success" onClick={() => changeStatus(selected.id, "completed")}>تأكيد الاستلام</Btn>
+            )}
+            {selected.status !== "pending" && (
+              <Btn variant="outline" onClick={() => changeStatus(selected.id, "pending")}>إعادة للمعالجة</Btn>
+            )}
+            {selected.status !== "failed" && (
+              <Btn variant="danger" onClick={() => changeStatus(selected.id, "failed")}>تعليم كفاشل</Btn>
+            )}
           </div>
         </Modal>
       )}

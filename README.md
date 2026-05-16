@@ -1,56 +1,64 @@
-# Project Overview
 # Charity Platform (Hamoda-Charity)
-This project is an academic web application developed to create a digital charity platform.
 
-# Features
-- Submit help requests with documents
-- Donate to charity projects
-- View active projects
-- User profile and donation history
-- Admin dashboard for managing requests and projects
+Academic web application for a digital charity platform.
 
-# Tech Stack
-- Frontend: React.js, HTML, CSS, JavaScript
-- Backend: Node.js
-- Database: MySQL
-- APIs: Stripe / PayPal, OpenAI
- 
-# Team
+## Features
+- Submit help requests with optional document upload
+- Browse active projects with progress and beneficiary stats
+- Donate to a specific project (amount is credited to the project's raised counter) or make a general donation
+- User profile with help-request and donation history
+- Admin dashboard for managing requests, projects, donations, users, notifications, and reports
+
+## Tech Stack
+- **Frontend:** React 19 + Vite, Tailwind CSS, React Router v7, Framer Motion
+- **Backend:** Node.js + Express 5, Mongoose, Helmet, express-rate-limit
+- **Database:** MongoDB (Docker locally, Atlas in production)
+- **Auth:** Clerk (optional — app degrades gracefully when keys are absent)
+- **Payments:** Currently records donations as `pending` for manual processing. Stripe/PayPal integration is not implemented.
+
+## Setup
+
+```bash
+# 1. Install dependencies
+npm install
+npm install --prefix backend
+npm install --prefix frontend
+
+# 2. Configure env (NEVER commit real .env)
+cp backend/.env.example backend/.env       # then edit values
+cp frontend/.env.example frontend/.env.local
+
+# 3. (Optional) Start a local MongoDB
+docker compose up -d
+
+# 4. Run dev servers (concurrent)
+npm run dev
+```
+
+Backend listens on `http://localhost:5000`, frontend on `http://localhost:5173`.
+
+## Auth modes
+
+| Scenario | `CLERK_SECRET_KEY` + `CLERK_PUBLISHABLE_KEY` | `ALLOW_DEV_AUTH_BYPASS` | Result |
+|---|---|---|---|
+| Production | Set | (ignored) | Full Clerk JWT verification |
+| Local dev with Clerk | Set | (ignored) | Full Clerk JWT verification |
+| Local dev without Clerk | Unset | `1` (non-prod only) | `x-user-id` header for auth; admin requires `x-admin-bypass: 1` |
+| Misconfigured | Unset | Unset / production | All protected routes return 401 |
+
+The dev bypass refuses to run in production even when both flags are set.
+
+## Tests
+
+```bash
+npm test --prefix backend
+```
+
+Tests covering live MongoDB queries are skipped unless you provide a real `MONGODB_URI`.
+
+## Team
 - Murad Hisham Aydi
 - Hamza Nael Hubeisha
 - Ahmed Hassan Asaad
 - Yahya Saed Zyoud
 - Mohammad Nael Daraghmeh
-
-# حمودة (Hamoda) — AI assistant
-The platform ships with an AI helper named **حمودة** that uses OpenAI to:
-- Auto-classify each new help request into the correct `helpType`
-  (medical / education / food / housing / financial / other)
-- Estimate the urgency (low / medium / high / critical)
-- Generate a short Arabic summary for the admin dashboard
-
-The AI fields are written back onto the `HelpRequest` document as
-`aiSuggestedHelpType`, `aiUrgency`, `aiConfidence`, `aiSummary`,
-`aiClassifiedAt`, and `aiModel`.
-
-## Setup
-1. `cd backend && npm install` (installs the `openai` package).
-2. Add the following to `backend/.env`:
-   ```
-   OPENAI_API_KEY=sk-...
-   # Optional — defaults to gpt-4o-mini
-   HAMODA_MODEL=gpt-4o-mini
-   ```
-3. Restart the server. New requests will be analyzed automatically.
-
-## Endpoints
-- `POST /api/help-requests` — creating a request kicks off حمودة
-  in the background; the user gets an instant response.
-- `POST /api/help-requests/:id/reanalyze` — re-run حمودة on an existing
-  request (used by the admin dashboard).
-
-## Fallback behavior
-If `OPENAI_API_KEY` is not set (or the `openai` package isn't installed
-yet), حمودة falls back to a simple keyword heuristic so the app keeps
-working. Failures never break request creation — they're logged and
-swallowed.

@@ -254,7 +254,10 @@ function ProjectModal({ project, gradient, progress, onClose }) {
             </div>
 
             {/* Donate button */}
-            <Link to="/donations" style={{ display: "block" }}>
+            <Link
+              to={`/donations?projectId=${encodeURIComponent(project.id || project._id || "")}`}
+              style={{ display: "block" }}
+            >
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}

@@ -16,7 +16,7 @@ dns.setDefaultResultOrder("ipv4first");
  * app can still boot in CI or local runs without a database.
  */
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI;
+  const uri = process.env.MONGODB_URI;
   if (!uri) {
     logger.warn("MONGO_URI not set — running without database");
     return;

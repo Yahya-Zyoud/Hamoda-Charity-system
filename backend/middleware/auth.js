@@ -1,18 +1,30 @@
 /**
  * Auth middleware wrapping @clerk/express.
  *
- * Graceful degradation: when CLERK_SECRET_KEY is absent the app still boots
- * and serves public routes normally. Protected routes fall back to the
- * x-user-id header (dev convenience only — never ship without Clerk in prod).
+ * Production: Clerk JWT verification is mandatory.
+ * Dev bypass: ONLY enabled when both Clerk keys are absent AND
+ * ALLOW_DEV_AUTH_BYPASS=1 is explicitly set (refused outside development).
+ * This prevents an accidental misconfiguration from silently opening admin
+ * endpoints in production.
  */
 
 const { HTTP_STATUS } = require("../config/constants");
 const logger = require("../utils/logger");
 
 const IS_CLERK_READY = !!(process.env.CLERK_SECRET_KEY && process.env.CLERK_PUBLISHABLE_KEY);
+const NODE_ENV       = process.env.NODE_ENV || "development";
+const DEV_BYPASS     = !IS_CLERK_READY
+  && process.env.ALLOW_DEV_AUTH_BYPASS === "1"
+  && NODE_ENV !== "production";
 
 if (!IS_CLERK_READY) {
-  logger.warn("Clerk keys not fully set — auth middleware running in dev-bypass mode (x-user-id header)");
+  if (DEV_BYPASS) {
+    logger.warn("Clerk keys not set — dev bypass ENABLED (x-user-id header). Refuses to run in production.");
+  } else if (NODE_ENV === "production") {
+    logger.error("Clerk keys not set in production — protected routes will reject all traffic.");
+  } else {
+    logger.warn("Clerk keys not set — protected routes will reject all traffic. Set ALLOW_DEV_AUTH_BYPASS=1 to enable header auth in dev.");
+  }
 }
 
 // Lazy-load Clerk so the app boots even when the package is absent in tests.
@@ -56,11 +68,11 @@ const forbidden = (res) =>
  */
 const optionalAuth = (req, res, next) => {
   if (!IS_CLERK_READY) {
-    req.userId = req.headers["x-user-id"] || null;
+    req.userId = DEV_BYPASS ? (req.headers["x-user-id"] || null) : null;
     return next();
   }
   const { userId } = _getAuth(req);
-  req.userId = userId || req.headers["x-user-id"] || null;
+  req.userId = userId || (DEV_BYPASS ? req.headers["x-user-id"] : null) || null;
   next();
 };
 
@@ -69,14 +81,13 @@ const optionalAuth = (req, res, next) => {
  */
 const requireAuth = (req, res, next) => {
   if (!IS_CLERK_READY) {
+    if (!DEV_BYPASS) return unauth(res);
     req.userId = req.headers["x-user-id"] || null;
     if (!req.userId) return unauth(res);
     return next();
   }
   const { userId } = _getAuth(req);
-  // Fall back to x-user-id header when JWT is missing or fails to verify
-  // (handles dev environments where the secret key doesn't match the frontend key)
-  req.userId = userId || req.headers["x-user-id"] || null;
+  req.userId = userId || (DEV_BYPASS ? req.headers["x-user-id"] : null) || null;
   if (!req.userId) return unauth(res);
   next();
 };
@@ -84,10 +95,15 @@ const requireAuth = (req, res, next) => {
 /**
  * Requires a valid Clerk JWT AND publicMetadata.role === "admin".
  * Returns 401 for unauthenticated or 403 for non-admin users.
+ *
+ * Dev bypass: only when DEV_BYPASS is on (ALLOW_DEV_AUTH_BYPASS=1, no Clerk
+ * keys, non-production) AND the request explicitly sets x-admin-bypass=1.
+ * Never grants admin implicitly.
  */
 const requireAdmin = async (req, res, next) => {
   if (!IS_CLERK_READY) {
-    // Dev bypass: any request with x-user-id is treated as admin.
+    if (!DEV_BYPASS) return unauth(res);
+    if (req.headers["x-admin-bypass"] !== "1") return forbidden(res);
     req.userId = req.headers["x-user-id"] || "dev-admin";
     return next();
   }

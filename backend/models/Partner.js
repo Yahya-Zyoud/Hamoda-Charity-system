@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const idTransform = require("./_idTransform");
 
 const partnerSchema = new mongoose.Schema(
   {
@@ -8,7 +9,7 @@ const partnerSchema = new mongoose.Schema(
     color: { type: String, default: "" },
     order: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true, ...idTransform }
 );
 
 module.exports = mongoose.model("Partner", partnerSchema);

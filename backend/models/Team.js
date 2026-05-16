@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const idTransform = require("./_idTransform");
 
 const teamSchema = new mongoose.Schema(
   {
@@ -12,7 +13,7 @@ const teamSchema = new mongoose.Schema(
     image:       { type: String, default: null },
     order:       { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true, ...idTransform }
 );
 
 module.exports = mongoose.model("Team", teamSchema);

@@ -1,4 +1,6 @@
-export function validateDonationForm({ donationType, amount, donorInfo }) {
+const VALID_PAYMENTS = ["stripe", "paypal", "cash"];
+
+export function validateDonationForm({ donationType, amount, donorInfo, paymentMethod }) {
   const errors = {};
 
   if (!donationType) {
@@ -17,8 +19,14 @@ export function validateDonationForm({ donationType, amount, donorInfo }) {
     errors.donorEmail = "يرجى إدخال بريد إلكتروني صحيح";
   }
 
-  if (donorInfo.donorPhone && !/^05\d{8}$/.test(donorInfo.donorPhone)) {
+  if (!donorInfo.donorPhone || donorInfo.donorPhone.trim() === "") {
+    errors.donorPhone = "رقم الهاتف مطلوب";
+  } else if (!/^05\d{8}$/.test(donorInfo.donorPhone)) {
     errors.donorPhone = "رقم الهاتف يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
+  }
+
+  if (!paymentMethod || !VALID_PAYMENTS.includes(paymentMethod)) {
+    errors.paymentMethod = "يرجى اختيار طريقة الدفع";
   }
 
   return { errors, isValid: Object.keys(errors).length === 0 };

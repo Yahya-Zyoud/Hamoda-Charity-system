@@ -359,3 +359,48 @@
   margin-bottom: 6px;
   font-size: .85rem;
 }
+
+/* ── Project banner (when arriving from a Project card) ──────────────────── */
+.dp-project-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, #eff6ff 0%, #ecfdf5 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 16px auto;
+  max-width: 1100px;
+  font-size: .9rem;
+  color: #1e40af;
+  flex-wrap: wrap;
+}
+
+.dp-project-banner-content strong {
+  color: #1856FF;
+  margin-inline-end: 6px;
+}
+
+.dp-project-banner-progress {
+  color: #065f46;
+  font-weight: 600;
+}
+
+.dp-project-banner-clear {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #1856FF;
+  text-decoration: none;
+  border: 1px solid #1856FF;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: white;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.dp-project-banner-clear:hover {
+  background: #1856FF;
+  color: white;
+}

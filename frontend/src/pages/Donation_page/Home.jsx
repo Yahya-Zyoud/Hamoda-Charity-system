@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import DonationTypeSelector from "./components/DonationTypeSelector";
 import DonationAmountSelector from "./components/DonationAmountSelector";
 import DonorInfoForm from "./components/DonorInfoForm";
+import PaymentMethodSelector from "./components/PaymentMethodSelector";
 import DonationSummary from "./components/DonationSummary";
 import DonationSubmitButton from "./components/DonationSubmitButton";
 import { validateDonationForm } from "./utils/validation";
 import { createDirectDonation } from "./services/donationService";
+import { getProjectById } from "../../services/api";
 import { useAppAuth } from "../../contexts/AppAuthContext";
 import "./styles/donations.css";
 import "./styles/responsive.css";
@@ -22,13 +25,28 @@ const INITIAL_DONOR = {
 
 function DonationPage() {
   const { user } = useAppAuth();
-  const [donationType, setDonationType] = useState("");
-  const [amount,       setAmount]       = useState(null);
-  const [donorInfo,    setDonorInfo]    = useState(INITIAL_DONOR);
-  const [fieldErrors,  setFieldErrors]  = useState({});
-  const [submitError,  setSubmitError]  = useState("");
-  const [success,      setSuccess]      = useState(false);
-  const [loading,      setLoading]      = useState(false);
+  const [searchParams] = useSearchParams();
+  const projectId = searchParams.get("projectId");
+
+  const [donationType,   setDonationType]   = useState("");
+  const [amount,         setAmount]         = useState(null);
+  const [paymentMethod,  setPaymentMethod]  = useState("cash");
+  const [donorInfo,      setDonorInfo]      = useState(INITIAL_DONOR);
+  const [fieldErrors,    setFieldErrors]    = useState({});
+  const [submitError,    setSubmitError]    = useState("");
+  const [success,        setSuccess]        = useState(false);
+  const [loading,        setLoading]        = useState(false);
+  const [project,        setProject]        = useState(null);
+  const [projectError,   setProjectError]   = useState("");
+
+  useEffect(() => {
+    if (!projectId) { setProject(null); return; }
+    let cancelled = false;
+    getProjectById(projectId)
+      .then((data) => { if (!cancelled) setProject(data); })
+      .catch(() => { if (!cancelled) setProjectError("تعذّر تحميل بيانات المشروع. سيتم متابعة التبرع العام."); });
+    return () => { cancelled = true; };
+  }, [projectId]);
 
   function handleDonorChange(e) {
     const { name, value } = e.target;
@@ -40,7 +58,7 @@ function DonationPage() {
     e.preventDefault();
     setSubmitError("");
 
-    const { errors, isValid } = validateDonationForm({ donationType, amount, donorInfo });
+    const { errors, isValid } = validateDonationForm({ donationType, amount, donorInfo, paymentMethod });
     if (!isValid) {
       setFieldErrors(errors);
       return;
@@ -56,12 +74,14 @@ function DonationPage() {
         donorPhone:    donorInfo.donorPhone,
         donorCity:     donorInfo.donorCity,
         note:          donorInfo.note,
-        paymentMethod: "cash",
+        paymentMethod,
         userId:        user?.id || "",
+        ...(project ? { projectId: project.id || project._id } : {}),
       });
       setSuccess(true);
       setDonationType("");
       setAmount(null);
+      setPaymentMethod("cash");
       setDonorInfo(INITIAL_DONOR);
     } catch (err) {
       setSubmitError(err.message || "حدث خطأ، يرجى المحاولة مرة أخرى.");
@@ -77,12 +97,30 @@ function DonationPage() {
       <main className="dp-page">
         <section className="dp-hero">
           <span className="dp-hero-badge">تبرع الآن</span>
-          <h1>ساهم في صنع الفرق</h1>
+          <h1>{project ? `تبرعك لمشروع: ${project.title}` : "ساهم في صنع الفرق"}</h1>
           <p>
-            تبرعك يصل مباشرة إلى من يحتاجه. اختر نوع التبرع والمبلغ وأكمل
-            بياناتك لنتمكن من توصيل مساهمتك بأمان.
+            {project
+              ? "أنت على وشك التبرع لمشروع محدد. سيُضاف مبلغ تبرعك مباشرة إلى رصيد المشروع."
+              : "تبرعك يصل مباشرة إلى من يحتاجه. اختر نوع التبرع والمبلغ وأكمل بياناتك لنتمكن من توصيل مساهمتك بأمان."}
           </p>
         </section>
+
+        {project && (
+          <div className="dp-project-banner" dir="rtl">
+            <div className="dp-project-banner-content">
+              <strong>المشروع المختار:</strong> {project.title}
+              {project.goal > 0 && (
+                <span className="dp-project-banner-progress">
+                  {" "}— تم جمع {Number(project.raised || 0).toLocaleString("ar-EG")} من أصل {Number(project.goal).toLocaleString("ar-EG")} ₪
+                </span>
+              )}
+            </div>
+            <Link to="/projects" className="dp-project-banner-clear">تغيير المشروع</Link>
+          </div>
+        )}
+        {projectError && (
+          <div className="dp-alert dp-alert-error" dir="rtl">⚠ {projectError}</div>
+        )}
 
         <div className="dp-layout">
           <form onSubmit={handleSubmit} noValidate>
@@ -120,6 +158,15 @@ function DonationPage() {
                 donorInfo={donorInfo}
                 onChange={handleDonorChange}
                 errors={fieldErrors}
+              />
+
+              <PaymentMethodSelector
+                paymentMethod={paymentMethod}
+                onChange={(val) => {
+                  setPaymentMethod(val);
+                  setFieldErrors((p) => ({ ...p, paymentMethod: "" }));
+                }}
+                error={fieldErrors.paymentMethod}
               />
 
               <DonationSubmitButton loading={loading} />

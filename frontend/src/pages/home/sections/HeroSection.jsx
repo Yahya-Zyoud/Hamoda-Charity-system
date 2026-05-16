@@ -21,14 +21,15 @@ export default function HeroSection() {
 
       {circleIconsData.map((circle, i) => {
         const Icon = circle.icon;
+        const extra = circle.extra ? `${circle.extra} ` : "flex ";
         return (
           <div
             key={i}
-            className={`absolute ${circle.x} ${circle.y} ${circle.size} rounded-full bg-gradient-to-br ${circle.bg} shadow-2xl border-4 border-white/60 flex flex-col items-center justify-center animate-float cursor-pointer hover:scale-110 transition-transform duration-500 z-20`}
+            className={`absolute ${circle.x} ${circle.y} ${circle.size} rounded-full bg-gradient-to-br ${circle.bg} shadow-2xl border-4 border-white/60 ${extra}flex-col items-center justify-center animate-float cursor-pointer hover:scale-110 transition-transform duration-500 z-20`}
             style={{ animationDelay: circle.delay }}
           >
-            <Icon className={`w-10 h-10 mb-2 ${circle.color}`} strokeWidth={1.5} />
-            <span className="text-xs font-bold text-green-800 text-center px-2">
+            <Icon className={`w-6 h-6 md:w-10 md:h-10 mb-1 md:mb-2 ${circle.color}`} strokeWidth={1.5} />
+            <span className="text-[10px] md:text-xs font-bold text-green-800 text-center px-2 leading-tight">
               {circle.label}
             </span>
           </div>

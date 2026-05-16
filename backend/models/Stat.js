@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const idTransform = require("./_idTransform");
 
 const statSchema = new mongoose.Schema(
   {
@@ -9,7 +10,7 @@ const statSchema = new mongoose.Schema(
     sublabel: { type: String, default: "" },
     order:    { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true, ...idTransform }
 );
 
 module.exports = mongoose.model("Stat", statSchema);

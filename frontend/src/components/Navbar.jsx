@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/static-components */
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import {
   Menu,
   X,
@@ -208,14 +208,28 @@ function ClerkSignInBtn() {
   );
 }
 
-const Navbar = () => {
-  const [active, setActive] = useState(() => {
-    const hash = window.location.hash || "#home";
-    const currentItem = navItems.find((item) => `#${item.path.split("#")[1]}` === hash);
-    return currentItem?.label || "الرئيسية";
+function getActiveLabel(pathname) {
+  // exact pathname match (e.g. /projects, /team, /donations …)
+  const byPath = navItems.find((item) => {
+    const itemPath = item.path.split("#")[0];
+    return itemPath && itemPath !== "/" && pathname === itemPath;
   });
+  if (byPath) return byPath.label;
+  // fall back to home item when on "/"
+  if (pathname === "/") return "الرئيسية";
+  return "";
+}
+
+const Navbar = () => {
+  const location = useLocation();
+  const [active, setActive] = useState(() => getActiveLabel(location.pathname));
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const derived = getActiveLabel(location.pathname);
+    if (derived) setActive(derived);
+  }, [location.pathname]);
 
   return (
     <header className="relative w-full">

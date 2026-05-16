@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const idTransform = require("./_idTransform");
 
 const storySchema = new mongoose.Schema(
   {
@@ -8,7 +9,7 @@ const storySchema = new mongoose.Schema(
     tag:              { type: String, default: null },
     date:             { type: Date, required: true },
   },
-  { timestamps: true }
+  { timestamps: true, ...idTransform }
 );
 
 module.exports = mongoose.model("Story", storySchema);

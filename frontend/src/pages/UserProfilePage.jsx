@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { User, Edit3, Save, X, Heart, HelpCircle, FolderOpen, DollarSign, Loader2, CheckCircle, Clock, XCircle } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAppAuth } from "../contexts/AppAuthContext";
+import { useClerkSignInButton } from "../hooks/useClerkSignInButton";
 import { getUserProfile, updateUserProfile, getUserActivity } from "../services/api";
 
 const HELP_TYPE_AR = {
@@ -42,6 +44,7 @@ function StatCard({ icon: Icon, label, value, color }) {
 
 export default function UserProfilePage() {
   const { user, isLoaded } = useAppAuth();
+  const SignInButton = useClerkSignInButton();
 
   const [profile, setProfile]   = useState(null);
   const [activity, setActivity] = useState(null);
@@ -109,9 +112,77 @@ export default function UserProfilePage() {
     return (
       <>
         <Navbar />
-        <div style={{ minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, color: "#64748B" }}>
-          <User size={48} color="#CBD5E1" />
-          <p style={{ fontSize: 18, fontWeight: 600 }}>يجب تسجيل الدخول لعرض الملف الشخصي</p>
+        <div
+          dir="rtl"
+          style={{
+            minHeight: "60vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 18,
+            color: "#64748B",
+            padding: "24px",
+            textAlign: "center",
+          }}
+        >
+          <User size={56} color="#CBD5E1" />
+          <p style={{ fontSize: 18, fontWeight: 600, color: "#1E293B" }}>
+            يجب تسجيل الدخول لعرض الملف الشخصي
+          </p>
+          <p style={{ fontSize: 14, color: "#64748B", maxWidth: 420 }}>
+            سجّل الدخول لعرض طلبات المساعدة وسجل التبرعات الخاصة بك.
+          </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+            {SignInButton ? (
+              <SignInButton mode="modal">
+                <button
+                  style={{
+                    background: "#1856FF",
+                    color: "white",
+                    border: "none",
+                    padding: "12px 28px",
+                    borderRadius: 12,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontSize: 14,
+                  }}
+                >
+                  تسجيل الدخول
+                </button>
+              </SignInButton>
+            ) : (
+              <Link
+                to="/"
+                style={{
+                  background: "#1856FF",
+                  color: "white",
+                  padding: "12px 28px",
+                  borderRadius: 12,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  fontSize: 14,
+                }}
+              >
+                العودة إلى الرئيسية
+              </Link>
+            )}
+            <Link
+              to="/"
+              style={{
+                background: "white",
+                color: "#1856FF",
+                border: "1px solid #1856FF",
+                padding: "12px 28px",
+                borderRadius: 12,
+                fontWeight: 700,
+                textDecoration: "none",
+                fontSize: 14,
+              }}
+            >
+              العودة إلى الرئيسية
+            </Link>
+          </div>
         </div>
         <Footer />
       </>
