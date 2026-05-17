@@ -6,7 +6,6 @@ import Badge from "../../components/admin/Badge";
 import Btn from "../../components/admin/Btn";
 import { getAdminStats, getHelpRequests, getProjects } from "../../services/api";
 
-
 const HELP_TYPE_AR = {
   medical: "طبي", education: "تعليم", food: "غذاء",
   housing: "إسكان", financial: "مالي", other: "أخرى",
@@ -53,14 +52,20 @@ function ReportsPage() {
   const [loading,  setLoading]  = useState(true);
 
   useEffect(() => {
-    Promise.all([getAdminStats(), getHelpRequests(), getProjects()])
-      .then(([adminStats, requests, projects]) => {
-        setStats(adminStats);
-        setMonthly(adminStats.monthlyDonations || []);
-        setReqDist(buildRequestDist(requests));
-        setProjPerf(buildProjectPerf(projects));
+    Promise.allSettled([getAdminStats(), getHelpRequests(), getProjects()])
+      .then(([adminRes, reqRes, projRes]) => {
+        if (adminRes.status === "fulfilled") {
+          const adminStats = adminRes.value;
+          setStats(adminStats);
+          setMonthly(adminStats.monthlyDonations || []);
+        }
+        if (reqRes.status === "fulfilled") {
+          setReqDist(buildRequestDist(reqRes.value));
+        }
+        if (projRes.status === "fulfilled") {
+          setProjPerf(buildProjectPerf(projRes.value));
+        }
       })
-      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

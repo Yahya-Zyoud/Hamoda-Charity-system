@@ -6,8 +6,19 @@
       "Bash(node -e \"require\\('dotenv'\\).config\\({path:'backend/.env'}\\); const mongoose=require\\('mongoose'\\); mongoose.connect\\(process.env.MONGO_URI\\).then\\(\\(\\)=>{console.log\\('CONNECTED'\\);process.exit\\(0\\)}\\).catch\\(e=>{console.log\\('FAILED:',e.message\\);process.exit\\(1\\)}\\)\")",
       "Bash(node data/seed.js)",
       "Bash(node -e ' *)",
-      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Mahmo\\\\Hamoda-Charity-system\" -Directory)",
-      "Bash(Select-Object Name)"
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\user\\\\Desktop\\\\Hamoda-Charity-system\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(node -e \"require\\('./backend/controllers/statController.js'\\)\")",
+      "Bash(node -e \"require\\('./backend/services/userService.js'\\)\")",
+      "Bash(git rm *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\user\\\\Desktop\\\\Hamoda-Charity-system\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Out-String -Width 500)",
+      "Bash(node -e \"const c = require\\('./backend/config/constants'\\); console.log\\(JSON.stringify\\(c, null, 2\\)\\)\")"
     ]
   }
 }

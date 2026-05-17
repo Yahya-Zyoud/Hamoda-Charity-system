@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Pencil, Check, Trash2, Loader2 } from "lucide-react";
+import { useToast, ToastContainer } from "../../components/Toast";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
 import Btn from "../../components/admin/Btn";
@@ -27,20 +28,23 @@ const uiToDb = (form) => ({
   title:       form.title,
   category:    form.category,
   description: form.description,
-  goal:        +form.target,
+  goal:        parseFloat(String(form.target).replace(/[^\d.]/g, "")) || 0,
   status:      DB_STATUS[form.status] || "نشط",
 });
 
-const CAT_COLORS = { تعليم: "#2563eb", طبي: "#16A34A", إسكان: "#D97706", غذاء: "#8b5cf6" };
+const CATEGORIES = ["صحة", "تعليم", "إغاثة", "بنية تحتية", "دعم نفسي", "غذاء", "مياه", "رعاية", "أضاحي", "إسكان", "أخرى"];
+const CAT_COLORS = { تعليم: "#2563eb", صحة: "#16A34A", إسكان: "#D97706", غذاء: "#8b5cf6", إغاثة: "#DC2626", مياه: "#0EA5E9", رعاية: "#F59E0B", أضاحي: "#7C3AED" };
 const empty = { title: "", category: "", description: "", target: "", status: "active" };
 
 function ProjectsPage() {
   const [list,     setList]     = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [apiError, setApiError] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [editing,  setEditing]  = useState(null);
-  const [form,     setForm]     = useState(empty);
+  const [showForm,   setShowForm]   = useState(false);
+  const [editing,    setEditing]    = useState(null);
+  const [form,       setForm]       = useState(empty);
+  const [saveError,  setSaveError]  = useState("");
+  const { toasts, addToast, remove: removeToast } = useToast();
 
   useEffect(() => {
     getProjects()
@@ -51,6 +55,7 @@ function ProjectsPage() {
 
   const save = async () => {
     if (!form.title.trim()) return;
+    setSaveError("");
     try {
       if (editing) {
         const updated = await updateProject(editing, uiToDb(form));
@@ -60,21 +65,29 @@ function ProjectsPage() {
         setList((p) => [...p, dbToUi(created)]);
       }
       closeForm();
-    } catch { /* leave list unchanged */ }
+    } catch (err) {
+      setSaveError(err?.message || "حدث خطأ أثناء الحفظ، حاول مجدداً");
+    }
   };
 
   const del = async (id) => {
     try {
       await deleteProject(id);
       setList((p) => p.filter((pr) => pr.id !== id));
-    } catch {}
+      addToast("تم حذف المشروع بنجاح", "success");
+    } catch (err) {
+      addToast(err?.message || "تعذّر حذف المشروع", "error");
+    }
   };
 
   const complete = async (id) => {
     try {
       await updateProject(id, { status: "مكتمل" });
       setList((p) => p.map((pr) => (pr.id === id ? { ...pr, status: "completed" } : pr)));
-    } catch {}
+      addToast("تم تعيين المشروع كمكتمل", "success");
+    } catch (err) {
+      addToast(err?.message || "تعذّر تحديث المشروع", "error");
+    }
   };
 
   const openEdit = (pr) => {
@@ -83,10 +96,11 @@ function ProjectsPage() {
     setShowForm(true);
   };
 
-  const closeForm = () => { setShowForm(false); setEditing(null); setForm(empty); };
+  const closeForm = () => { setShowForm(false); setEditing(null); setForm(empty); setSaveError(""); };
 
   return (
     <DashboardLayout title="إدارة المشاريع">
+      <ToastContainer toasts={toasts} remove={removeToast} />
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div />
@@ -169,7 +183,7 @@ function ProjectsPage() {
               <label style={{ fontSize: 13, color: "#64748B", display: "block", marginBottom: 6, fontWeight: 600 }}>التصنيف</label>
               <Select value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))} style={{ width: "100%" }}>
                 <option value="">اختر تصنيفاً</option>
-                {["تعليم", "طبي", "إسكان", "غذاء"].map((c) => <option key={c} value={c}>{c}</option>)}
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </Select>
             </div>
             <div>
@@ -178,8 +192,13 @@ function ProjectsPage() {
             </div>
             <div>
               <label style={{ fontSize: 13, color: "#64748B", display: "block", marginBottom: 6, fontWeight: 600 }}>المبلغ المستهدف ($)</label>
-              <Input placeholder="0" value={form.target} onChange={(e) => setForm((p) => ({ ...p, target: e.target.value }))} />
+              <Input type="number" min="0" placeholder="0" value={form.target} onChange={(e) => setForm((p) => ({ ...p, target: e.target.value }))} />
             </div>
+            {saveError && (
+              <div style={{ background: "#FFF1F2", color: "#BE123C", border: "1px solid #FECDD3", borderRadius: 8, padding: "10px 14px", fontSize: 13, fontWeight: 600 }}>
+                {saveError}
+              </div>
+            )}
             <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
               <Btn variant="primary" onClick={save}>{editing ? "حفظ التعديلات" : "إضافة المشروع"}</Btn>
               <Btn variant="outline" onClick={closeForm}>إلغاء</Btn>

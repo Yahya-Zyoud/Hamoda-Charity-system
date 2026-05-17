@@ -1,8 +1,11 @@
-// Validates the donation form; returns { errors, isValid } — phone is optional but validated if provided
-export function validateDonationForm({ donationType, amount, donorInfo }) {
+export function validateDonationForm({ donationMode, donationType, selectedProject, paymentMethod, amount, donorInfo }) {
   const errors = {};
 
-  if (!donationType) {
+  if (!donationMode) {
+    errors.donationMode = "يرجى اختيار طريقة التبرع";
+  } else if (donationMode === "project" && !selectedProject) {
+    errors.project = "يرجى اختيار مشروع لتدعمه";
+  } else if (donationMode === "general" && !donationType) {
     errors.donationType = "يرجى اختيار نوع التبرع";
   }
 
@@ -20,6 +23,10 @@ export function validateDonationForm({ donationType, amount, donorInfo }) {
 
   if (donorInfo.donorPhone && !/^05\d{8}$/.test(donorInfo.donorPhone)) {
     errors.donorPhone = "رقم الهاتف يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
+  }
+
+  if (!paymentMethod) {
+    errors.paymentMethod = "يرجى اختيار طريقة الدفع";
   }
 
   return { errors, isValid: Object.keys(errors).length === 0 };

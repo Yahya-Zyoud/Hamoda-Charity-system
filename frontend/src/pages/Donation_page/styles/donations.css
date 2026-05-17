@@ -342,6 +342,128 @@
   color: #2563eb;
 }
 
+/* ── Mode buttons ─────────────────────────────────────────────────────────── */
+.dp-mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all .18s ease;
+  text-align: center;
+}
+
+.dp-mode-btn:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.dp-mode-btn.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+
+.dp-mode-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.dp-mode-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.dp-mode-sub {
+  font-size: .75rem;
+  color: #64748b;
+}
+
+/* ── Project picker ────────────────────────────────────────────────────────── */
+.dp-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.dp-projects-loading,
+.dp-projects-empty {
+  padding: 24px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: .88rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+}
+
+.dp-project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all .18s ease;
+  text-align: right;
+}
+
+.dp-project-card:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.dp-project-card.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+
+.dp-project-name {
+  font-size: .92rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.4;
+}
+
+.dp-project-cat {
+  font-size: .72rem;
+  color: #2563eb;
+  background: #dbeafe;
+  border-radius: 20px;
+  padding: 2px 10px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+.dp-project-bar-track {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.dp-project-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #16a34a);
+  border-radius: 99px;
+  transition: width .3s ease;
+}
+
+.dp-project-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: .72rem;
+  color: #64748b;
+}
+
 /* ── Info box (below summary) ─────────────────────────────────────────────── */
 .dp-info-box {
   margin-top: 20px;

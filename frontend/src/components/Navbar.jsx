@@ -252,17 +252,17 @@ const Navbar = () => {
                     setActive(item.label);
                     navigate(item.path);
                   }}
-                  className={`relative group flex items-center gap-2 px-3 py-2 text-base transition-colors ${
-                    isActiveItem ? "text-blue-600" : "text-gray-600 hover:text-blue-600"
+                  className={`relative flex items-center gap-2 rounded-xl px-4 py-2 text-base font-semibold transition-all duration-200 ${
+                    isActiveItem
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
                   }`}
                 >
-                  {Icon && <Icon size={20} />}
+                  {Icon && <Icon size={18} />}
                   <span>{item.label}</span>
-                  <span
-                    className={`absolute bottom-0 right-0 left-0 h-0.5 origin-right bg-blue-600 transition-transform ${
-                      isActiveItem ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                    }`}
-                  />
+                  {isActiveItem && (
+                    <span className="absolute bottom-0 right-3 left-3 h-0.5 rounded-full bg-blue-500" />
+                  )}
                 </button>
               );
             })}
@@ -293,8 +293,10 @@ const Navbar = () => {
                     navigate(item.path);
                     setMenuOpen(false);
                   }}
-                  className={`flex items-center gap-2 px-4 py-2 text-base ${
-                    active === item.label ? "text-blue-600" : "text-gray-600 hover:text-blue-600"
+                  className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-base font-semibold transition-colors ${
+                    active === item.label
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
                   }`}
                 >
                   {Icon && <Icon size={20} />}

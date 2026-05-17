@@ -1,20 +1,21 @@
-// Maps a status key (English or Arabic) to a colored pill badge with the localised label.
 const STATUS_CFG = {
-  pending:  { label: "قيد المراجعة", bg: "#FEF3C7", color: "#D97706" },
-  approved: { label: "مقبول",        bg: "#DCFCE7", color: "#16A34A" },
-  accepted: { label: "مقبول",        bg: "#DCFCE7", color: "#16A34A" },
-  rejected: { label: "مرفوض",        bg: "#FEE2E2", color: "#DC2626" },
-  on_hold:  { label: "معلق",         bg: "#F3F4F6", color: "#6B7280" },
-  active:   { label: "نشط",          bg: "#DBEAFE", color: "#2563EB" },
-  completed:{ label: "مكتمل",        bg: "#EDE9FE", color: "#7C3AED" },
-  // Arabic keys allow the component to accept values stored in Arabic directly.
-  نشط:      { label: "نشط",          bg: "#DBEAFE", color: "#2563EB" },
-  مكتمل:    { label: "مكتمل",        bg: "#EDE9FE", color: "#7C3AED" },
-  معلق:     { label: "معلق",         bg: "#F3F4F6", color: "#6B7280" },
+  // Donation statuses
+  pending:   { label: "قيد المراجعة", bg: "#FEF3C7", color: "#D97706" },
+  accepted:  { label: "مقبول",        bg: "#DCFCE7", color: "#16A34A" },
+  rejected:  { label: "مرفوض",        bg: "#FEE2E2", color: "#DC2626" },
+  // Help-request statuses
+  approved:  { label: "مقبول",        bg: "#DCFCE7", color: "#16A34A" },
+  on_hold:   { label: "معلق",         bg: "#F3F4F6", color: "#6B7280" },
+  // Project statuses (English + Arabic keys)
+  active:    { label: "نشط",          bg: "#DBEAFE", color: "#2563EB" },
+  completed: { label: "مكتمل",        bg: "#EDE9FE", color: "#7C3AED" },
+  failed:    { label: "فشل",          bg: "#FEE2E2", color: "#DC2626" },
+  نشط:       { label: "نشط",          bg: "#DBEAFE", color: "#2563EB" },
+  مكتمل:     { label: "مكتمل",        bg: "#EDE9FE", color: "#7C3AED" },
+  معلق:      { label: "معلق",         bg: "#F3F4F6", color: "#6B7280" },
 };
 
 function Badge({ status }) {
-  // Fall back to a neutral grey pill for unknown status values.
   const c = STATUS_CFG[status] || {
     label: status,
     bg: "#F3F4F6",

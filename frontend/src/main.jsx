@@ -26,7 +26,6 @@ class AuthBootBoundary extends Component {
     if (this.state.hasError) {
       return <App />;
     }
-
     return this.props.children;
   }
 }

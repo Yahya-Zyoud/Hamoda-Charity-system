@@ -42,12 +42,13 @@ const PieTooltip = ({ active, payload }) => {
 
 function OverviewPage() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState(null);
+  const [stats,    setStats]    = useState(null);
+  const [apiError, setApiError] = useState(false);
 
   useEffect(() => {
     getAdminStats()
       .then(setStats)
-      .catch(() => {});
+      .catch(() => setApiError(true));
   }, []);
 
   const live = stats ?? {
@@ -95,6 +96,11 @@ function OverviewPage() {
 
   return (
     <DashboardLayout title="نظرة عامة" showHeader={false}>
+      {apiError && (
+        <div style={{ background: "#FFF1F2", color: "#BE123C", border: "1px solid #FECDD3", borderRadius: 12, padding: "14px 18px", marginBottom: 20, fontWeight: 600 }}>
+          تعذّر تحميل إحصاءات لوحة التحكم. تأكد من اتصال قاعدة البيانات.
+        </div>
+      )}
 
       {/* ── 1. Mission Banner ─────────────────────────────────── */}
       <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="mission-banner">

@@ -45,7 +45,8 @@ async function updateHelpRequestStatus(req, res) {
     res.sendSuccess(request, "تم تحديث حالة الطلب بنجاح.");
   } catch (error) {
     logger.error("Update help request status error:", error);
-    res.sendError(error.message, error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    const status = error.status || (error.name === "CastError" ? HTTP_STATUS.BAD_REQUEST : HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    res.sendError(error.message, status);
   }
 }
 

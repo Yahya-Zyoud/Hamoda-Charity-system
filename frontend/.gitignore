@@ -22,3 +22,6 @@ build/
 .idea/
 .DS_Store
 .claude
+
+# tarballs
+*.tgz

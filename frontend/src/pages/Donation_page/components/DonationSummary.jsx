@@ -1,12 +1,26 @@
-// Read-only sidebar summary of the selected donation type, amount, donor name, and payment method
-function DonationSummary({ donationType, amount, donorInfo }) {
+const PAYMENT_LABELS = { stripe: "بطاقة ائتمانية", cash: "كاش / تحويل" };
+
+function DonationSummary({ donationMode, selectedProject, donationType, paymentMethod, amount, donorInfo }) {
+  const typeLabel =
+    donationMode === "project"
+      ? (selectedProject?.title || "—")
+      : (donationType || "—");
+
+  const typeKey = donationMode === "project" ? "المشروع" : "نوع التبرع";
+
   return (
     <div className="dp-summary">
       <h3 className="dp-summary-title">ملخص التبرع</h3>
       <ul className="dp-summary-list">
         <li className="dp-summary-item">
-          <span className="dp-summary-key">نوع التبرع</span>
-          <span className="dp-summary-val">{donationType || "—"}</span>
+          <span className="dp-summary-key">طريقة التبرع</span>
+          <span className="dp-summary-val">
+            {donationMode === "project" ? "تبرع لمشروع" : donationMode === "general" ? "تبرع عام" : "—"}
+          </span>
+        </li>
+        <li className="dp-summary-item">
+          <span className="dp-summary-key">{typeKey}</span>
+          <span className="dp-summary-val">{typeLabel}</span>
         </li>
         <li className="dp-summary-item">
           <span className="dp-summary-key">المبلغ</span>
@@ -20,7 +34,7 @@ function DonationSummary({ donationType, amount, donorInfo }) {
         </li>
         <li className="dp-summary-item">
           <span className="dp-summary-key">طريقة الدفع</span>
-          <span className="dp-summary-val">تحويل بنكي / كاش</span>
+          <span className="dp-summary-val">{PAYMENT_LABELS[paymentMethod] || "—"}</span>
         </li>
       </ul>
     </div>

@@ -4,16 +4,18 @@ const Project     = require("../models/Project");
 const HelpRequest = require("../models/HelpRequest");
 const Team        = require("../models/Team");
 
+// Stats are re-computed at most once per TTL window.
+// Any write that affects the numbers (donation, project, help-request, team)
+// must call invalidateCache() so the next read triggers a fresh query.
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 let _cache   = null;
 let _cacheAt = 0;
 
 /**
- * Compute all public statistics in parallel from real collections.
- * Returns a plain object of numbers — display config lives in the frontend.
- *
- * Cached for CACHE_TTL_MS to avoid hitting Atlas on every page load.
+ * Queries all four collections in parallel and returns a plain object of
+ * numbers.  Display labels and icons live in the frontend (StatsSection.jsx)
+ * so adding a new stat only requires a frontend change, not a backend deploy.
  */
 async function computeStats() {
   const [
@@ -24,26 +26,24 @@ async function computeStats() {
     teamCount,
     donationAgg,
   ] = await Promise.all([
-    // Unique donors by email (excludes failed donations)
-    Donation.distinct("donorEmail", { status: { $ne: "failed" } }),
+    // distinct() dedups by email so one donor with multiple donations counts once
+    Donation.distinct("donorEmail", { status: "accepted" }),
 
-    // Total number of projects
     Project.countDocuments(),
 
-    // Sum of beneficiaries across all projects (null-safe)
+    // $ifNull guards against projects that were saved before the beneficiaries
+    // field was added to the schema (avoids null summing to NaN)
     Project.aggregate([
       { $group: { _id: null, total: { $sum: { $ifNull: ["$beneficiaries", 0] } } } },
     ]),
 
-    // Help requests that were accepted = people actually served
+    // Only accepted requests count as "people actually served"
     HelpRequest.countDocuments({ status: "accepted" }),
 
-    // Team members (volunteers + staff)
     Team.countDocuments(),
 
-    // Total donation amount (excludes failed)
     Donation.aggregate([
-      { $match: { status: { $ne: "failed" } } },
+      { $match: { status: "accepted" } },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]),
   ]);
@@ -62,7 +62,8 @@ async function computeStats() {
 
 /**
  * Returns live stats, using the in-memory cache when fresh.
- * Call invalidateCache() after any write that changes these numbers.
+ * The first call after a cold start (or after invalidateCache) hits the DB;
+ * subsequent calls within the TTL window return the cached value instantly.
  */
 exports.getLiveStats = async () => {
   if (_cache && Date.now() - _cacheAt < CACHE_TTL_MS) return _cache;
@@ -73,7 +74,11 @@ exports.getLiveStats = async () => {
   return stats;
 };
 
-/** Call this after creating a Donation, Project, HelpRequest, or Team member. */
+/**
+ * Must be called after any write that changes the stats numbers:
+ * createDonation, createHelpRequest, updateHelpRequestStatus,
+ * createProject, updateProject, deleteProject, createTeamMember.
+ */
 exports.invalidateCache = () => {
   _cache   = null;
   _cacheAt = 0;

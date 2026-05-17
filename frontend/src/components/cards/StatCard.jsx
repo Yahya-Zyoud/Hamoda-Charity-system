@@ -20,7 +20,7 @@ export const StatCard = ({ stat, index }) => {
       </div>
 
       <div className="text-base md:text-lg font-bold text-slate-500">
-        {stat.name}
+        {stat.label}
       </div>
 
       {/* Vertical divider between cards — omitted after the last card (index 3). */}

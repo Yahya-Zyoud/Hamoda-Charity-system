@@ -7,6 +7,7 @@ import Badge from "../../components/admin/Badge";
 import Modal from "../../components/admin/Modal";
 import FilterTabs from "../../components/admin/FilterTabs";
 import { Th, Td, TableRow } from "../../components/admin/TableParts";
+import { useToast, ToastContainer } from "../../components/Toast";
 import { getHelpRequests, updateHelpRequestStatus, deleteHelpRequest } from "../../services/api";
 
 // API uses "accepted"; Badge/UI use "approved"
@@ -47,6 +48,7 @@ function RequestsPage() {
   const [apiError, setApiError] = useState(null);
   const [filter,   setFilter]   = useState("all");
   const [selected, setSelected] = useState(null);
+  const { toasts, addToast, remove: removeToast } = useToast();
 
   useEffect(() => {
     getHelpRequests()
@@ -59,9 +61,11 @@ function RequestsPage() {
     try {
       await updateHelpRequestStatus(id, toApi(uiStatus));
       setList((prev) => prev.map((r) => (r.id === id ? { ...r, status: uiStatus } : r)));
-      setSelected(null);
-    } catch {
-      // keep existing list unchanged on failure
+      if (selected?.id === id) setSelected((prev) => ({ ...prev, status: uiStatus }));
+      const label = uiStatus === "approved" ? "تم قبول الطلب" : uiStatus === "rejected" ? "تم رفض الطلب" : "تم تحديث الحالة";
+      addToast(label, uiStatus === "approved" ? "success" : "error");
+    } catch (err) {
+      addToast(err?.message || "تعذّر تحديث الحالة", "error");
     }
   };
 
@@ -70,8 +74,9 @@ function RequestsPage() {
       await deleteHelpRequest(id);
       setList((prev) => prev.filter((r) => r.id !== id));
       setSelected(null);
-    } catch {
-      // keep existing list unchanged on failure
+      addToast("تم حذف الطلب بنجاح", "success");
+    } catch (err) {
+      addToast(err?.message || "تعذّر حذف الطلب", "error");
     }
   };
 
@@ -86,6 +91,7 @@ function RequestsPage() {
 
   return (
     <DashboardLayout title="إدارة الطلبات">
+      <ToastContainer toasts={toasts} remove={removeToast} />
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div />

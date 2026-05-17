@@ -1,37 +1,58 @@
-// Shared HTTP status codes, Arabic response messages, and input validation rules used across the app
+/* =============================================
+   اسم الملف: constants.js
+   الوظيفة: يحتوي على القيم الثابتة المستخدمة في كل أنحاء الباكيند
+            — أكواد HTTP، رسائل الاستجابة، قواعد التحقق
+   لماذا نستخدمه؟ بدلاً من كتابة الأرقام والرسائل مباشرة في كل ملف،
+   نُعرّفها هنا مرة واحدة ونستوردها — هذا يسهّل التعديل لاحقاً
+   ============================================= */
+
+/* --- أكواد HTTP Status --- */
+// هذه الأرقام هي معايير عالمية يفهمها المتصفح وكل client
 const statusCodes = {
-  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  CONFLICT: 409,
-  INTERNAL_SERVER_ERROR: 500,
+  OK: 200,                    // الطلب نجح وتم الرد بالبيانات
+  CREATED: 201,               // تم إنشاء بيانات جديدة بنجاح (مثل إنشاء تبرع جديد)
+  BAD_REQUEST: 400,           // البيانات المرسلة من المستخدم غير صحيحة
+  UNAUTHORIZED: 401,          // المستخدم غير مسجّل الدخول
+  FORBIDDEN: 403,             // المستخدم مسجّل لكن لا يملك الصلاحية (مثلاً: ليس أدمن)
+  NOT_FOUND: 404,             // البيانات المطلوبة غير موجودة
+  CONFLICT: 409,              // تعارض — مثلاً: الإيميل مسجّل مسبقاً
+  INTERNAL_SERVER_ERROR: 500, // خطأ داخلي في السيرفر (الخطأ مننا، مش من المستخدم)
 };
 
+/* --- رسائل الاستجابة الافتراضية --- */
+// نستخدم العربية لأن المستخدمين النهائيين عرب
 const msgs = {
-  SUCCESS: "تم بنجاح",
-  ERROR: "حدث خطأ",
-  INVALID_INPUT: "البيانات المدخلة غير صحيحة",
-  NOT_FOUND: "لم يتم العثور على البيانات",
-  SUBSCRIPTION_SUCCESS: "تم الاشتراك بنجاح! شكراً لاهتمامك.",
-  FILE_UPLOAD_SUCCESS: "تم رفع الملف بنجاح",
-  FILE_UPLOAD_ERROR: "فشل في رفع الملف",
-  INVALID_EMAIL: "البريد الإلكتروني غير صالح",
+  SUCCESS: "تم بنجاح",                                     // رسالة النجاح العامة
+  ERROR: "حدث خطأ",                                        // رسالة الخطأ العامة
+  INVALID_INPUT: "البيانات المدخلة غير صحيحة",              // عند فشل التحقق من البيانات
+  NOT_FOUND: "لم يتم العثور على البيانات",                  // عند عدم وجود العنصر المطلوب
+  SUBSCRIPTION_SUCCESS: "تم الاشتراك بنجاح! شكراً لاهتمامك.", // بعد الاشتراك في النشرة البريدية
+  FILE_UPLOAD_SUCCESS: "تم رفع الملف بنجاح",               // عند رفع صورة أو وثيقة
+  FILE_UPLOAD_ERROR: "فشل في رفع الملف",                   // عند فشل الرفع
+  INVALID_EMAIL: "البريد الإلكتروني غير صالح",              // عند إدخال إيميل بصيغة خاطئة
 };
 
+/* --- قواعد التحقق من البيانات --- */
+// نضعها هنا حتى يستخدمها validators.js ولا نُكرر القيم في أكثر من مكان
 const rules = {
+  // Regex للتحقق من صيغة الإيميل: يجب أن يحتوي على @ ونقطة
   EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+
+  // Regex للتحقق من رقم الهاتف: أرقام ومسافات وشرطات وأقواس، 7 خانات على الأقل
   PHONE_REGEX: /^[\d\s\-\+\(\)]{7,}$/,
+
+  // الاسم يجب أن يكون بين 2 و 100 حرف
   MIN_NAME_LENGTH: 2,
   MAX_NAME_LENGTH: 100,
-  MIN_BIO_LENGTH: 10,
+
+  // النبذة الشخصية (Bio): يمكن أن تكون فارغة لكن لا تتجاوز 500 حرف
+  MIN_BIO_LENGTH: 0,
   MAX_BIO_LENGTH: 500,
 };
 
+// نُصدّر كل الثوابت تحت أسماء واضحة يُمكن استيرادها بـ destructuring
 module.exports = {
-  HTTP_STATUS: statusCodes,
-  MESSAGES: msgs,
-  VALIDATION: rules,
+  HTTP_STATUS: statusCodes, // الاستخدام: HTTP_STATUS.OK أو HTTP_STATUS.NOT_FOUND
+  MESSAGES: msgs,           // الاستخدام: MESSAGES.SUCCESS أو MESSAGES.ERROR
+  VALIDATION: rules,        // الاستخدام: VALIDATION.EMAIL_REGEX
 };
