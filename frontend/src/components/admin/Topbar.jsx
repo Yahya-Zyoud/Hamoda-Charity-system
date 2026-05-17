@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Bell, ClipboardList, DollarSign } from "lucide-react";
 import { getNotifications, markAllNotificationsRead } from "../../services/api";
+import { useAppAuth } from "../../contexts/AppAuthContext";
 
 const timeAgo = (dateStr) => {
   if (!dateStr) return "حديثاً";
@@ -14,14 +15,36 @@ const timeAgo = (dateStr) => {
 };
 
 function Topbar({ title }) {
+  const { user } = useAppAuth();
   const [showNotifs, setShowNotifs] = useState(false);
   const [notifs, setNotifs] = useState([]);
   const unread = notifs.filter((n) => !n.read).length;
+  const displayName = user?.fullName || user?.firstName || "مشرف";
+  const initials    = (user?.firstName?.[0] || user?.username?.[0] || displayName?.[0] || "م").toUpperCase();
 
   useEffect(() => {
-    getNotifications()
-      .then((data) => setNotifs(data.map((n) => ({ ...n, time: timeAgo(n.createdAt) }))))
-      .catch(() => {});
+    let cancelled = false;
+    const fetch = () => {
+      getNotifications()
+        .then((data) => {
+          if (cancelled) return;
+          setNotifs((prev) => {
+            const next = data.map((n) => ({ ...n, time: timeAgo(n.createdAt) }));
+            // Preserve client-side "read" marks until the server catches up:
+            // if the user marked-all-read locally, don't flip back on refresh.
+            const prevById = new Map(prev.map((p) => [p._id, p]));
+            return next.map((n) => {
+              const old = prevById.get(n._id);
+              return old?.read && !n.read ? { ...n, read: true } : n;
+            });
+          });
+        })
+        .catch(() => {});
+    };
+    fetch();
+    // Poll every 30 seconds for new notifications. Cheap, no WebSocket needed.
+    const interval = setInterval(fetch, 30_000);
+    return () => { cancelled = true; clearInterval(interval); };
   }, []);
 
   const markAll = () => {
@@ -122,7 +145,17 @@ function Topbar({ title }) {
       </div>
 
       {/* Avatar */}
-      <div className="topbar-avatar">م</div>
+      {user?.imageUrl ? (
+        <img
+          src={user.imageUrl}
+          alt={displayName}
+          title={displayName}
+          className="topbar-avatar"
+          style={{ objectFit: "cover" }}
+        />
+      ) : (
+        <div className="topbar-avatar" title={displayName}>{initials}</div>
+      )}
     </div>
   );
 }

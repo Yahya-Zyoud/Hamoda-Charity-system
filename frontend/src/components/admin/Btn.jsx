@@ -1,17 +1,18 @@
-function Btn({ children, variant = "primary", sm, onClick, style = {}, type = "button" }) {
+function Btn({ children, variant = "primary", sm, onClick, style = {}, type = "button", disabled = false, title }) {
   const base = {
     display: "inline-flex",
     alignItems: "center",
     gap: 6,
     borderRadius: 10,
     fontWeight: 600,
-    cursor: "pointer",
+    cursor: disabled ? "not-allowed" : "pointer",
     whiteSpace: "nowrap",
     border: "none",
     fontFamily: "'Tajawal', sans-serif",
     fontSize: sm ? 13 : 14,
     padding: sm ? "6px 14px" : "10px 20px",
     transition: "all 0.2s ease",
+    opacity: disabled ? 0.6 : 1,
   };
 
   const variants = {
@@ -27,7 +28,13 @@ function Btn({ children, variant = "primary", sm, onClick, style = {}, type = "b
   };
 
   return (
-    <button type={type} onClick={onClick} style={{ ...base, ...variants[variant], ...style }}>
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      style={{ ...base, ...variants[variant], ...style }}
+    >
       {children}
     </button>
   );

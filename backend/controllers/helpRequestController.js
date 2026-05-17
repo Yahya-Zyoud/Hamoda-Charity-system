@@ -1,4 +1,5 @@
 const helpRequestService = require("../services/helpRequestService");
+const emailService       = require("../services/emailService");
 const { HTTP_STATUS } = require("../config/constants");
 const logger = require("../utils/logger");
 const { cleanObject } = require("../utils/sanitize");
@@ -11,6 +12,8 @@ async function createHelpRequest(req, res) {
       ...clean,
       file: req.file,
     });
+    emailService.sendHelpRequestConfirmation(helpRequest)
+      .catch((err) => logger.warn("Help-request email failed", { error: err.message }));
     res.sendSuccess(helpRequest, "تم إرسال طلب المساعدة بنجاح.", HTTP_STATUS.CREATED);
   } catch (error) {
     logger.error("Create help request error:", error);
@@ -51,6 +54,8 @@ async function updateHelpRequestStatus(req, res) {
   try {
     const request = await helpRequestService.updateHelpRequestStatus(req.params.id, req.body.status);
     if (!request) return res.sendError("الطلب غير موجود.", HTTP_STATUS.NOT_FOUND);
+    emailService.sendHelpRequestStatusUpdate(request)
+      .catch((err) => logger.warn("Status email failed", { error: err.message }));
     res.sendSuccess(request, "تم تحديث حالة الطلب بنجاح.");
   } catch (error) {
     logger.error("Update help request status error:", error);

@@ -60,6 +60,16 @@
   align-items: start;
 }
 
+/* Single-column variant — sidebar summary was removed, so the form takes full width */
+.dp-layout-single {
+  grid-template-columns: 1fr;
+  max-width: 760px;
+}
+
+.dp-info-box-inline {
+  margin-top: 24px;
+}
+
 /* ── Card ──────────────────────────────────────────────────────────────────── */
 .dp-card {
   background: #fff;

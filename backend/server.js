@@ -26,6 +26,15 @@ app.use(cors({
 }));
 app.use(helmet());
 
+// Stripe webhook needs the raw body for signature verification — mount BEFORE
+// express.json() and skip JSON parsing for this one route.
+const { handleStripeWebhook } = require("./controllers/donationController");
+app.post(
+  "/api/webhooks/stripe",
+  express.raw({ type: "application/json" }),
+  handleStripeWebhook
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,6 +55,20 @@ const subscribeLimiter = rateLimit({
   message: { success: false, message: "عدد محاولات الاشتراك كبير، حاول لاحقاً." },
 });
 app.use(`${config.API_PREFIX}/subscribe`, subscribeLimiter);
+
+// Swagger UI — interactive API docs at /api/docs
+try {
+  const swaggerUi   = require("swagger-ui-express");
+  const openapiSpec = require("./config/openapi");
+  app.use(
+    `${config.API_PREFIX}/docs`,
+    swaggerUi.serve,
+    swaggerUi.setup(openapiSpec, { customSiteTitle: "Hamoda Charity API" })
+  );
+  app.get(`${config.API_PREFIX}/openapi.json`, (_req, res) => res.json(openapiSpec));
+} catch (err) {
+  logger.warn("Swagger UI not available", { error: err.message });
+}
 
 app.use(config.API_PREFIX, apiRoutes);
 

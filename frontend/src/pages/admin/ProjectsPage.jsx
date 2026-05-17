@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Pencil, Check, Trash2, Loader2 } from "lucide-react";
+import { Pencil, Check, Trash2, Loader2, ImagePlus } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
 import Btn from "../../components/admin/Btn";
@@ -7,7 +7,7 @@ import Badge from "../../components/admin/Badge";
 import Modal from "../../components/admin/Modal";
 import Input from "../../components/admin/Input";
 import Select from "../../components/admin/Select";
-import { getProjects, createProject, updateProject, deleteProject } from "../../services/api";
+import { getProjects, createProject, updateProject, deleteProject, uploadImage } from "../../services/api";
 
 // DB uses Arabic status & goal/raised field names — normalize at the boundary
 const DB_STATUS = { active: "نشط", completed: "مكتمل" };
@@ -21,6 +21,7 @@ const dbToUi = (p) => ({
   target:      p.goal        || 0,
   collected:   p.raised      || 0,
   status:      UI_STATUS[p.status] || "active",
+  image:       p.image       || "",
 });
 
 const uiToDb = (form) => ({
@@ -29,10 +30,11 @@ const uiToDb = (form) => ({
   description: form.description,
   goal:        +form.target,
   status:      DB_STATUS[form.status] || "نشط",
+  image:       form.image || "",
 });
 
 const CAT_COLORS = { تعليم: "#2563eb", طبي: "#16A34A", إسكان: "#D97706", غذاء: "#8b5cf6" };
-const empty = { title: "", category: "", description: "", target: "", status: "active" };
+const empty = { title: "", category: "", description: "", target: "", status: "active", image: "" };
 
 function ProjectsPage() {
   const [list,     setList]     = useState([]);
@@ -79,11 +81,27 @@ function ProjectsPage() {
 
   const openEdit = (pr) => {
     setEditing(pr.id);
-    setForm({ title: pr.title, category: pr.category, description: pr.description, target: pr.target, status: pr.status });
+    setForm({ title: pr.title, category: pr.category, description: pr.description, target: pr.target, status: pr.status, image: pr.image });
     setShowForm(true);
   };
 
   const closeForm = () => { setShowForm(false); setEditing(null); setForm(empty); };
+
+  const [uploading, setUploading] = useState(false);
+  const handleImageChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const { url } = await uploadImage(file);
+      setForm((p) => ({ ...p, image: url }));
+    } catch (err) {
+      setApiError(err.message || "فشل رفع الصورة");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
 
   return (
     <DashboardLayout title="إدارة المشاريع">
@@ -180,8 +198,25 @@ function ProjectsPage() {
               <label style={{ fontSize: 13, color: "#64748B", display: "block", marginBottom: 6, fontWeight: 600 }}>المبلغ المستهدف ($)</label>
               <Input placeholder="0" value={form.target} onChange={(e) => setForm((p) => ({ ...p, target: e.target.value }))} />
             </div>
+            <div>
+              <label style={{ fontSize: 13, color: "#64748B", display: "block", marginBottom: 6, fontWeight: 600 }}>صورة المشروع</label>
+              {form.image && (
+                <div style={{ marginBottom: 8 }}>
+                  <img src={form.image} alt="" style={{ width: "100%", maxHeight: 160, objectFit: "cover", borderRadius: 10, border: "1px solid #e2e8f0" }} />
+                </div>
+              )}
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", border: "1px dashed #cbd5e1", borderRadius: 10, cursor: "pointer", fontSize: 13, color: "#475569" }}>
+                <ImagePlus size={15} /> {uploading ? "جاري الرفع..." : (form.image ? "تغيير الصورة" : "رفع صورة")}
+                <input type="file" accept="image/*" onChange={handleImageChange} disabled={uploading} style={{ display: "none" }} />
+              </label>
+              {form.image && (
+                <button type="button" onClick={() => setForm((p) => ({ ...p, image: "" }))} style={{ marginInlineStart: 8, background: "none", border: "none", color: "#dc2626", fontSize: 12, cursor: "pointer" }}>
+                  حذف
+                </button>
+              )}
+            </div>
             <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-              <Btn variant="primary" onClick={save}>{editing ? "حفظ التعديلات" : "إضافة المشروع"}</Btn>
+              <Btn variant="primary" onClick={save} disabled={uploading}>{editing ? "حفظ التعديلات" : "إضافة المشروع"}</Btn>
               <Btn variant="outline" onClick={closeForm}>إلغاء</Btn>
             </div>
           </div>

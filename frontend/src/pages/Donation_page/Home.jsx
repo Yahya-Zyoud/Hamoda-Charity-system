@@ -6,7 +6,6 @@ import DonationTypeSelector from "./components/DonationTypeSelector";
 import DonationAmountSelector from "./components/DonationAmountSelector";
 import DonorInfoForm from "./components/DonorInfoForm";
 import PaymentMethodSelector from "./components/PaymentMethodSelector";
-import DonationSummary from "./components/DonationSummary";
 import DonationSubmitButton from "./components/DonationSubmitButton";
 import { validateDonationForm } from "./utils/validation";
 import { createDirectDonation } from "./services/donationService";
@@ -66,7 +65,7 @@ function DonationPage() {
 
     setLoading(true);
     try {
-      await createDirectDonation({
+      const result = await createDirectDonation({
         donationType,
         amount,
         donorName:     donorInfo.donorName,
@@ -78,6 +77,14 @@ function DonationPage() {
         userId:        user?.id || "",
         ...(project ? { projectId: project.id || project._id } : {}),
       });
+
+      // If the backend created a Stripe Checkout session, redirect the
+      // browser to it so the user can enter their card details.
+      if (result?.checkoutUrl) {
+        window.location.href = result.checkoutUrl;
+        return;
+      }
+
       setSuccess(true);
       setDonationType("");
       setAmount(null);
@@ -122,7 +129,7 @@ function DonationPage() {
           <div className="dp-alert dp-alert-error" dir="rtl">⚠ {projectError}</div>
         )}
 
-        <div className="dp-layout">
+        <div className="dp-layout dp-layout-single">
           <form onSubmit={handleSubmit} noValidate>
             <div className="dp-card">
               <h2 className="dp-card-title">تفاصيل التبرع</h2>
@@ -173,17 +180,10 @@ function DonationPage() {
             </div>
           </form>
 
-          <aside>
-            <DonationSummary
-              donationType={donationType}
-              amount={amount}
-              donorInfo={donorInfo}
-            />
-            <div className="dp-info-box">
-              <strong>كيف تتم عملية التبرع؟</strong>
-              بعد إرسال الطلب يتواصل معك فريقنا لإرشادك إلى رقم الحساب البنكي أو استلام التبرع مباشرة.
-            </div>
-          </aside>
+          <div className="dp-info-box dp-info-box-inline">
+            <strong>كيف تتم عملية التبرع؟</strong>
+            بعد إرسال الطلب يتواصل معك فريقنا لإرشادك إلى رقم الحساب البنكي أو استلام التبرع مباشرة.
+          </div>
         </div>
       </main>
 

@@ -23,6 +23,7 @@ const {
   getDonationStats,
   getDonationById,
   updateDonationStatus,
+  downloadReceipt,
 } = require('../controllers/donationController');
 
 // ── Public routes (no auth required) ──────────────────────────────────────
@@ -31,6 +32,9 @@ router.get('/stats',  getDonationStats);
 
 // ── Donor-facing: submit a donation (auth optional — attaches userId if logged in) ──
 router.post('/', optionalAuth, validateDonation, createDonation);
+
+// ── PDF receipt — donor receives this link in their confirmation email ────
+router.get('/:id/receipt', downloadReceipt);
 
 // ── Admin-only routes ──────────────────────────────────────────────────────
 router.get('/',             requireAdmin, getAllDonations);

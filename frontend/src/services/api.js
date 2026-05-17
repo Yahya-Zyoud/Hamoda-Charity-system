@@ -142,3 +142,30 @@ export const getProjectById  = (id)           => makeRequest(`/projects/${id}`);
 export const createProject   = (payload)      => makeRequest("/projects",        { method: "POST",   body: JSON.stringify(payload) });
 export const updateProject   = (id, payload)  => makeRequest(`/projects/${id}`,  { method: "PUT",    body: JSON.stringify(payload) });
 export const deleteProject   = (id)           => makeRequest(`/projects/${id}`,  { method: "DELETE" });
+
+// ── Volunteers ────────────────────────────────────────────────────────────
+export const submitVolunteer       = (payload)      => makeRequest("/volunteers",            { method: "POST",  body: JSON.stringify(payload) });
+export const getVolunteers         = ()             => makeRequest("/volunteers");
+export const updateVolunteerStatus = (id, status)   => makeRequest(`/volunteers/${id}/status`,{ method: "PATCH", body: JSON.stringify({ status }) });
+
+// ── Uploads (admin) ───────────────────────────────────────────────────────
+// Returns { url, filename }. Pass a File from an <input type="file"> change.
+export async function uploadImage(file) {
+  const headers = await getAuthHeader();
+  delete headers["Content-Type"]; // let the browser set multipart boundary
+  const form = new FormData();
+  form.append("image", file);
+  const response = await fetch(`${BASE_URL}/uploads/image`, {
+    method: "POST",
+    headers,
+    body: form,
+  });
+  if (!response.ok) {
+    const body = await response.text();
+    let msg = `HTTP ${response.status}`;
+    try { msg = JSON.parse(body).message || msg; } catch {}
+    throw new Error(msg);
+  }
+  const json = await response.json();
+  return json && json.data !== undefined ? json.data : json;
+}

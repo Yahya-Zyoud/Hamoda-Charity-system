@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { Download, FileSpreadsheet, DollarSign, ClipboardList, TrendingUp, Users, Briefcase, Wallet, Loader2 } from "lucide-react";
+import { DollarSign, ClipboardList, TrendingUp, Users, Briefcase, Wallet, Loader2 } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import Card from "../../components/admin/Card";
 import Badge from "../../components/admin/Badge";
-import Btn from "../../components/admin/Btn";
 import { getAdminStats, getHelpRequests, getProjects } from "../../services/api";
 
 
@@ -69,14 +68,6 @@ function ReportsPage() {
 
   return (
     <DashboardLayout title="التقارير والإحصاءات">
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
-        <div />
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <Btn variant="outline"><Download size={15} style={{ marginLeft: 6 }} /> تصدير PDF</Btn>
-          <Btn variant="outline"><FileSpreadsheet size={15} style={{ marginLeft: 6 }} /> تصدير Excel</Btn>
-        </div>
-      </div>
-
       {loading && (
         <div style={{ textAlign: "center", padding: "60px 20px", color: "#94A3B8", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           <Loader2 size={18} className="spin" /> جاري التحميل...

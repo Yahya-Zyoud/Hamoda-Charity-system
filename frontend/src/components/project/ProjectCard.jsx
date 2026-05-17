@@ -406,23 +406,37 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
             )}
           </div>
 
-          {/* زر عرض التفاصيل */}
-          <button
-            onClick={toggleExpand}
-            className="mt-auto w-full py-3 rounded-xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
-            style={{
-              background: "linear-gradient(135deg, #1856FF, #07CA6B)",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0 4px 14px rgba(24,86,255,0.3)",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-          >
-            <ChevronDown size={15} />
-            عرض التفاصيل
-          </button>
+          {/* زر عرض التفاصيل + رابط الصفحة المخصصة */}
+          <div className="mt-auto flex gap-2">
+            <button
+              onClick={toggleExpand}
+              className="flex-1 py-3 rounded-xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
+              style={{
+                background: "linear-gradient(135deg, #1856FF, #07CA6B)",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(24,86,255,0.3)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            >
+              <ChevronDown size={15} />
+              نظرة سريعة
+            </button>
+            <Link
+              to={`/projects/${project.id || project._id}`}
+              className="py-3 px-4 rounded-xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-1"
+              style={{
+                background: "white",
+                color: "#1856FF",
+                border: "1px solid #1856FF",
+                textDecoration: "none",
+              }}
+            >
+              صفحة المشروع
+            </Link>
+          </div>
         </div>
       </motion.div>
 

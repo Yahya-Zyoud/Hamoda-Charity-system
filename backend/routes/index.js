@@ -13,5 +13,7 @@ router.use("/help-requests",  require("./helpRequestRoutes"));
 router.use("/donations",      require("../router/donationRouter"));
 router.use("/notifications",  require("./notificationRoutes"));
 router.use("/admin",          require("./adminRoutes"));
+router.use("/uploads",        require("./uploadRoutes"));
+router.use("/volunteers",     require("./volunteerRoutes"));
 
 module.exports = router;

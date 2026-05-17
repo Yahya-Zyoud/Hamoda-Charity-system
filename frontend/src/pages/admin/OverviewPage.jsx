@@ -65,11 +65,13 @@ function OverviewPage() {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
 
+  // Trend percentages were previously hardcoded ("+18%", "-2%" etc.) — they never
+  // reflected real data. Removed until a real time-series comparison is wired up.
   const STATS_CONFIG = [
-    { label: "إجمالي التبرعات",  value: `$${live.totalDonations.toLocaleString()}`, icon: DollarSign,    color: "#16A34A", trend: "+18%", context: "مقارنة بالشهر الماضي", to: "/admin/dashboard/donations" },
-    { label: "المستخدمون",       value: live.totalUsers.toLocaleString(),            icon: Users,         color: "#2563eb", trend: "+12%", context: "مستخدم مسجل",           to: "/admin/dashboard/users"     },
-    { label: "الطلبات الواردة",  value: live.totalRequests,                          icon: ClipboardList, color: "#D97706", trend: "+5%",  context: `${live.pendingRequests} قيد المراجعة`, urgent: true, to: "/admin/dashboard/requests" },
-    { label: "المشاريع الجارية", value: live.totalProjects,                          icon: CheckCircle2,  color: "#8B5CF6", trend: "-2%",  context: "مشاريع مسجّلة",          to: "/admin/dashboard/projects"  },
+    { label: "إجمالي التبرعات",  value: `$${live.totalDonations.toLocaleString()}`, icon: DollarSign,    color: "#16A34A", context: "إجمالي ما تم جمعه",                    to: "/admin/dashboard/donations" },
+    { label: "المستخدمون",       value: live.totalUsers.toLocaleString(),            icon: Users,         color: "#2563eb", context: "مستخدم مسجل",                          to: "/admin/dashboard/users"     },
+    { label: "الطلبات الواردة",  value: live.totalRequests,                          icon: ClipboardList, color: "#D97706", context: `${live.pendingRequests} قيد المراجعة`, urgent: true, to: "/admin/dashboard/requests" },
+    { label: "المشاريع الجارية", value: live.totalProjects,                          icon: CheckCircle2,  color: "#8B5CF6", context: "مشاريع مسجّلة",                        to: "/admin/dashboard/projects"  },
   ];
 
   const QUICK_ACTIONS = [
