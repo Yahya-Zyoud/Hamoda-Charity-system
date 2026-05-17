@@ -1,3 +1,4 @@
+// Groups team members by role into labelled sections, then renders a card grid per section.
 import TeamCard from "./TeamCard";
 
 const SECTIONS = [

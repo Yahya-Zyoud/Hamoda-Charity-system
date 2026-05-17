@@ -1,3 +1,4 @@
+// Responsive grid of ProjectCards; enforces at most one expanded (modal) card at a time.
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";

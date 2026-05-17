@@ -1,3 +1,4 @@
+// Admin donations management: searchable/filterable table with accept, reject, revert, and delete actions.
 import { useState, useEffect, useCallback } from "react";
 import { Eye, Search, Loader2, CheckCircle2, XCircle, Trash2, RotateCcw } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";

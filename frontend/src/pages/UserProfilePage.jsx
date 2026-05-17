@@ -1,3 +1,4 @@
+// Authenticated user profile page: avatar, editable info form, activity stats, and tabbed history.
 import { useState, useEffect } from "react";
 import { User, Edit3, Save, X, Heart, HelpCircle, FolderOpen, DollarSign, Loader2, CheckCircle, Clock, XCircle } from "lucide-react";
 import Navbar from "../components/Navbar";

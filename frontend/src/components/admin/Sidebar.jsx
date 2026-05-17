@@ -1,3 +1,4 @@
+// Admin sidebar: brand logo, nav links with per-item icon colours, and a user footer with sign-out.
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,

@@ -1,3 +1,4 @@
+// Lazily imports Clerk's SignInButton only when Clerk is configured; returns null otherwise.
 import { useEffect, useState } from "react";
 import { isClerkProviderActive } from "../lib/clerkConfig.js";
 

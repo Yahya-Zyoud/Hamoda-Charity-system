@@ -1,3 +1,4 @@
+// Admin dashboard overview: KPI cards, alert strip, quick actions, bar/pie charts, and recent activity.
 import { useState, useEffect } from "react";
 import {
   DollarSign, Users, ClipboardList, CheckCircle2,

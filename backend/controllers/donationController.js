@@ -1,14 +1,18 @@
+// Donation CRUD controller — handles HTTP requests and delegates business logic to donationService.
 const donationService = require("../services/donationService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
+// Maps Mongoose errors (ValidationError, CastError) and custom service errors to HTTP-friendly responses.
 function resolveError(error) {
   if (error.status) return { message: error.message, status: error.status };
   if (error.name === "ValidationError") {
+    // Join all field-level validation messages into one string.
     const msg = Object.values(error.errors).map((e) => e.message).join("، ");
     return { message: msg || MESSAGES.INVALID_INPUT, status: HTTP_STATUS.BAD_REQUEST };
   }
   if (error.name === "CastError") {
+    // Triggered when an invalid MongoDB ObjectId is passed as a URL param.
     return { message: "معرّف غير صالح", status: HTTP_STATUS.BAD_REQUEST };
   }
   return { message: MESSAGES.ERROR, status: HTTP_STATUS.INTERNAL_SERVER_ERROR };

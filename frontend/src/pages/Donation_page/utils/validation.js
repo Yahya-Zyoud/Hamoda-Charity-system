@@ -1,3 +1,4 @@
+// Validates all donation form fields and returns an errors map plus an isValid flag.
 export function validateDonationForm({ donationMode, donationType, selectedProject, paymentMethod, amount, donorInfo }) {
   const errors = {};
 

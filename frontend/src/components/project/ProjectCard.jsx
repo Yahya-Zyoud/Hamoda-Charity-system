@@ -1,3 +1,4 @@
+// Project card with a summary view and a full-detail modal rendered via portal.
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";

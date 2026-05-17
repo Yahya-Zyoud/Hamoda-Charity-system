@@ -1,3 +1,4 @@
+// Hook that animates a number from 0 to a target value using requestAnimationFrame with exponential ease-out.
 import { useEffect, useState } from "react";
 
 /**

@@ -1,3 +1,4 @@
+// Admin top bar: displays the page title, a notification bell with dropdown, and an avatar.
 import { useState, useEffect } from "react";
 import { Bell, ClipboardList, DollarSign } from "lucide-react";
 import { getNotifications, markAllNotificationsRead } from "../../services/api";

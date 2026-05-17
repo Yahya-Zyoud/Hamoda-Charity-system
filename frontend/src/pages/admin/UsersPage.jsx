@@ -1,3 +1,4 @@
+// Admin team members management: searchable table with add, edit, and delete actions via modal form.
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, Loader2 } from "lucide-react";
 import { useToast, ToastContainer } from "../../components/Toast";

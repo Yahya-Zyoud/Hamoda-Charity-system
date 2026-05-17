@@ -1,3 +1,4 @@
+// Read-only sidebar that summarises the donor's current selections before submission.
 const PAYMENT_LABELS = { stripe: "بطاقة ائتمانية", cash: "كاش / تحويل" };
 
 function DonationSummary({ donationMode, selectedProject, donationType, paymentMethod, amount, donorInfo }) {

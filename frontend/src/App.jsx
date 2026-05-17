@@ -1,3 +1,4 @@
+// Root component: sets up BrowserRouter and declares all public, user, and admin routes.
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";

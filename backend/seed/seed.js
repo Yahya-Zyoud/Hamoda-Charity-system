@@ -1,3 +1,4 @@
+// Seed script for the seed/ directory — populates Partners, Services, Stats, Projects, and Team from local JSON files.
 require("dotenv").config({ path: require("path").join(__dirname, "../.env") });
 const mongoose = require("mongoose");
 const path = require("path");
@@ -9,9 +10,11 @@ const Stat     = require("../models/Stat");
 const Project  = require("../models/Project");
 const Team     = require("../models/Team");
 
+// Reads a JSON file from the seed/data directory and parses it.
 const loadJson = (filename) =>
   JSON.parse(fs.readFileSync(path.join(__dirname, "data", filename), "utf-8"));
 
+// Generic helper: seeds a collection only if it is empty, preventing duplicate inserts on re-runs.
 async function seedCollection(Model, filename, label) {
   const count = await Model.countDocuments();
   if (count > 0) {

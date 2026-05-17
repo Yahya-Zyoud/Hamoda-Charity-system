@@ -1,3 +1,4 @@
+// Admin help requests management: filterable table with approve, reject, and delete actions plus AI urgency display.
 import { useState, useEffect } from "react";
 import { Paperclip, Eye, Inbox, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";

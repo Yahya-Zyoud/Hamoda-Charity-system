@@ -1,3 +1,4 @@
+// Stat strip below the team hero: member count, unique roles, and unique specializations.
 import { motion } from "framer-motion";
 
 export default function Stats({ team = [] }) {

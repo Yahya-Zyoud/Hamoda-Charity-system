@@ -1,3 +1,4 @@
+// Toggle between "donate to a specific project" and "general donation" modes.
 function DonationModeSelector({ mode, onChange }) {
   return (
     <div className="dp-section">

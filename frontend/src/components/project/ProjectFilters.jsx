@@ -1,3 +1,4 @@
+// Search bar and collapsible category/status filter panel for the projects page.
 import { useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

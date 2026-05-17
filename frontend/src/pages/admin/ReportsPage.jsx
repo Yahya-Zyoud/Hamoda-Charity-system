@@ -1,3 +1,4 @@
+// Admin reports page: KPI cards, monthly donation bar chart, project progress, and request-type distribution.
 import { useState, useEffect } from "react";
 import { Download, FileSpreadsheet, DollarSign, ClipboardList, TrendingUp, Users, Briefcase, Wallet, Loader2 } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";

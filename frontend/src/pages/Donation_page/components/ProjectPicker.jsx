@@ -1,3 +1,4 @@
+// Fetches active projects and lets the donor select one; shows a funding-progress bar per card.
 import { useEffect, useState } from "react";
 import { getProjects } from "../../../services/api";
 

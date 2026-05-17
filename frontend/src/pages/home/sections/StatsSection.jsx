@@ -1,3 +1,4 @@
+// Animated stats strip on the home page; retries the API up to 3 times and shows skeletons while loading.
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Users, Briefcase, Heart, Activity } from "lucide-react";

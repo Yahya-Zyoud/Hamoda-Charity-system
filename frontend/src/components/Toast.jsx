@@ -1,3 +1,4 @@
+// Toast notification system: useToast hook manages a queue; ToastContainer renders them fixed bottom-left.
 import { useState, useCallback, useEffect, useRef } from "react";
 import { CheckCircle2, XCircle, X } from "lucide-react";
 

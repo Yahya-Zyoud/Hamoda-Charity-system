@@ -1,3 +1,4 @@
+// Centralised API client: token injection, response-envelope unwrapping, and all backend call definitions.
 const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 // ── Auth token injection ───────────────────────────────────────────────────

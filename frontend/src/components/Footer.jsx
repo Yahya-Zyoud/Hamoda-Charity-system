@@ -1,3 +1,4 @@
+// Site footer: newsletter subscription, contact info, nav links, social icons, and scroll-to-top.
 import { useState } from "react";
 import { Heart, Mail, Phone, MapPin, ArrowUp } from "lucide-react";
 import { subscribeEmail } from "../services/api";

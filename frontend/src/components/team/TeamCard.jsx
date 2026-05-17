@@ -1,3 +1,4 @@
+// Individual team member card: photo or gradient-initials avatar, role badge, and contact links.
 import { motion } from "framer-motion";
 import { Mail, Phone } from "lucide-react";
 

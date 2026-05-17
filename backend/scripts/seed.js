@@ -1,3 +1,4 @@
+// Seed script for the scripts/ directory — populates Projects from the dataLoader utility. Run once on fresh deployments.
 require("dotenv").config({ path: require("path").join(__dirname, "../.env") });
 const mongoose = require("mongoose");
 const { loadData } = require("../utils/dataLoader");
@@ -15,7 +16,7 @@ async function seed() {
   await mongoose.connect(uri);
   console.log("Connected to MongoDB");
 
-  // Projects
+  // Only insert projects if the collection is empty to avoid duplicates.
   const existingProjects = await Project.countDocuments();
   if (existingProjects === 0) {
     const data = loadData("projects");

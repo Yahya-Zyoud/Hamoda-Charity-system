@@ -1,3 +1,4 @@
+// Admin login page with client-side credential validation; sets localStorage flag on success.
 import { useState } from "react";
 import { HeartHandshake } from "lucide-react";
 import { useNavigate } from "react-router-dom";

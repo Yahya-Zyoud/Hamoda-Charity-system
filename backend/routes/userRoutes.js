@@ -1,3 +1,4 @@
+// User API routes — profile management for authenticated users and admin controls for roles/status.
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -8,6 +9,7 @@ const userController = require("../controllers/userController");
 const { validateProfileUpdate } = require("../middleware/validators");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 
+// Multer storage config for profile image uploads.
 const storage = multer.diskStorage({
   destination: (request, file, cb) => {
     const dir = path.join(__dirname, "../public/uploads");
@@ -15,13 +17,14 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: (request, file, cb) => {
+    // Timestamp prefix prevents overwriting existing files with the same name.
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max per image
   fileFilter: (request, file, cb) => {
     const types = ["image/jpeg", "image/png", "image/webp"];
     if (types.includes(file.mimetype)) cb(null, true);

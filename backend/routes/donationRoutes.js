@@ -1,3 +1,4 @@
+// Donation API routes — public for stats/submissions, admin-only for management.
 const express          = require("express");
 const router           = express.Router();
 const validateDonation = require("../middleware/validateDonation");

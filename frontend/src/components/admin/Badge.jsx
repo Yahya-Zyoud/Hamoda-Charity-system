@@ -1,3 +1,4 @@
+// Maps status strings (English and Arabic) to coloured pill badge styles.
 const STATUS_CFG = {
   // Donation statuses
   pending:   { label: "قيد المراجعة", bg: "#FEF3C7", color: "#D97706" },

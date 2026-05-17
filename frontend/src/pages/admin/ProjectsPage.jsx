@@ -1,3 +1,4 @@
+// Admin projects management: card grid with create, edit, mark-complete, and delete via modal form.
 import { useState, useEffect } from "react";
 import { Pencil, Check, Trash2, Loader2 } from "lucide-react";
 import { useToast, ToastContainer } from "../../components/Toast";

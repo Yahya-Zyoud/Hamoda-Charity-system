@@ -1,3 +1,4 @@
+// Animated gradient hero banner shown at the top of the public team page.
 import { motion } from "framer-motion";
 
 export default function Hero() {

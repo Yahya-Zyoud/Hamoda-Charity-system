@@ -1,3 +1,4 @@
+// Bridges Clerk auth (user, token, signOut) into AppAuthContext so the rest of the app is auth-provider-agnostic.
 import { useLayoutEffect } from "react";
 import { useUser, useClerk, useAuth } from "@clerk/clerk-react";
 import { AppAuthProvider } from "../../contexts/AppAuthContext";
