@@ -1,3 +1,4 @@
+// Controller that serves live aggregated statistics (donors, projects, beneficiaries, etc.)
 const statsService = require("../services/statsService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");

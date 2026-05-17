@@ -1,3 +1,4 @@
+// Service layer for team member CRUD; sorts by manual order then creation date
 const Team = require("../models/Team");
 
 exports.getTeam = async () =>

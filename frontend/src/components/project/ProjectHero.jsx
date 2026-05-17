@@ -8,7 +8,7 @@ export default function ProjectHero() {
         background: "linear-gradient(135deg, #1856FF 0%, #0ea5e9 45%, #07CA6B 100%)",
       }}
     >
-      {/* خلفية دوائر */}
+      {/* Background circles */}
       <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full pointer-events-none"
         style={{ background: "rgba(255,255,255,0.07)" }} />
       <div className="absolute -bottom-28 -right-20 w-[28rem] h-[28rem] rounded-full pointer-events-none"

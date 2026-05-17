@@ -1,3 +1,4 @@
+// Project routes — GET endpoints are public; POST/PUT/DELETE are admin-only
 const express = require("express");
 const router = express.Router();
 const {

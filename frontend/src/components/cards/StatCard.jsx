@@ -1,6 +1,8 @@
+// Stat counter card that animates the number from 0 to its target value using the useCountUp hook.
 import { useCountUp } from "../../hooks/useCountUp";
 
 export const StatCard = ({ stat, index }) => {
+  // Stagger the count-up duration per card so they finish at slightly different times.
   const count = useCountUp(stat.value, 2500 + index * 400);
   const Icon = stat.icon;
 
@@ -21,6 +23,7 @@ export const StatCard = ({ stat, index }) => {
         {stat.name}
       </div>
 
+      {/* Vertical divider between cards — omitted after the last card (index 3). */}
       {index !== 3 && (
         <div className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 w-px h-24 bg-gradient-to-b from-transparent via-slate-200 to-transparent" />
       )}

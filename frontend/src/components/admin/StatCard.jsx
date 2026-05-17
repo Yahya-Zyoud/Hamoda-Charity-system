@@ -1,3 +1,4 @@
+// Admin dashboard stat card displaying an icon, numeric value, label, optional context line, and optional trend badge.
 import Card from "./Card";
 
 function StatCard({ label, value, icon: Icon, color, trend, context, onClick }) {
@@ -9,6 +10,7 @@ function StatCard({ label, value, icon: Icon, color, trend, context, onClick }) 
         display: "flex",
         alignItems: "center",
         gap: 14,
+        // Make the card interactive (pointer cursor) only when an onClick handler is provided.
         cursor: onClick ? "pointer" : "default",
       }}
       onClick={onClick}
@@ -39,6 +41,7 @@ function StatCard({ label, value, icon: Icon, color, trend, context, onClick }) 
         )}
       </div>
 
+      {/* Trend badge: green for positive values (starting with "+"), red for negative. */}
       {trend && (
         <div
           style={{

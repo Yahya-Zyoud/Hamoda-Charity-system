@@ -1,3 +1,4 @@
+// Project list with a sticky preview panel on the right; hovering a row updates the preview.
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -20,6 +21,7 @@ export default function ProjectsSection() {
       const data = await getProjects();
       const loaded = Array.isArray(data) ? data : [];
       setProjects(loaded);
+      // Pre-select the first project so the preview panel is never empty on load.
       if (loaded.length > 0) setActiveProject(loaded[0]);
     } catch (err) {
       setError(err.message || "حدث خطأ غير متوقع");
@@ -209,6 +211,7 @@ export default function ProjectsSection() {
                         className="w-full h-64 object-cover"
                       />
                     ) : (
+                      // IIFE used to resolve design variables inline when no image is available.
                       (() => {
                         const activeIdx = projects.findIndex(p => p.id === activeProject.id || p._id === activeProject._id);
                         const activeDesign = getProjectDesign(activeIdx >= 0 ? activeIdx : 0);

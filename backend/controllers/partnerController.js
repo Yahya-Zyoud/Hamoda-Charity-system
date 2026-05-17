@@ -1,10 +1,11 @@
+// Controller for the public-facing partner (sponsor) list
 const Partner = require("../models/Partner");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
 
 exports.getPartners = async (req, res) => {
   try {
-    const items = await Partner.find().sort({ order: 1, createdAt: 1 });
+    const items = await Partner.find().sort({ order: 1, createdAt: 1 }); // primary sort by manual order, secondary by insertion date
     logger.info("Partners retrieved", { count: items.length });
     return res.sendSuccess(items);
   } catch (error) {

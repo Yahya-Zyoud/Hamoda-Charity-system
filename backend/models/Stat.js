@@ -1,3 +1,4 @@
+// Mongoose model for manually-managed statistic cards shown on the public site
 const mongoose = require("mongoose");
 
 const statSchema = new mongoose.Schema(

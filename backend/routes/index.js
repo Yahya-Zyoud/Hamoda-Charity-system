@@ -1,3 +1,4 @@
+// Central router — mounts all feature sub-routers under their respective API paths
 const express = require("express");
 const router = express.Router();
 

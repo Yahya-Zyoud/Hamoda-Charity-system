@@ -1,3 +1,4 @@
+// Auto-scrolling carousel of partner cards; the animation loop pauses when the user hovers.
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { getPartners } from "../../../services/api";
@@ -47,6 +48,7 @@ export default function PartnersSection() {
     const step = () => {
       if (!isPausedRef.current) {
         posRef.current -= 0.6;
+        // Reset to 0 once we've scrolled past the first copy of the list (seamless loop).
         const half = track.scrollWidth / 2;
         if (Math.abs(posRef.current) >= half) posRef.current = 0;
         track.style.transform = `translateX(${posRef.current}px)`;
@@ -119,6 +121,7 @@ export default function PartnersSection() {
                 className="flex gap-6 w-max"
                 style={{ willChange: "transform" }}
               >
+                {/* Duplicate the list so the scroll can loop seamlessly back to the start. */}
                 {[...partners, ...partners].map((partner, i) => (
                   <div key={`${partner.id}-${i}`} className="flex-shrink-0 w-72">
                     <PartnerCard partner={partner} index={i} />

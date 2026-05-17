@@ -1,3 +1,4 @@
+// Generic white container card used as the base surface across admin panels.
 function Card({ children, style = {}, className = "", onClick }) {
   return (
     <div

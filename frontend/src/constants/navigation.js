@@ -1,3 +1,4 @@
+// Navbar items and icon lookup for the main navigation
 import {
   Home,
   Users,

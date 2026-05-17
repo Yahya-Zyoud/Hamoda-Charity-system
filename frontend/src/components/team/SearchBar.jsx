@@ -1,3 +1,4 @@
+// Glassmorphic search input for filtering team members by name, role, or description.
 export default function SearchBar({ search, setSearch }) {
   return (
     <div className="max-w-xl mx-auto px-5 mt-8" dir="rtl">

@@ -1,3 +1,4 @@
+// Mongoose model for charity team members displayed on the About/Team page
 const mongoose = require("mongoose");
 
 const teamSchema = new mongoose.Schema(

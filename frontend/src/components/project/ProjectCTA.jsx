@@ -1,3 +1,4 @@
+// Call-to-action banner at the bottom of the projects page that links visitors to the donations page.
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";

@@ -1,3 +1,4 @@
+// Static data for footer navigation links, social media icons, and email validation regex
 import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";
 
 export const footerLinks = {

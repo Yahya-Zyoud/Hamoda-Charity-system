@@ -1,3 +1,4 @@
+// Fetches services from the API and renders them as an animated grid; maps string icon names to Lucide components
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
@@ -12,6 +13,7 @@ import {
   Heart,
 } from "lucide-react";
 
+// Resolves string icon names returned by the API into Lucide component references
 const iconsMap = {
   ShieldCheck,
   Search,

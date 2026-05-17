@@ -1,3 +1,4 @@
+// Shell layout that wraps every admin page with a persistent sidebar and an optional topbar.
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 

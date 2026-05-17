@@ -1,3 +1,4 @@
+// Help request form with client-side validation; submits a multipart payload to the backend
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";

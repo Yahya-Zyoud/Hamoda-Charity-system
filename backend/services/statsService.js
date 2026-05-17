@@ -1,3 +1,4 @@
+// Service that computes live public statistics from real collections with a 5-minute in-memory cache
 const Donation    = require("../models/Donation");
 const Project     = require("../models/Project");
 const HelpRequest = require("../models/HelpRequest");

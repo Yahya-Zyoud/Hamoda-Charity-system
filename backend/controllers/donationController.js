@@ -1,3 +1,4 @@
+// Controller handling donation creation, retrieval, status updates, and statistics
 const donationService = require("../services/donationService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");
@@ -9,6 +10,7 @@ exports.createDonation = async (req, res) => {
     return res.sendSuccess(donation, "تم استلام تبرعك بنجاح، سيتواصل معك فريقنا قريباً");
   } catch (error) {
     logger.error("Error creating donation", { error: error.message });
+    // Propagate validation errors (400) as-is; wrap all others in a generic message
     return res.sendError(error.status === 400 ? error.message : MESSAGES.ERROR,
       error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }

@@ -1,3 +1,4 @@
+// Service that aggregates all admin dashboard data (counts, charts, recent records) in a single parallel query
 const HelpRequest = require("../models/HelpRequest");
 const Project     = require("../models/Project");
 const Donation    = require("../models/Donation");
@@ -30,6 +31,7 @@ exports.getAdminStats = async () => {
   const currentYear = new Date().getFullYear();
   const yearStart   = new Date(`${currentYear}-01-01`);
 
+  // Fire all DB queries in parallel to keep dashboard load fast
   const [
     totalRequests,
     pendingRequests,
@@ -85,7 +87,7 @@ exports.getAdminStats = async () => {
       id:        r._id,
       name:      r.fullName,
       type:      TYPE_AR[r.helpType] || r.helpType,
-      status:    r.status === "accepted" ? "approved" : r.status,
+      status:    r.status === "accepted" ? "approved" : r.status, // normalise "accepted" to "approved" for the frontend
       createdAt: r.createdAt,
     })),
     recentDonations: recentDonations.map((d) => ({

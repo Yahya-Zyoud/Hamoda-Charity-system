@@ -1,3 +1,4 @@
+// Mongoose model for citizen help requests submitted via the platform
 const mongoose = require("mongoose");
 
 const helpRequestSchema = new mongoose.Schema(

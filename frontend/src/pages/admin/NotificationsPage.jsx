@@ -1,3 +1,4 @@
+// Notifications list with optimistic read/delete — UI updates immediately, API calls fire silently after
 import { useState, useEffect } from "react";
 import { Check, BellOff, ClipboardList, DollarSign, Bell, Loader2 } from "lucide-react";
 import DashboardLayout from "../../components/admin/DashboardLayout";

@@ -1,3 +1,4 @@
+// Express error-handling middleware: maps Multer errors, validation errors, and generic errors to structured JSON responses
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 
 const handleValidationError = (error, req, res, next) => {
@@ -33,7 +34,7 @@ const handleAllErrors = (err, req, res, next) => {
   return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
     success: false,
     message: err.message || MESSAGES.ERROR,
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }), // include stack trace only in dev
   });
 };
 

@@ -1,3 +1,4 @@
+// Read-only sidebar summary of the selected donation type, amount, donor name, and payment method
 function DonationSummary({ donationType, amount, donorInfo }) {
   return (
     <div className="dp-summary">

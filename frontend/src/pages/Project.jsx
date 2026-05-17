@@ -1,3 +1,4 @@
+// Projects page: fetches projects and stats from the API, applies search/category/status filters
 import { useState, useEffect } from "react";
 import { Loader2, FolderOpen } from "lucide-react";
 

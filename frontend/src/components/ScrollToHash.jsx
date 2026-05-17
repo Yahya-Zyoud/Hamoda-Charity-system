@@ -1,3 +1,4 @@
+// Renderless component that scrolls to a hash anchor (or to the top) on every navigation.
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -17,6 +18,7 @@ function ScrollToHash() {
       return;
     }
 
+    // Defer scrollIntoView by one frame so the target element is fully painted.
     requestAnimationFrame(() => {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     });

@@ -1,3 +1,4 @@
+// Maps a status key (English or Arabic) to a colored pill badge with the localised label.
 const STATUS_CFG = {
   pending:  { label: "قيد المراجعة", bg: "#FEF3C7", color: "#D97706" },
   approved: { label: "مقبول",        bg: "#DCFCE7", color: "#16A34A" },
@@ -6,12 +7,14 @@ const STATUS_CFG = {
   on_hold:  { label: "معلق",         bg: "#F3F4F6", color: "#6B7280" },
   active:   { label: "نشط",          bg: "#DBEAFE", color: "#2563EB" },
   completed:{ label: "مكتمل",        bg: "#EDE9FE", color: "#7C3AED" },
+  // Arabic keys allow the component to accept values stored in Arabic directly.
   نشط:      { label: "نشط",          bg: "#DBEAFE", color: "#2563EB" },
   مكتمل:    { label: "مكتمل",        bg: "#EDE9FE", color: "#7C3AED" },
   معلق:     { label: "معلق",         bg: "#F3F4F6", color: "#6B7280" },
 };
 
 function Badge({ status }) {
+  // Fall back to a neutral grey pill for unknown status values.
   const c = STATUS_CFG[status] || {
     label: status,
     bg: "#F3F4F6",

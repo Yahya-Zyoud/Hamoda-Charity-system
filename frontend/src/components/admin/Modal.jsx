@@ -1,9 +1,11 @@
+// Overlay modal that closes when the backdrop is clicked; inner clicks are stopped from bubbling.
 import { X as XIcon } from "lucide-react";
 import Card from "./Card";
 
 function Modal({ title, onClose, children }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
+      {/* stopPropagation prevents a click inside the card from closing the modal via the overlay handler. */}
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <Card style={{ maxHeight: "88vh", overflowY: "auto" }}>
           <div

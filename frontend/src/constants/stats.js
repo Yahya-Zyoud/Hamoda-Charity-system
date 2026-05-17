@@ -1,3 +1,4 @@
+// Static stats shown in the home page stats strip (beneficiaries, projects, donors, volunteers)
 import { Users, Briefcase, Heart, Activity } from "lucide-react";
 
 export const statsData = [

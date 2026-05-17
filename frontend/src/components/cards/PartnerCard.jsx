@@ -1,6 +1,8 @@
+// Displays a partner's logo (or fallback icon), name, and an accent bar that expands to full width on hover.
 import { getPartnerTheme } from "../../constants/partners";
 
 export const PartnerCard = ({ partner }) => {
+  // Derive gradient color and fallback icon from the partner's emoji identifier.
   const theme = getPartnerTheme(partner.emoji);
   const color = theme.color;
   const Icon = theme.icon;

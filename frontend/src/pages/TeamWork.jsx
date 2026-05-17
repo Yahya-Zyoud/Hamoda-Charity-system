@@ -1,3 +1,4 @@
+// Team page: fetches team members from the API and filters by name, role, title, or description
 import { useState, useEffect } from "react";
 import Navbar    from "../components/Navbar";
 import Footer    from "../components/Footer";

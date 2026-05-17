@@ -1,3 +1,4 @@
+// Grid of donation type buttons (Sadaqa, Zakat, Relief, etc.); highlights the active selection
 const DONATION_TYPES = [
   { id: "صدقة",  label: "صدقة",  sub: "تبرع عام" },
   { id: "زكاة",  label: "زكاة",  sub: "زكي الإسلام" },

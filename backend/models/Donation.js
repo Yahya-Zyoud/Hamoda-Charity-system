@@ -1,3 +1,4 @@
+// Mongoose model for charity donations submitted through the platform
 const mongoose = require("mongoose");
 
 const donationSchema = new mongoose.Schema(
@@ -57,7 +58,7 @@ const donationSchema = new mongoose.Schema(
     timestamps: true,
     toJSON: {
       transform(doc, ret) {
-        ret.id = ret._id;
+        ret.id = ret._id; // expose id instead of _id to the client
         delete ret._id;
         delete ret.__v;
         return ret;

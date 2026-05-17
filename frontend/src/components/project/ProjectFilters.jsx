@@ -10,7 +10,7 @@ export default function ProjectFilters({ search, setSearch, category, setCategor
 
   return (
     <div className="max-w-6xl mx-auto px-5 mt-8 mb-2" dir="rtl">
-      {/* شريط البحث */}
+      {/* Search bar */}
       <div className="flex gap-3 items-center mb-4">
         <div
           className="flex-1 flex items-center gap-3 px-4 py-3 rounded-2xl"
@@ -52,7 +52,7 @@ export default function ProjectFilters({ search, setSearch, category, setCategor
         </button>
       </div>
 
-      {/* الفلاتر */}
+      {/* Filters panel */}
       <AnimatePresence>
         {showFilters && (
           <motion.div
@@ -69,7 +69,7 @@ export default function ProjectFilters({ search, setSearch, category, setCategor
                 boxShadow: "0 2px 16px rgba(24,86,255,0.06)",
               }}
             >
-              {/* التصنيف */}
+              {/* Category filter */}
               <div>
                 <p className="text-xs font-bold mb-2.5" style={{ color: "#475569" }}>التصنيف</p>
                 <div className="flex flex-wrap gap-2">
@@ -89,7 +89,7 @@ export default function ProjectFilters({ search, setSearch, category, setCategor
                 </div>
               </div>
 
-              {/* الحالة */}
+              {/* Status filter */}
               <div>
                 <p className="text-xs font-bold mb-2.5" style={{ color: "#475569" }}>الحالة</p>
                 <div className="flex flex-wrap gap-2">

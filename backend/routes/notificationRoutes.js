@@ -1,3 +1,4 @@
+// Admin-only routes for listing, marking, and deleting notifications
 const express = require("express");
 const router = express.Router();
 const {

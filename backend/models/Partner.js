@@ -1,3 +1,4 @@
+// Mongoose model for charity partner/sponsor organisations displayed on the site
 const mongoose = require("mongoose");
 
 const partnerSchema = new mongoose.Schema(

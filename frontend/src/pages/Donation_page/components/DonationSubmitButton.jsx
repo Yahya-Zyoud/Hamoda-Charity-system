@@ -1,3 +1,4 @@
+// Submit button that shows a spinner while the donation request is in-flight
 function DonationSubmitButton({ loading }) {
   return (
     <button

@@ -1,3 +1,4 @@
+// Controller for user profile management, role/status updates, activity history, and image uploads
 const userService = require("../services/userService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");

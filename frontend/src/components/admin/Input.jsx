@@ -1,3 +1,4 @@
+// Styled text input that shows a blue border and outer glow ring while focused.
 function Input({ placeholder, value, onChange, type = "text", style = {} }) {
   return (
     <input
@@ -17,6 +18,7 @@ function Input({ placeholder, value, onChange, type = "text", style = {} }) {
         transition: "border-color 0.2s ease, box-shadow 0.2s ease",
         ...style,
       }}
+      // Inline style mutations are used here to avoid adding a global CSS class for focus state.
       onFocus={(e) => {
         e.target.style.borderColor = "#2563eb";
         e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)";

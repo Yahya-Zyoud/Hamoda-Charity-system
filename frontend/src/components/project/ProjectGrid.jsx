@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
 
 export default function ProjectGrid({ projects }) {
-  // مشروع واحد مفتوح في نفس الوقت
+  // Only one project expanded at a time
   const [expandedId, setExpandedId] = useState(null);
 
   if (!projects || projects.length === 0) {

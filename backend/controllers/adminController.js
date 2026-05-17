@@ -1,3 +1,4 @@
+// Controller for admin-only endpoints — currently exposes aggregated dashboard statistics
 const adminService = require("../services/adminService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");

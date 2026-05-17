@@ -1,3 +1,4 @@
+// Styled dropdown select that highlights its border in blue on focus.
 function Select({ value, onChange, children, style = {} }) {
   return (
     <select

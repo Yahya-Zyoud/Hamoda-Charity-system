@@ -1,3 +1,4 @@
+// Shared HTTP status codes, Arabic response messages, and input validation rules used across the app
 const statusCodes = {
   OK: 200,
   CREATED: 201,

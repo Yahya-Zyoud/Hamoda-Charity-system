@@ -1,3 +1,4 @@
+// Middleware that validates all required donation fields before the request reaches the controller
 const VALID_TYPES    = ["صدقة", "زكاة", "إغاثة", "إسكان", "علاج", "تعليم"];
 const VALID_PAYMENTS = ["stripe", "paypal", "cash"];
 
@@ -13,6 +14,7 @@ module.exports = function validateDonation(req, res, next) {
   }
 
   const numAmount = Number(amount);
+  // Allow 0 to pass the presence check so the "must be > 0" message fires instead
   if (!amount && amount !== 0) {
     errors.amount = "المبلغ مطلوب";
   } else if (isNaN(numAmount) || numAmount <= 0) {

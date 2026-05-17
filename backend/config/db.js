@@ -1,3 +1,4 @@
+// Establishes the MongoDB connection; skips gracefully when MONGO_URI is absent
 const dns = require("dns");
 const mongoose = require("mongoose");
 const logger = require("../utils/logger");
@@ -17,7 +18,7 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 30000,
       bufferCommands: true,
     });
-    const safeUri = uri.replace(/\/\/[^@]+@/, "//***@");
+    const safeUri = uri.replace(/\/\/[^@]+@/, "//***@"); // strip credentials before logging
     logger.info("MongoDB connected", { uri: safeUri });
   } catch (err) {
     logger.error("MongoDB connection failed", { error: err.message });

@@ -1,3 +1,4 @@
+// Service layer for donation CRUD operations and statistics; fires admin notifications on creation
 const Donation     = require("../models/Donation");
 const Notification = require("../models/Notification");
 const statsService = require("./statsService");
@@ -16,6 +17,7 @@ exports.createDirectDonation = async ({ donationType, amount, donorName, donorEm
     userId:        userId || "",
   });
 
+  // Fire-and-forget: notification failure must not block the donor's response
   Notification.create({
     type:      "donation",
     msg:       `تبرع جديد بمبلغ $${donation.amount} من ${donation.donorName} (${donation.donationType})`,
@@ -43,7 +45,7 @@ exports.updateDonationStatus = async (id, status) => {
 };
 
 exports.getRecentDonations = async (limit = 6) => {
-  const safeLimit = Math.min(Number(limit) || 6, 50);
+  const safeLimit = Math.min(Number(limit) || 6, 50); // cap at 50 to prevent large payloads
   const donations = await Donation.find({ status: { $ne: "failed" } })
     .sort({ createdAt: -1 })
     .limit(safeLimit)

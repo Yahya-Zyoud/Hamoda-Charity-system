@@ -1,3 +1,4 @@
+// Lightweight leveled logger (ERROR/WARN/INFO/DEBUG) that prefixes each line with a timestamp
 const { LOG_LEVEL } = require("../config/environment");
 
 const levels = {

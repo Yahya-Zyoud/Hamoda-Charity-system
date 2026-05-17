@@ -1,3 +1,4 @@
+// Mongoose model for newsletter email subscriptions; email is enforced unique at the DB level
 const mongoose = require("mongoose");
 
 const subscriptionSchema = new mongoose.Schema(

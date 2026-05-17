@@ -1,3 +1,4 @@
+// Donor contact fields (name, email, optional phone/city, note) with per-field error display
 function DonorInfoForm({ donorInfo, onChange, errors = {} }) {
   return (
     <div className="dp-section">

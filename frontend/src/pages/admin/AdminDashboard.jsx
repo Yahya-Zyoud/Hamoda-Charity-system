@@ -1,3 +1,4 @@
+// Admin sub-router; "/" redirects to "overview" by default
 import { Routes, Route, Navigate } from "react-router-dom";
 import "../../styles/admin.css";
 import OverviewPage from "./OverviewPage";

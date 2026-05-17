@@ -1,3 +1,4 @@
+// Service layer for admin notifications — thin wrappers around Mongoose queries
 const Notification = require("../models/Notification");
 
 exports.getAll = async () =>

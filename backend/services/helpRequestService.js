@@ -1,3 +1,4 @@
+// Service layer for help requests — validates input, persists to DB, and fires admin notifications
 const HelpRequest  = require("../models/HelpRequest");
 const Notification = require("../models/Notification");
 const statsService = require("./statsService");
@@ -32,6 +33,7 @@ exports.createHelpRequest = async ({ clerkId, fullName, nationalId, phone, email
     clerkId, fullName, nationalId, phone, email, city, helpType, description, documentPath,
   });
 
+  // Fire-and-forget: notification failure must not block the submitter's response
   Notification.create({
     type:      "request",
     msg:       `طلب مساعدة جديد من ${fullName} (${HELP_TYPE_AR[helpType] || helpType})`,

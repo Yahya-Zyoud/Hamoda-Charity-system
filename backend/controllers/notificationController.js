@@ -1,3 +1,4 @@
+// Controller for admin notification management — list, mark read, and delete
 const notificationService = require("../services/notificationService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");

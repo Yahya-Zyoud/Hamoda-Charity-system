@@ -1,3 +1,4 @@
+// Full-width hero section with a background image, animated floating icons, and CTA buttons.
 import { useNavigate } from "react-router-dom";
 import { Heart, ArrowDown, Compass } from "lucide-react";
 import { circleIconsData } from "../../../constants/heroSection";
@@ -19,6 +20,7 @@ export default function HeroSection() {
 
       <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px]" />
 
+      {/* Floating icon bubbles positioned around the hero; each has its own CSS animation delay. */}
       {circleIconsData.map((circle, i) => {
         const Icon = circle.icon;
         return (

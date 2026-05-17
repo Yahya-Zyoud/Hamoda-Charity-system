@@ -1,9 +1,11 @@
+// Animated card for a single service; floats continuously and reveals a gradient title + accent bar on hover.
 import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 
 export const ServiceCard = ({ service, index }) => {
   const Icon = service.icon || ShieldCheck;
 
+  // Entry animation variant — used by the parent motion container (stagger list).
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
     show: {
@@ -16,6 +18,7 @@ export const ServiceCard = ({ service, index }) => {
   return (
     <motion.div
       variants={itemVariants}
+      // Perpetual floating animation; each card is offset by its index so they don't all move in sync.
       animate={{ y: [0, -8, 0] }}
       transition={{
         duration: 4,

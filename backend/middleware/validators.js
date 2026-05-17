@@ -1,3 +1,4 @@
+// Reusable field-level validators and request-level middleware for subscriptions and profile updates
 const { VALIDATION, MESSAGES, HTTP_STATUS } = require("../config/constants");
 
 const checkEmail = (email) => {

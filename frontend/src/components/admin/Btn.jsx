@@ -1,3 +1,4 @@
+// Reusable admin button supporting multiple visual variants and an optional compact (sm) size.
 function Btn({ children, variant = "primary", sm, onClick, style = {}, type = "button" }) {
   const base = {
     display: "inline-flex",

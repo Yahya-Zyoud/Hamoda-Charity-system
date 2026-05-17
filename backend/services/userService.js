@@ -1,3 +1,4 @@
+// Service layer for user profile management, activity history aggregation, and image uploads
 const User        = require("../models/User");
 const HelpRequest = require("../models/HelpRequest");
 const Donation    = require("../models/Donation");
@@ -14,7 +15,7 @@ exports.updateUserStatus = async (id, status) =>
 
 exports.getProfile = async (clerkId) => {
   let user = await User.findOne({ clerkId });
-  if (!user) user = await User.create({ clerkId });
+  if (!user) user = await User.create({ clerkId }); // auto-provision a user record on first profile fetch
   return user;
 };
 
@@ -75,7 +76,7 @@ exports.uploadImage = async (clerkId, file, type = "avatar") => {
   const url = getFileUrl(file.filename);
   const existing = await User.findOne({ clerkId });
   if (existing && existing[type]) {
-    deleteFile(existing[type].split("/").pop());
+    deleteFile(existing[type].split("/").pop()); // delete the old file from disk before saving the new one
   }
   await User.findOneAndUpdate({ clerkId }, { $set: { [type]: url } }, { upsert: true });
   return { url };

@@ -1,3 +1,4 @@
+// Service layer for charity project CRUD; invalidates the stats cache after any write
 const Project      = require("../models/Project");
 const statsService = require("./statsService");
 

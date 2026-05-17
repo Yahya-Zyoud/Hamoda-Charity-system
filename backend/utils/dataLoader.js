@@ -1,3 +1,4 @@
+// Utility for reading and writing JSON data files stored under backend/data/
 const fs = require("fs");
 const path = require("path");
 

@@ -1,3 +1,4 @@
+// Maps partner emoji keys to Lucide icons and gradient colors; falls back to a default theme
 import {
   Landmark,
   Crown,

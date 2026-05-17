@@ -1,3 +1,4 @@
+// Donation page: collects donation type, amount, and donor info then submits to the backend
 import { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";

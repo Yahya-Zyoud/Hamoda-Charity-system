@@ -1,3 +1,4 @@
+// Payment method picker (card or cash/transfer); currently only "cash" is used by the form
 const PAYMENT_METHODS = [
   { id: "stripe", label: "بطاقة ائتمانية", sub: "Visa / Mastercard" },
   { id: "cash",   label: "كاش / تحويل",   sub: "دفع يدوي" },

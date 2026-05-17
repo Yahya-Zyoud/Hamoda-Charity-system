@@ -1,3 +1,4 @@
+// Shared table primitives (Th, Td, TableRow) used across all admin data tables.
 export function Th({ children }) {
   return (
     <th
@@ -36,6 +37,7 @@ export function Td({ children, style = {} }) {
 
 export function TableRow({ children }) {
   return (
+    // Highlight the row on hover via inline style mutation (avoids a global CSS rule).
     <tr
       style={{ transition: "background 0.15s" }}
       onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FFFE")}

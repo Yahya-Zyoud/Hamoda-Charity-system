@@ -1,7 +1,9 @@
+// Derives and displays team stats (total members, unique roles, specializations) from the team array.
 import { motion } from "framer-motion";
 
 export default function Stats({ team = [] }) {
   const totalMembers       = team.length;
+  // Use a Set to count distinct non-empty values for roles and specializations.
   const uniqueRoles        = new Set(team.map((m) => m.role).filter(Boolean)).size;
   const uniqueSpecializations = new Set(team.map((m) => m.title).filter(Boolean)).size;
 

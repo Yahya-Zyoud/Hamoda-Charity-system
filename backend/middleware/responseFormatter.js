@@ -1,3 +1,4 @@
+// Attaches res.sendSuccess() and res.sendError() helpers to every response for a consistent JSON envelope
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 
 const makeSuccessResponse = (data, message = MESSAGES.SUCCESS, statusCode = HTTP_STATUS.OK) => {

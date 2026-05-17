@@ -1,3 +1,4 @@
+// Controller for team member management — public reads and admin CRUD operations
 const teamService = require("../services/teamService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");

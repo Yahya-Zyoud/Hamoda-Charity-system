@@ -34,7 +34,7 @@ export default function TeamCard({ member, index = 0 }) {
         transition: "transform 0.2s, box-shadow 0.2s",
       }}
     >
-      {/* الصورة أو الأفاتار */}
+      {/* Image or avatar */}
       <div
         className="w-full h-44 flex items-center justify-center relative"
         style={{ background: "linear-gradient(135deg,#dbeafe 0%,#bbf7d0 100%)" }}
@@ -68,7 +68,7 @@ export default function TeamCard({ member, index = 0 }) {
         </span>
       </div>
 
-      {/* المعلومات */}
+      {/* Member info */}
       <div className="p-4" dir="rtl">
         <h3 className="text-sm font-bold mb-0.5" style={{ color: "#0f172a" }}>
           {member.name}

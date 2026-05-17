@@ -1,3 +1,4 @@
+// Floating icon circles displayed in the hero section background
 import { Leaf, Users, Globe2, HeartHandshake } from "lucide-react";
 
 export const circleIconsData = [

@@ -1,3 +1,4 @@
+// Mongoose model for platform users — synced from Clerk via clerkId as the unique key
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(

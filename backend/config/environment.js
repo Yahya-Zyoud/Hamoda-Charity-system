@@ -1,3 +1,4 @@
+// Centralises all environment-derived configuration values for the application
 const port = process.env.PORT || 5000;
 const env = process.env.NODE_ENV || "development";
 

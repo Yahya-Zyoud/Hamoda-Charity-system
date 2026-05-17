@@ -1,3 +1,4 @@
+// Cyclic design palette (icon + gradient + shadow) assigned to projects by index
 import {
   Droplets,
   HeartHandshake,

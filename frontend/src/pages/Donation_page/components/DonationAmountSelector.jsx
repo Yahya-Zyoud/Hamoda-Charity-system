@@ -1,3 +1,4 @@
+// Amount picker: preset buttons plus a free-text custom input; clears custom when preset is selected
 import { useState } from "react";
 
 const PRESET_AMOUNTS = [10, 25, 50, 100, 250, 500];

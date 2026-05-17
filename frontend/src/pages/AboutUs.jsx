@@ -1,3 +1,4 @@
+// Static about page — describes the charity's mission, vision, values, and target audience
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./about/AboutUs.css";

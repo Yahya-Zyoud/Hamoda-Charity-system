@@ -1,3 +1,4 @@
+// Controller for charity projects — public reads and admin CRUD operations
 const projectService = require("../services/projectService");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
 const logger = require("../utils/logger");

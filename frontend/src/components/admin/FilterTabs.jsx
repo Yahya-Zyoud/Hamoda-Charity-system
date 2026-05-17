@@ -1,3 +1,4 @@
+// Pill-shaped tab bar for switching the active filter; each tab can display an optional count badge.
 import Card from "./Card";
 
 function FilterTabs({ tabs, active, onChange }) {
@@ -22,6 +23,7 @@ function FilterTabs({ tabs, active, onChange }) {
           }}
         >
           {t.label}
+          {/* Only render the count badge when the caller provides a count value. */}
           {t.count !== undefined && (
             <span
               style={{

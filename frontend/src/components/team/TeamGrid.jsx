@@ -16,7 +16,7 @@ export default function TeamGrid({ members }) {
     );
   }
 
-  // تجميع الأعضاء حسب الدور
+  // Group members by role
   const grouped = {};
   members.forEach((m) => {
     const key = m.role || "أخرى";
@@ -24,7 +24,7 @@ export default function TeamGrid({ members }) {
     grouped[key].push(m);
   });
 
-  // الأدوار الإضافية غير الموجودة في SECTIONS
+  // Extra roles not defined in SECTIONS
   const extraKeys = Object.keys(grouped).filter(
     (k) => !SECTIONS.find((s) => s.key === k)
   );
@@ -38,7 +38,7 @@ export default function TeamGrid({ members }) {
     <div className="max-w-6xl mx-auto px-5 pb-16 pt-8 space-y-12" dir="rtl">
       {allSections.map((section) => (
         <section key={section.key}>
-          {/* عنوان القسم */}
+          {/* Section title */}
           <div
             className="flex items-center gap-3 mb-6 pb-3"
             style={{
@@ -46,7 +46,7 @@ export default function TeamGrid({ members }) {
               borderImage: "linear-gradient(90deg,transparent,#1856FF,#07CA6B) 1",
             }}
           >
-            {/* الشريط الملوّن */}
+            {/* Colored accent bar */}
             <div
               className="w-1 h-6 rounded-full shrink-0"
               style={{ background: "linear-gradient(180deg,#1856FF,#07CA6B)" }}
@@ -63,7 +63,7 @@ export default function TeamGrid({ members }) {
             </div>
           </div>
 
-          {/* الكروت */}
+          {/* Member cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {grouped[section.key].map((member, idx) => (
               <TeamCard

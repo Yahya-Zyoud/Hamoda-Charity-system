@@ -1,3 +1,4 @@
+// Composes all home page sections in their display order.
 import HeroSection from "./sections/HeroSection";
 import StatsSection from "./sections/StatsSection";
 import ServicesSection from "./sections/ServicesSection";

@@ -1,3 +1,4 @@
+// Horizontal stats strip showing project totals; renders em-dashes while data is loading.
 import { motion } from "framer-motion";
 
 export default function ProjectStats({ stats }) {
@@ -6,6 +7,7 @@ export default function ProjectStats({ stats }) {
     { value: stats?.active       ?? "—", label: "مشاريع نشطة"      },
     { value: stats?.done         ?? "—", label: "مشاريع مكتملة"    },
     {
+      // Format the beneficiary count in Arabic locale (e.g. ١٢٣٬٤٥٦).
       value: stats?.beneficiaries
         ? Number(stats.beneficiaries).toLocaleString("ar-EG")
         : "—",
@@ -29,6 +31,7 @@ export default function ProjectStats({ stats }) {
         <div
           key={i}
           className="px-10 py-5 text-center"
+          // Add a right-side divider between items but not after the last one.
           style={{
             borderRight: i < items.length - 1 ? "1px solid rgba(24,86,255,0.1)" : "none",
           }}

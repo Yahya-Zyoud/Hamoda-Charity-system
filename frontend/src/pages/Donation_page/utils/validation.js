@@ -1,3 +1,4 @@
+// Validates the donation form; returns { errors, isValid } — phone is optional but validated if provided
 export function validateDonationForm({ donationType, amount, donorInfo }) {
   const errors = {};
 

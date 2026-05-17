@@ -1,3 +1,4 @@
+// Controller for citizen help requests — create, read, status update, and delete
 const helpRequestService = require("../services/helpRequestService");
 const { HTTP_STATUS } = require("../config/constants");
 const logger = require("../utils/logger");

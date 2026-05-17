@@ -1,3 +1,4 @@
+// Utility helpers for building upload URLs, deleting files from disk, and ensuring the upload directory exists
 const fs = require("fs");
 const path = require("path");
 const { UPLOAD_DIR } = require("../config/environment");

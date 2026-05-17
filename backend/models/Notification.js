@@ -1,3 +1,4 @@
+// Mongoose model for internal admin notifications triggered by donations or help requests
 const mongoose = require("mongoose");
 
 const notificationSchema = new mongoose.Schema(

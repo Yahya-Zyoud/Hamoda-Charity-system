@@ -1,3 +1,4 @@
+// Mongoose model for the services/programs offered by the charity
 const mongoose = require("mongoose");
 
 const serviceSchema = new mongoose.Schema(

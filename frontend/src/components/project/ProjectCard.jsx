@@ -280,7 +280,7 @@ function ProjectModal({ project, gradient, progress, onClose }) {
   return createPortal(modal, document.body);
 }
 
-// ── الكارد الرئيسي ─────────────────────────────────────────────────────────────
+// ── Main card component ────────────────────────────────────────────────────────
 export default function ProjectCard({ project, index = 0, expandedId, setExpandedId }) {
   const isExpanded = expandedId === (project._id || index);
 
@@ -309,7 +309,7 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
           transition: "box-shadow 0.3s",
         }}
       >
-        {/* ── الصورة ──────────────────────────────────────────────────────────── */}
+        {/* ── Image ───────────────────────────────────────────────────────────── */}
         <div className="relative h-52 overflow-hidden bg-gray-100">
           {project.image ? (
             <img
@@ -346,7 +346,7 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
           </span>
         </div>
 
-        {/* ── المحتوى الأساسي ─────────────────────────────────────────────────── */}
+        {/* ── Main content ────────────────────────────────────────────────────── */}
         <div className="p-5 flex flex-col flex-1" dir="rtl">
           <h3 className="text-base font-extrabold mb-2 leading-snug" style={{ color: "#0f172a" }}>
             {project.title}
@@ -365,7 +365,7 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
             {project.description}
           </p>
 
-          {/* شريط التقدم */}
+          {/* Progress bar */}
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs font-bold" style={{ color: "#1856FF" }}>نسبة الإنجاز</span>
@@ -381,7 +381,7 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
             </div>
           </div>
 
-          {/* التفاصيل المختصرة */}
+          {/* Brief details row */}
           <div className="flex flex-col gap-2 mb-5 pt-3" style={{ borderTop: "1px solid #f1f5f9" }}>
             {project.location && (
               <div className="flex items-center gap-2 text-xs" style={{ color: "#475569" }}>
@@ -403,7 +403,7 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
             )}
           </div>
 
-          {/* زر عرض التفاصيل */}
+          {/* View details button */}
           <button
             onClick={toggleExpand}
             className="mt-auto w-full py-3 rounded-xl text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
@@ -423,7 +423,7 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
         </div>
       </motion.div>
 
-      {/* Modal يظهر في منتصف الشاشة */}
+      {/* Modal centered on screen */}
       {isExpanded && (
         <ProjectModal
           project={project}
