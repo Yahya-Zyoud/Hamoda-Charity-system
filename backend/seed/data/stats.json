@@ -1,6 +1,0 @@
-[
-  { "icon": "Users",    "value": 50430, "suffix": "+", "label": "إجمالي المستفيدين", "sublabel": "من مختلف المناطق",          "order": 1 },
-  { "icon": "Briefcase","value": 1250,  "suffix": "+", "label": "مشروع منجز",        "sublabel": "في التعليم والصحة والبنية", "order": 2 },
-  { "icon": "Heart",    "value": 8300,  "suffix": "+", "label": "متبرع كريم",         "sublabel": "وصلوا للمحتاجين مباشرة",   "order": 3 },
-  { "icon": "Activity", "value": 340,   "suffix": "+", "label": "متطوع نشط",          "sublabel": "في العمل الخيري والإنساني", "order": 4 }
-]

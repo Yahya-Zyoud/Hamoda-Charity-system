@@ -13,13 +13,11 @@ const Project  = require("../models/Project");
 const Service  = require("../models/Service");
 const Stat     = require("../models/Stat");
 const Partner  = require("../models/Partner");
-const Story    = require("../models/Story");
 
 const projects = require("./projects.json");
 const services = require("./services.json");
 const stats    = require("./stats.json");
 const partners = require("./partners.json");
-const stories  = require("./stories.json");
 
 async function seedCollection(Model, data, name) {
   const count = await Model.countDocuments();
@@ -41,7 +39,6 @@ async function main() {
   await seedCollection(Service, services, "Services");
   await seedCollection(Stat,    stats,    "Stats");
   await seedCollection(Partner, partners, "Partners");
-  await seedCollection(Story,   stories.map(s => ({ ...s, date: new Date(s.date) })), "Stories");
 
   console.log("\n✅ Seed complete.\n");
   await mongoose.connection.close();
