@@ -6,7 +6,6 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-const path = require("path");
 
 const config = require("./config/environment");
 
@@ -25,15 +24,6 @@ app.use(cors({
   credentials: true,
 }));
 app.use(helmet());
-
-// Stripe webhook needs the raw body for signature verification — mount BEFORE
-// express.json() and skip JSON parsing for this one route.
-const { handleStripeWebhook } = require("./controllers/donationController");
-app.post(
-  "/api/webhooks/stripe",
-  express.raw({ type: "application/json" }),
-  handleStripeWebhook
-);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -56,20 +46,6 @@ const subscribeLimiter = rateLimit({
 });
 app.use(`${config.API_PREFIX}/subscribe`, subscribeLimiter);
 
-// Swagger UI — interactive API docs at /api/docs
-try {
-  const swaggerUi   = require("swagger-ui-express");
-  const openapiSpec = require("./config/openapi");
-  app.use(
-    `${config.API_PREFIX}/docs`,
-    swaggerUi.serve,
-    swaggerUi.setup(openapiSpec, { customSiteTitle: "Hamoda Charity API" })
-  );
-  app.get(`${config.API_PREFIX}/openapi.json`, (_req, res) => res.json(openapiSpec));
-} catch (err) {
-  logger.warn("Swagger UI not available", { error: err.message });
-}
-
 app.use(config.API_PREFIX, apiRoutes);
 
 app.get("/health", (req, res) => {
@@ -89,53 +65,42 @@ app.use(handleAllErrors);
 const PORT = config.PORT;
 const NODE_ENV = config.NODE_ENV;
 
-// Only bind an HTTP port when run directly (node server.js).
-// In Vercel serverless the module is imported — listen() must not be called.
-if (require.main === module) {
-  // Start HTTP server immediately so the frontend isn't blocked.
-  // MongoDB connection is attempted in parallel; API routes that need
-  // the DB will fail gracefully if it hasn't connected yet.
-  const server = app.listen(PORT, () => {
-    logger.info("Server running", {
-      port: PORT,
-      environment: NODE_ENV,
-      url: `http://localhost:${PORT}`,
-    });
+const server = app.listen(PORT, () => {
+  logger.info("Server running", {
+    port: PORT,
+    environment: NODE_ENV,
+    url: `http://localhost:${PORT}`,
   });
-  connectDB().catch((err) => {
-    logger.error("MongoDB connection failed — DB routes will return errors until resolved", {
-      error: err.message,
-      hint: "Run: docker compose up -d",
-    });
+});
+
+connectDB().catch((err) => {
+  logger.error("MongoDB connection failed - DB routes will return errors until resolved", {
+    error: err.message,
+    hint: "Run: docker compose -f docker-compose.dev.yml up -d",
   });
+});
 
-  const gracefulShutdown = (signal) => {
-    logger.info(`${signal} received — shutting down gracefully`);
-    server.close(() => {
-      logger.info("HTTP server closed");
-      const mongoose = require("mongoose");
-      mongoose.connection.close(false).then(() => {
-        logger.info("MongoDB connection closed");
-        process.exit(0);
-      }).catch(() => process.exit(1));
-    });
-    setTimeout(() => {
-      logger.error("Forced shutdown after timeout");
-      process.exit(1);
-    }, 10_000).unref();
-  };
-
-  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-  process.on("SIGINT",  () => gracefulShutdown("SIGINT"));
-} else {
-  // Serverless: kick off the DB connection but don't block module export.
-  connectDB().catch((err) => {
-    logger.error("MongoDB connection failed (serverless)", { error: err.message });
+const gracefulShutdown = (signal) => {
+  logger.info(`${signal} received - shutting down gracefully`);
+  server.close(() => {
+    logger.info("HTTP server closed");
+    const mongoose = require("mongoose");
+    mongoose.connection.close(false).then(() => {
+      logger.info("MongoDB connection closed");
+      process.exit(0);
+    }).catch(() => process.exit(1));
   });
-}
+  setTimeout(() => {
+    logger.error("Forced shutdown after timeout");
+    process.exit(1);
+  }, 10000).unref();
+};
 
-process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled Rejection", { reason, promise });
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT",  () => gracefulShutdown("SIGINT"));
+
+process.on("unhandledRejection", (reason) => {
+  logger.error("Unhandled Rejection", { reason });
 });
 
 process.on("uncaughtException", (error) => {

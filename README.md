@@ -1,20 +1,24 @@
-# Charity Platform (Hamoda-Charity)
+# Hamoda Charity Platform
 
-Academic web application for a digital charity platform.
+Academic web application for a digital charity platform — An-Najah National University graduation project, team of 5 students.
 
 ## Features
-- Submit help requests with optional document upload
-- Browse active projects with progress and beneficiary stats
-- Donate to a specific project (amount is credited to the project's raised counter) or make a general donation
-- User profile with help-request and donation history
-- Admin dashboard for managing requests, projects, donations, users, notifications, and reports
+- Browse active projects with progress bars and beneficiary stats
+- Submit a help request with optional document upload
+- Make a donation (general, or scoped to a specific project)
+- User profile showing personal help-requests and donation history
+- Admin dashboard for managing requests, projects, donations, users, and notifications
 
 ## Tech Stack
-- **Frontend:** React 19 + Vite, Tailwind CSS, React Router v7, Framer Motion
-- **Backend:** Node.js + Express 5, Mongoose, Helmet, express-rate-limit
-- **Database:** MongoDB (Docker locally, Atlas in production)
-- **Auth:** Clerk (optional — app degrades gracefully when keys are absent)
-- **Payments:** Currently records donations as `pending` for manual processing. Stripe/PayPal integration is not implemented.
+| Layer        | Technology                                                  |
+|--------------|-------------------------------------------------------------|
+| Frontend     | React 19 + Vite, Tailwind CSS, React Router v7              |
+| Backend      | Node.js + Express 5, Mongoose, Helmet, express-rate-limit   |
+| Database     | MongoDB (Docker locally)                                    |
+| Auth         | Clerk (optional — degrades gracefully without keys)         |
+| File uploads | Multer (local disk under `backend/public/uploads/`)         |
+
+Donations are recorded with `status: "pending"` and confirmed manually by an admin. No payment gateway is integrated — this is intentional for the academic scope.
 
 ## Setup
 
@@ -28,8 +32,8 @@ npm install --prefix frontend
 cp backend/.env.example backend/.env       # then edit values
 cp frontend/.env.example frontend/.env.local
 
-# 3. (Optional) Start a local MongoDB
-docker compose up -d
+# 3. Start a local MongoDB
+docker compose -f docker-compose.dev.yml up -d
 
 # 4. Run dev servers (concurrent)
 npm run dev
@@ -39,14 +43,11 @@ Backend listens on `http://localhost:5000`, frontend on `http://localhost:5173`.
 
 ## Auth modes
 
-| Scenario | `CLERK_SECRET_KEY` + `CLERK_PUBLISHABLE_KEY` | `ALLOW_DEV_AUTH_BYPASS` | Result |
-|---|---|---|---|
-| Production | Set | (ignored) | Full Clerk JWT verification |
-| Local dev with Clerk | Set | (ignored) | Full Clerk JWT verification |
-| Local dev without Clerk | Unset | `1` (non-prod only) | `x-user-id` header for auth; admin requires `x-admin-bypass: 1` |
-| Misconfigured | Unset | Unset / production | All protected routes return 401 |
-
-The dev bypass refuses to run in production even when both flags are set.
+| Scenario                | Clerk keys set | `ALLOW_DEV_AUTH_BYPASS` | Result                                                       |
+|-------------------------|----------------|-------------------------|--------------------------------------------------------------|
+| Local dev with Clerk    | Yes            | (ignored)               | Full Clerk JWT verification                                  |
+| Local dev without Clerk | No             | `1`                     | `x-user-id` header for auth; admin needs `x-admin-bypass: 1` |
+| Misconfigured           | No             | unset                   | All protected routes return 401                              |
 
 ## Tests
 
@@ -54,7 +55,15 @@ The dev bypass refuses to run in production even when both flags are set.
 npm test --prefix backend
 ```
 
-Tests covering live MongoDB queries are skipped unless you provide a real `MONGODB_URI`.
+Tests covering live MongoDB queries are skipped unless you provide a real `MONGO_URI`.
+
+## Seed sample data
+
+```bash
+npm run seed --prefix backend
+```
+
+Loads projects, services, stats, partners, and stories from `backend/data/*.json`.
 
 ## Team
 - Murad Hisham Aydi

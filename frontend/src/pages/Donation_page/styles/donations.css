@@ -51,19 +51,13 @@
 
 /* ── Layout ────────────────────────────────────────────────────────────────── */
 .dp-layout {
-  max-width: 1100px;
+  max-width: 760px;
   margin: 24px auto 64px;
   padding: 0 24px;
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 1fr;
   gap: 24px;
   align-items: start;
-}
-
-/* Single-column variant — sidebar summary was removed, so the form takes full width */
-.dp-layout-single {
-  grid-template-columns: 1fr;
-  max-width: 760px;
 }
 
 .dp-info-box-inline {
@@ -302,57 +296,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* ── Summary card (right sidebar) ─────────────────────────────────────────── */
-.dp-summary {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,.07);
-  padding: 28px 24px;
-}
-
-.dp-summary-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1e3a5f;
-  margin: 0 0 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #e8edf5;
-}
-
-.dp-summary-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.dp-summary-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: .88rem;
-}
-
-.dp-summary-key {
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.dp-summary-val {
-  color: #1e293b;
-  font-weight: 600;
-  text-align: left;
-  direction: ltr;
-}
-
-.dp-summary-amount {
-  font-size: 1.1rem;
-  color: #2563eb;
-}
-
-/* ── Info box (below summary) ─────────────────────────────────────────────── */
+/* ── Info box ─────────────────────────────────────────────────────────────── */
 .dp-info-box {
   margin-top: 20px;
   background: #eff6ff;

@@ -1,17 +1,37 @@
+# Dependencies
 node_modules/
 backend/node_modules/
 frontend/node_modules/
+
+# Env files (never commit secrets)
 .env
 .env.local
 .env.*.local
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# Build output
 dist/
 build/
-.DS_Store
+frontend/dist/
+
+# Logs
 *.log
 npm-debug.log*
-*.tgz
+
+# Uploads (user-generated)
+uploads/
+backend/public/uploads/
+
+# IDE / OS
 .idea/
 .vscode/
+.DS_Store
+Thumbs.db
+
+# Tarballs / misc
+*.tgz
 *.suo
 *.ntvs*
 *.njsproj

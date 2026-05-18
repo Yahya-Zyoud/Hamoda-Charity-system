@@ -35,16 +35,16 @@ fi
 
 # ── Start MongoDB container ────────────────────────────────────────
 info "Starting MongoDB container..."
-docker compose up -d db
+docker compose -f docker-compose.dev.yml up -d
 
 info "Waiting for MongoDB to be ready..."
 for i in $(seq 1 30); do
-  if docker compose exec -T db mongosh --quiet --eval "db.adminCommand('ping').ok" >/dev/null 2>&1; then
+  if docker compose -f docker-compose.dev.yml exec -T db mongosh --quiet --eval "db.adminCommand('ping').ok" >/dev/null 2>&1; then
     ok "MongoDB is ready"
     break
   fi
   if [ "$i" -eq 30 ]; then
-    error "MongoDB did not become ready in time. Run: docker compose logs db"
+    error "MongoDB did not become ready in time. Run: docker compose -f docker-compose.dev.yml logs db"
   fi
   sleep 2
 done

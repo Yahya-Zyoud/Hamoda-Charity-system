@@ -3,8 +3,6 @@ const Donation = require('../models/Donation');
 const Project  = require('../models/Project');
 const Notification = require('../models/Notification');
 const statsService = require('../services/statsService');
-const stripeService = require('../services/stripeService');
-const emailService  = require('../services/emailService');
 const { HTTP_STATUS } = require('../config/constants');
 const { cleanObject } = require('../utils/sanitize');
 const logger = require('../utils/logger');
@@ -27,11 +25,7 @@ async function createDonation(req, res, next) {
       }
     }
 
-    // For Stripe payments we create the donation in pending state, hand the
-    // browser a Checkout URL, and let the webhook mark it completed.
-    // Cash donations stay pending until admin confirms (current behavior).
-    const wantsStripe = paymentMethod === 'stripe' && stripeService.isEnabled();
-
+    // Donations stay pending until admin marks them completed (cash flow).
     const donation = await Donation.create({
       donationType,
       amount:      Number(amount),
@@ -43,12 +37,11 @@ async function createDonation(req, res, next) {
       note:        note   || '',
       userId:      userId || req.userId || '',
       projectId:   projectRef ? projectRef._id : undefined,
-      status:      wantsStripe ? 'pending' : 'pending',
+      status:      'pending',
     });
 
-    if (projectRef && !wantsStripe) {
-      // Credit the project counter immediately for cash donations.
-      // For Stripe, we wait for webhook confirmation in handleWebhook().
+    if (projectRef) {
+      // Credit the project counter immediately.
       await Project.findByIdAndUpdate(projectRef._id, { $inc: { raised: Number(amount) } });
     }
 
@@ -60,61 +53,10 @@ async function createDonation(req, res, next) {
 
     statsService.invalidateCache();
 
-    // Fire-and-forget thank-you email (works without Stripe too)
-    emailService.sendDonationConfirmation(donation, projectRef)
-      .catch((err) => logger.warn('Failed to send donation email', { error: err.message }));
-
-    // If Stripe is enabled and chosen, return a checkout URL for the frontend
-    // to redirect to. Otherwise return the donation as before.
-    if (wantsStripe) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      const session = await stripeService.createCheckoutSession({ donation, frontendUrl });
-      if (session) {
-        donation.stripeSessionId = session.sessionId;
-        await donation.save();
-        return res.sendSuccess({ donation, checkoutUrl: session.url }, 'تم إنشاء جلسة الدفع', HTTP_STATUS.CREATED);
-      }
-      // If Stripe failed, fall through to the standard success response —
-      // the donation is still saved as pending and an admin can follow up.
-      logger.warn('Stripe session creation failed; donation saved as cash-pending', { donationId: donation._id });
-    }
-
     res.sendSuccess(donation, 'تم استلام تبرعك بنجاح، شكرًا لك', HTTP_STATUS.CREATED);
   } catch (error) {
     next(error);
   }
-}
-
-/**
- * Stripe webhook handler. The Stripe SDK requires the raw request body to
- * verify the signature, so the route mounts express.raw() before this.
- */
-async function handleStripeWebhook(req, res) {
-  const signature = req.headers['stripe-signature'];
-  const event = stripeService.verifyWebhook(req.body, signature);
-  if (!event) {
-    return res.status(400).send('Invalid webhook');
-  }
-
-  if (event.type === 'checkout.session.completed') {
-    const session    = event.data.object;
-    const donationId = session.metadata?.donationId;
-    if (donationId && mongoose.Types.ObjectId.isValid(donationId)) {
-      const donation = await Donation.findByIdAndUpdate(
-        donationId,
-        { status: 'completed' },
-        { new: true }
-      );
-      if (donation?.projectId) {
-        await Project.findByIdAndUpdate(donation.projectId, { $inc: { raised: Number(donation.amount) } });
-      }
-      statsService.invalidateCache();
-      logger.info('Stripe payment completed', { donationId });
-    }
-  }
-
-  // Always 200 — Stripe retries non-2xx and we don't want noise.
-  res.json({ received: true });
 }
 
 async function getAllDonations(req, res, next) {
@@ -195,21 +137,6 @@ async function getDonationById(req, res, next) {
   }
 }
 
-async function downloadReceipt(req, res, next) {
-  try {
-    const donation = await Donation.findById(req.params.id);
-    if (!donation) return res.sendError('لم يتم العثور على التبرع', HTTP_STATUS.NOT_FOUND);
-    let project = null;
-    if (donation.projectId) {
-      project = await Project.findById(donation.projectId).select('title');
-    }
-    const { streamReceipt } = require('../services/receiptService');
-    streamReceipt(res, donation, project);
-  } catch (error) {
-    next(error);
-  }
-}
-
 async function updateDonationStatus(req, res, next) {
   try {
     const { status } = req.body;
@@ -239,6 +166,4 @@ module.exports = {
   getDonationStats,
   getDonationById,
   updateDonationStatus,
-  handleStripeWebhook,
-  downloadReceipt,
 };

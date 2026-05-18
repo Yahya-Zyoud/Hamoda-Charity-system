@@ -78,13 +78,6 @@ function DonationPage() {
         ...(project ? { projectId: project.id || project._id } : {}),
       });
 
-      // If the backend created a Stripe Checkout session, redirect the
-      // browser to it so the user can enter their card details.
-      if (result?.checkoutUrl) {
-        window.location.href = result.checkoutUrl;
-        return;
-      }
-
       setSuccess(true);
       setDonationType("");
       setAmount(null);
@@ -95,6 +88,34 @@ function DonationPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (!projectId) {
+    return (
+      <>
+        <Navbar />
+        <main className="dp-page">
+          <section className="dp-hero">
+            <span className="dp-hero-badge">تبرع الآن</span>
+            <h1>اختر مشروعاً للتبرع</h1>
+            <p>يرجى اختيار مشروع أولاً قبل إتمام عملية التبرع.</p>
+          </section>
+          <div style={{ maxWidth: 560, margin: "48px auto", padding: "0 24px", textAlign: "center", direction: "rtl" }}>
+            <div className="dp-alert dp-alert-error" style={{ justifyContent: "center" }}>
+              ⚠ لم يتم اختيار مشروع. يرجى العودة إلى صفحة المشاريع واختيار مشروع للتبرع له.
+            </div>
+            <Link
+              to="/projects"
+              className="dp-submit-btn"
+              style={{ display: "inline-flex", textDecoration: "none", marginTop: 16, width: "auto", padding: "14px 32px" }}
+            >
+              عرض المشاريع
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
   }
 
   return (
