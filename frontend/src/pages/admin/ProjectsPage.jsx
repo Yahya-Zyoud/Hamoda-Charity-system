@@ -9,10 +9,6 @@ import Input from "../../components/admin/Input";
 import Select from "../../components/admin/Select";
 import { getProjects, createProject, updateProject, deleteProject, uploadImage } from "../../services/api";
 
-// DB uses Arabic status & goal/raised field names — normalize at the boundary
-const DB_STATUS = { active: "نشط", completed: "مكتمل" };
-const UI_STATUS = { "نشط": "active", "مكتمل": "completed", "معلق": "active" };
-
 const dbToUi = (p) => ({
   id:          p.id,
   title:       p.title       || "",
@@ -20,7 +16,7 @@ const dbToUi = (p) => ({
   description: p.description || "",
   target:      p.goal        || 0,
   collected:   p.raised      || 0,
-  status:      UI_STATUS[p.status] || "active",
+  status:      p.status      || "active",
   image:       p.image       || "",
 });
 
@@ -29,7 +25,7 @@ const uiToDb = (form) => ({
   category:    form.category,
   description: form.description,
   goal:        +form.target,
-  status:      DB_STATUS[form.status] || "نشط",
+  status:      form.status || "active",
   image:       form.image || "",
 });
 
@@ -74,7 +70,7 @@ function ProjectsPage() {
 
   const complete = async (id) => {
     try {
-      await updateProject(id, { status: "مكتمل" });
+      await updateProject(id, { status: "completed" });
       setList((p) => p.map((pr) => (pr.id === id ? { ...pr, status: "completed" } : pr)));
     } catch {}
   };

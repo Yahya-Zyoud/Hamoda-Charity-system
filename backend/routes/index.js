@@ -10,7 +10,7 @@ router.use("/team",      require("./teamRoutes"));
 router.use("/subscribe", require("./subscriptionRoutes"));
 router.use("/user",           require("./userRoutes"));
 router.use("/help-requests",  require("./helpRequestRoutes"));
-router.use("/donations",      require("../router/donationRouter"));
+router.use("/donations",      require("./donationRoutes"));
 router.use("/notifications",  require("./notificationRoutes"));
 router.use("/admin",          require("./adminRoutes"));
 router.use("/uploads",        require("./uploadRoutes"));

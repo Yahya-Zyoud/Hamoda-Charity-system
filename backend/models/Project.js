@@ -9,7 +9,7 @@ const projectSchema = new mongoose.Schema(
     image: String,
     logoType: String,
     category: String,
-    status: { type: String, enum: ["نشط", "مكتمل", "معلق"], default: "نشط" },
+    status: { type: String, enum: ["active", "completed", "on_hold"], default: "active" },
     goal: Number,
     raised: { type: Number, default: 0 },
     beneficiaries: Number,

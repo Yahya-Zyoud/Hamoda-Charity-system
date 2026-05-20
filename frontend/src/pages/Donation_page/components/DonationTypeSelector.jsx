@@ -1,10 +1,10 @@
 const DONATION_TYPES = [
-  { id: "صدقة",  label: "صدقة",  sub: "تبرع عام" },
-  { id: "زكاة",  label: "زكاة",  sub: "زكي الإسلام" },
-  { id: "إغاثة", label: "إغاثة", sub: "مساعدة طارئة" },
-  { id: "إسكان", label: "إسكان", sub: "مأوى وسكن" },
-  { id: "علاج",  label: "علاج",  sub: "رعاية صحية" },
-  { id: "تعليم", label: "تعليم", sub: "دعم التعليم" },
+  { id: "sadaqah",   label: "صدقة",  sub: "تبرع عام" },
+  { id: "zakat",     label: "زكاة",  sub: "زكي الإسلام" },
+  { id: "relief",    label: "إغاثة", sub: "مساعدة طارئة" },
+  { id: "housing",   label: "إسكان", sub: "مأوى وسكن" },
+  { id: "medical",   label: "علاج",  sub: "رعاية صحية" },
+  { id: "education", label: "تعليم", sub: "دعم التعليم" },
 ];
 
 function DonationTypeSelector({ donationType, onChange, error }) {

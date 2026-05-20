@@ -1,45 +1,40 @@
-const notificationService = require("../services/notificationService");
+const Notification = require("../models/Notification");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
-const logger = require("../utils/logger");
 
-exports.getAll = async (req, res) => {
+exports.getAll = async (req, res, next) => {
   try {
-    const notifications = await notificationService.getAll();
+    const notifications = await Notification.find().sort({ createdAt: -1 }).limit(50);
     return res.sendSuccess(notifications);
   } catch (error) {
-    logger.error("Error fetching notifications", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.markRead = async (req, res) => {
+exports.markRead = async (req, res, next) => {
   try {
-    const notification = await notificationService.markRead(req.params.id);
+    const notification = await Notification.findByIdAndUpdate(req.params.id, { read: true }, { new: true });
     if (!notification) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
     return res.sendSuccess(notification);
   } catch (error) {
-    logger.error("Error marking notification read", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.markAllRead = async (req, res) => {
+exports.markAllRead = async (req, res, next) => {
   try {
-    await notificationService.markAllRead();
-    return res.sendSuccess(null, "تم تعيين الكل كمقروء");
+    await Notification.updateMany({ read: false }, { read: true });
+    return res.sendSuccess(null, "All notifications marked as read");
   } catch (error) {
-    logger.error("Error marking all notifications read", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.deleteOne = async (req, res) => {
+exports.deleteOne = async (req, res, next) => {
   try {
-    const notification = await notificationService.deleteOne(req.params.id);
+    const notification = await Notification.findByIdAndDelete(req.params.id);
     if (!notification) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
-    return res.sendSuccess(null, "تم حذف الإشعار");
+    return res.sendSuccess(null, "Notification deleted");
   } catch (error) {
-    logger.error("Error deleting notification", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };

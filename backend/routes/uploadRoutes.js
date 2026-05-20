@@ -35,7 +35,7 @@ const upload = multer({
 // Admin-only: returns { url: "/uploads/images/<filename>" } the frontend can
 // store directly on the resource (e.g. Project.image).
 router.post("/image", requireAdmin, upload.single("image"), (req, res) => {
-  if (!req.file) return res.sendError("لم يتم اختيار ملف", 400);
+  if (!req.file) return res.sendError("No file selected", 400);
   const url = `/uploads/images/${req.file.filename}`;
   res.sendSuccess({ url, filename: req.file.filename });
 });

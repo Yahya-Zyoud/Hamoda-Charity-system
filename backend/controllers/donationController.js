@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const Donation = require('../models/Donation');
 const Project  = require('../models/Project');
 const Notification = require('../models/Notification');
-const statsService = require('../services/statsService');
 const { HTTP_STATUS } = require('../config/constants');
 const { cleanObject } = require('../utils/sanitize');
 const logger = require('../utils/logger');
@@ -17,15 +16,14 @@ async function createDonation(req, res, next) {
     let projectRef = null;
     if (projectId) {
       if (!mongoose.Types.ObjectId.isValid(projectId)) {
-        return res.sendError('معرّف المشروع غير صالح', HTTP_STATUS.BAD_REQUEST);
+        return res.sendError('Invalid project ID', HTTP_STATUS.BAD_REQUEST);
       }
       projectRef = await Project.findById(projectId).select('_id title');
       if (!projectRef) {
-        return res.sendError('المشروع غير موجود', HTTP_STATUS.BAD_REQUEST);
+        return res.sendError('Project not found', HTTP_STATUS.BAD_REQUEST);
       }
     }
 
-    // Donations stay pending until admin marks them completed (cash flow).
     const donation = await Donation.create({
       donationType,
       amount:      Number(amount),
@@ -41,19 +39,16 @@ async function createDonation(req, res, next) {
     });
 
     if (projectRef) {
-      // Credit the project counter immediately.
       await Project.findByIdAndUpdate(projectRef._id, { $inc: { raised: Number(amount) } });
     }
 
     Notification.create({
       type:      'donation',
-      msg:       `تبرع جديد من ${donorName} بمبلغ $${Number(amount).toLocaleString()} (${donationType})`,
+      msg:       `New donation from ${donorName}: $${Number(amount).toLocaleString()} (${donationType})`,
       relatedId: donation._id,
     }).catch((err) => logger.warn('Failed to create donation notification', { error: err.message }));
 
-    statsService.invalidateCache();
-
-    res.sendSuccess(donation, 'تم استلام تبرعك بنجاح، شكرًا لك', HTTP_STATUS.CREATED);
+    res.sendSuccess(donation, 'Donation received successfully', HTTP_STATUS.CREATED);
   } catch (error) {
     next(error);
   }
@@ -61,9 +56,6 @@ async function createDonation(req, res, next) {
 
 async function getAllDonations(req, res, next) {
   try {
-    // Backwards-compatible: when no pagination query is sent, return an
-    // unwrapped array (old admin pages). When ?paginated=1 is sent, return
-    // a { items, page, ... } envelope for the new paginated tables.
     const page     = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
     const pageSize = Math.min(200, Math.max(1, Number.parseInt(req.query.pageSize, 10) || 25));
     const skip     = (page - 1) * pageSize;
@@ -99,7 +91,7 @@ async function getRecentDonations(req, res, next) {
       type:          d.donationType,
       paymentMethod: d.paymentMethod,
       amount:        `$${Number(d.amount).toLocaleString()}`,
-      date:          d.createdAt.toLocaleDateString('ar-SA', { day: 'numeric', month: 'long', year: 'numeric' }),
+      date:          d.createdAt.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }),
     }));
 
     res.sendSuccess(formatted);
@@ -116,7 +108,6 @@ async function getDonationStats(req, res, next) {
     ]);
 
     const stats = result[0] || { totalAmount: 0, totalDonors: 0 };
-
     res.sendSuccess({
       totalAmount:          stats.totalAmount,
       totalDonors:          stats.totalDonors,
@@ -130,7 +121,7 @@ async function getDonationStats(req, res, next) {
 async function getDonationById(req, res, next) {
   try {
     const donation = await Donation.findById(req.params.id);
-    if (!donation) return res.sendError('لم يتم العثور على التبرع', HTTP_STATUS.NOT_FOUND);
+    if (!donation) return res.sendError('Donation not found', HTTP_STATUS.NOT_FOUND);
     res.sendSuccess(donation);
   } catch (error) {
     next(error);
@@ -142,7 +133,7 @@ async function updateDonationStatus(req, res, next) {
     const { status } = req.body;
 
     if (!status || !VALID_STATUSES.includes(status)) {
-      return res.sendError(`الحالة يجب أن تكون: ${VALID_STATUSES.join(' | ')}`, HTTP_STATUS.BAD_REQUEST);
+      return res.sendError(`Status must be one of: ${VALID_STATUSES.join(', ')}`, HTTP_STATUS.BAD_REQUEST);
     }
 
     const donation = await Donation.findByIdAndUpdate(
@@ -151,9 +142,8 @@ async function updateDonationStatus(req, res, next) {
       { new: true, runValidators: true }
     );
 
-    if (!donation) return res.sendError('لم يتم العثور على التبرع', HTTP_STATUS.NOT_FOUND);
-
-    res.sendSuccess(donation, 'تم تحديث الحالة بنجاح');
+    if (!donation) return res.sendError('Donation not found', HTTP_STATUS.NOT_FOUND);
+    res.sendSuccess(donation, 'Status updated successfully');
   } catch (error) {
     next(error);
   }

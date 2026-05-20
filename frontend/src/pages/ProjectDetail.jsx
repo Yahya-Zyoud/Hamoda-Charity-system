@@ -91,8 +91,8 @@ export default function ProjectDetail() {
                     {project.category}
                   </span>
                 )}
-                <span style={{ background: project.status === "مكتمل" ? "#dcfce7" : "#fef3c7", color: project.status === "مكتمل" ? "#16a34a" : "#92400e", padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700 }}>
-                  {project.status}
+                <span style={{ background: project.status === "completed" ? "#dcfce7" : "#fef3c7", color: project.status === "completed" ? "#16a34a" : "#92400e", padding: "4px 12px", borderRadius: 999, fontSize: 12, fontWeight: 700 }}>
+                  {project.status === "active" ? "نشط" : project.status === "completed" ? "مكتمل" : "معلق"}
                 </span>
               </div>
 

@@ -5,7 +5,7 @@ const volunteerSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true, trim: true },
     email:    { type: String, required: true, trim: true, lowercase: true,
-                match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "البريد الإلكتروني غير صحيح"] },
+                match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email address"] },
     phone:    { type: String, required: true, trim: true },
     city:     { type: String, default: "", trim: true },
     skills:   { type: String, default: "", trim: true },

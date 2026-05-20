@@ -1,80 +1,48 @@
-// middleware/validateDonation.js
-// ─────────────────────────────────────────────────────────────────────────────
-// Express middleware that validates the donation request body BEFORE it reaches
-// the controller. If anything is wrong, it immediately sends a 400 error
-// with clear Arabic messages so the frontend can display them to the user.
-//
-// Middleware = a function that runs between the request arriving and the
-// controller handling it. It receives (req, res, next):
-//   - Call next()        → pass the request to the next step (controller)
-//   - Call res.json()    → stop here and send a response (validation failed)
-// ─────────────────────────────────────────────────────────────────────────────
-
-const VALID_TYPES    = ['صدقة', 'زكاة', 'إغاثة', 'إسكان', 'علاج', 'تعليم'];
+const VALID_TYPES    = ['sadaqah', 'zakat', 'relief', 'housing', 'medical', 'education'];
 const VALID_PAYMENTS = ['stripe', 'paypal', 'cash'];
 
 function validateDonation(req, res, next) {
-  const {
-    donationType,
-    amount,
-    donorName,
-    donorEmail,
-    donorPhone,
-    paymentMethod,
-  } = req.body;
-
+  const { donationType, amount, donorName, donorEmail, donorPhone, paymentMethod } = req.body;
   const errors = {};
 
-  // 1. Donation type
   if (!donationType) {
-    errors.donationType = 'يرجى اختيار نوع التبرع';
+    errors.donationType = 'Donation type is required';
   } else if (!VALID_TYPES.includes(donationType)) {
-    errors.donationType = 'نوع التبرع غير صحيح';
+    errors.donationType = 'Invalid donation type';
   }
 
-  // 2. Amount
   const numAmount = Number(amount);
   if (!amount && amount !== 0) {
-    errors.amount = 'المبلغ مطلوب';
+    errors.amount = 'Amount is required';
   } else if (isNaN(numAmount) || numAmount <= 0) {
-    errors.amount = 'يرجى إدخال مبلغ صحيح أكبر من صفر';
+    errors.amount = 'Amount must be a positive number';
   }
 
-  // 3. Donor name
   if (!donorName || String(donorName).trim() === '') {
-    errors.donorName = 'اسم المتبرع مطلوب';
+    errors.donorName = 'Donor name is required';
   }
 
-  // 4. Email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!donorEmail || String(donorEmail).trim() === '') {
-    errors.donorEmail = 'البريد الإلكتروني مطلوب';
+    errors.donorEmail = 'Email is required';
   } else if (!emailRegex.test(donorEmail)) {
-    errors.donorEmail = 'يرجى إدخال بريد إلكتروني صحيح';
+    errors.donorEmail = 'Invalid email address';
   }
 
-  // 5. Phone
   if (!donorPhone || String(donorPhone).trim() === '') {
-    errors.donorPhone = 'رقم الهاتف مطلوب';
+    errors.donorPhone = 'Phone number is required';
   }
 
-  // 6. Payment method
   if (!paymentMethod) {
-    errors.paymentMethod = 'يرجى اختيار طريقة الدفع';
+    errors.paymentMethod = 'Payment method is required';
   } else if (!VALID_PAYMENTS.includes(paymentMethod)) {
-    errors.paymentMethod = 'طريقة الدفع غير صحيحة';
+    errors.paymentMethod = 'Invalid payment method';
   }
 
-  // If there are any errors — stop here and send 400 Bad Request
   if (Object.keys(errors).length > 0) {
-    return res.status(400).json({
-      success: false,
-      message: 'بيانات غير صحيحة',
-      errors,
-    });
+    return res.status(400).json({ success: false, message: 'Invalid input data', errors });
   }
 
-  // No errors — let the request continue to the controller
   next();
 }
 

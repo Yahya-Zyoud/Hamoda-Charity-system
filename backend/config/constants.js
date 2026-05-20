@@ -10,14 +10,14 @@ const statusCodes = {
 };
 
 const msgs = {
-  SUCCESS: "تم بنجاح",
-  ERROR: "حدث خطأ",
-  INVALID_INPUT: "البيانات المدخلة غير صحيحة",
-  NOT_FOUND: "لم يتم العثور على البيانات",
-  SUBSCRIPTION_SUCCESS: "تم الاشتراك بنجاح! شكراً لاهتمامك.",
-  FILE_UPLOAD_SUCCESS: "تم رفع الملف بنجاح",
-  FILE_UPLOAD_ERROR: "فشل في رفع الملف",
-  INVALID_EMAIL: "البريد الإلكتروني غير صالح",
+  SUCCESS: "Success",
+  ERROR: "An error occurred",
+  INVALID_INPUT: "Invalid input data",
+  NOT_FOUND: "Resource not found",
+  SUBSCRIPTION_SUCCESS: "Subscribed successfully! Thank you for your interest.",
+  FILE_UPLOAD_SUCCESS: "File uploaded successfully",
+  FILE_UPLOAD_ERROR: "File upload failed",
+  INVALID_EMAIL: "Invalid email address",
 };
 
 const rules = {

@@ -22,7 +22,7 @@ const handleAllErrors = (err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
-      message: "حجم الملف كبير جداً",
+      message: "File size too large",
     });
   }
 

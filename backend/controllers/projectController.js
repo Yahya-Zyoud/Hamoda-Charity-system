@@ -1,70 +1,63 @@
-const projectService = require("../services/projectService");
+const Project = require("../models/Project");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
-const logger = require("../utils/logger");
 
-exports.getProjects = async (req, res) => {
+exports.getProjects = async (req, res, next) => {
   try {
-    const items = await projectService.getProjects();
-    logger.info("Projects retrieved", { count: items.length });
+    const items = await Project.find().sort({ createdAt: -1 });
     return res.sendSuccess(items);
   } catch (error) {
-    logger.error("Error fetching projects", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.getProjectById = async (req, res) => {
+exports.getProjectById = async (req, res, next) => {
   try {
-    const project = await projectService.getProjectById(req.params.id);
+    const project = await Project.findById(req.params.id);
     if (!project) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
     return res.sendSuccess(project);
   } catch (error) {
-    logger.error("Error fetching project", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.getProjectStats = async (req, res) => {
+exports.getProjectStats = async (req, res, next) => {
   try {
-    const stats = await projectService.getProjectStats();
-    return res.sendSuccess(stats);
+    const [total, active, completed] = await Promise.all([
+      Project.countDocuments(),
+      Project.countDocuments({ status: "active" }),
+      Project.countDocuments({ status: "completed" }),
+    ]);
+    return res.sendSuccess({ total, active, completed });
   } catch (error) {
-    logger.error("Error fetching project stats", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.createProject = async (req, res) => {
+exports.createProject = async (req, res, next) => {
   try {
-    const project = await projectService.createProject(req.body);
-    logger.info("Project created", { id: project._id });
+    const project = await Project.create(req.body);
     return res.sendSuccess(project, MESSAGES.SUCCESS, HTTP_STATUS.CREATED);
   } catch (error) {
-    logger.error("Error creating project", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.updateProject = async (req, res) => {
+exports.updateProject = async (req, res, next) => {
   try {
-    const project = await projectService.updateProject(req.params.id, req.body);
+    const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!project) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
-    logger.info("Project updated", { id: req.params.id });
     return res.sendSuccess(project);
   } catch (error) {
-    logger.error("Error updating project", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.deleteProject = async (req, res) => {
+exports.deleteProject = async (req, res, next) => {
   try {
-    const project = await projectService.deleteProject(req.params.id);
+    const project = await Project.findByIdAndDelete(req.params.id);
     if (!project) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
-    logger.info("Project deleted", { id: req.params.id });
     return res.sendSuccess(null, MESSAGES.SUCCESS);
   } catch (error) {
-    logger.error("Error deleting project", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };

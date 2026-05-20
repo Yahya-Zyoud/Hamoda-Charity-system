@@ -1,71 +1,88 @@
-const helpRequestService = require("../services/helpRequestService");
+const HelpRequest  = require("../models/HelpRequest");
+const Notification = require("../models/Notification");
 const { HTTP_STATUS } = require("../config/constants");
-const logger = require("../utils/logger");
 const { cleanObject } = require("../utils/sanitize");
+const logger = require("../utils/logger");
 
-async function createHelpRequest(req, res) {
+const ALLOWED_STATUSES = ["pending", "accepted", "rejected"];
+
+async function createHelpRequest(req, res, next) {
   try {
     const clean = cleanObject(req.body) || {};
-    const helpRequest = await helpRequestService.createHelpRequest({
-      clerkId: req.userId || "",
-      ...clean,
-      file: req.file,
-    });
-    res.sendSuccess(helpRequest, "تم إرسال طلب المساعدة بنجاح.", HTTP_STATUS.CREATED);
-  } catch (error) {
-    logger.error("Create help request error:", error);
-    // Mongoose validation and cast failures are caller mistakes — surface as 400.
-    if (error.name === "ValidationError" || error.name === "CastError") {
-      return res.sendError("بيانات الطلب غير صالحة.", HTTP_STATUS.BAD_REQUEST);
+    const { fullName, nationalId, phone, email, city, helpType, description } = clean;
+
+    if (!fullName || !nationalId || !phone || !city || !helpType || !description) {
+      return res.sendError("Please fill in all required fields", HTTP_STATUS.BAD_REQUEST);
     }
-    const status = error.status && error.status < 500 ? error.status : HTTP_STATUS.INTERNAL_SERVER_ERROR;
-    const message = status === HTTP_STATUS.INTERNAL_SERVER_ERROR
-      ? "حدث خطأ أثناء معالجة الطلب."
-      : error.message;
-    res.sendError(message, status);
+    if (!/^\d{9}$/.test(nationalId)) {
+      return res.sendError("National ID must be exactly 9 digits", HTTP_STATUS.BAD_REQUEST);
+    }
+    if (!/^05\d{8}$/.test(phone)) {
+      return res.sendError("Phone number must start with 05 and be 10 digits", HTTP_STATUS.BAD_REQUEST);
+    }
+    if (description.trim().length < 20) {
+      return res.sendError("Description must be at least 20 characters", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const documentPath = req.file ? `/uploads/help-documents/${req.file.filename}` : null;
+
+    const helpRequest = await HelpRequest.create({
+      clerkId: req.userId || "",
+      fullName, nationalId, phone, email, city, helpType, description, documentPath,
+    });
+
+    Notification.create({
+      type:      "request",
+      msg:       `New help request from ${fullName} (${helpType})`,
+      relatedId: helpRequest._id,
+    }).catch((err) => logger.warn("Failed to create notification", { error: err.message }));
+
+    res.sendSuccess(helpRequest, "Help request submitted successfully", HTTP_STATUS.CREATED);
+  } catch (error) {
+    next(error);
   }
 }
 
-async function getAllHelpRequests(req, res) {
+async function getAllHelpRequests(req, res, next) {
   try {
-    const requests = await helpRequestService.getAllHelpRequests();
+    const requests = await HelpRequest.find().sort({ createdAt: -1 });
     res.sendSuccess(requests);
   } catch (error) {
-    logger.error("Get help requests error:", error);
-    res.sendError("حدث خطأ أثناء جلب الطلبات.", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 }
 
-async function getHelpRequestById(req, res) {
+async function getHelpRequestById(req, res, next) {
   try {
-    const request = await helpRequestService.getHelpRequestById(req.params.id);
-    if (!request) return res.sendError("الطلب غير موجود.", HTTP_STATUS.NOT_FOUND);
+    const request = await HelpRequest.findById(req.params.id);
+    if (!request) return res.sendError("Help request not found", HTTP_STATUS.NOT_FOUND);
     res.sendSuccess(request);
   } catch (error) {
-    logger.error("Get help request error:", error);
-    res.sendError("حدث خطأ أثناء جلب الطلب.", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 }
 
-async function updateHelpRequestStatus(req, res) {
+async function updateHelpRequestStatus(req, res, next) {
   try {
-    const request = await helpRequestService.updateHelpRequestStatus(req.params.id, req.body.status);
-    if (!request) return res.sendError("الطلب غير موجود.", HTTP_STATUS.NOT_FOUND);
-    res.sendSuccess(request, "تم تحديث حالة الطلب بنجاح.");
+    const { status } = req.body;
+    if (!ALLOWED_STATUSES.includes(status)) {
+      return res.sendError(`Status must be one of: ${ALLOWED_STATUSES.join(", ")}`, HTTP_STATUS.BAD_REQUEST);
+    }
+    const request = await HelpRequest.findByIdAndUpdate(req.params.id, { status }, { new: true });
+    if (!request) return res.sendError("Help request not found", HTTP_STATUS.NOT_FOUND);
+    res.sendSuccess(request, "Status updated successfully");
   } catch (error) {
-    logger.error("Update help request status error:", error);
-    res.sendError(error.message, error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 }
 
-async function deleteHelpRequest(req, res) {
+async function deleteHelpRequest(req, res, next) {
   try {
-    const request = await helpRequestService.deleteHelpRequest(req.params.id);
-    if (!request) return res.sendError("الطلب غير موجود.", HTTP_STATUS.NOT_FOUND);
-    res.sendSuccess(null, "تم حذف الطلب بنجاح.");
+    const request = await HelpRequest.findByIdAndDelete(req.params.id);
+    if (!request) return res.sendError("Help request not found", HTTP_STATUS.NOT_FOUND);
+    res.sendSuccess(null, "Help request deleted");
   } catch (error) {
-    logger.error("Delete help request error:", error);
-    res.sendError("حدث خطأ أثناء حذف الطلب.", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 }
 

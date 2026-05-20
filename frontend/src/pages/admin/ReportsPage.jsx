@@ -15,7 +15,7 @@ const HELP_TYPE_COLORS = {
   housing: "#16A34A", financial: "#8b5cf6", other: "#64748B",
 };
 
-const DB_STATUS_MAP = { "نشط": "active", "مكتمل": "completed", "موقف": "paused" };
+const DB_STATUS_MAP = { active: "active", completed: "completed", on_hold: "on_hold" };
 
 function buildRequestDist(requests) {
   const counts = {};

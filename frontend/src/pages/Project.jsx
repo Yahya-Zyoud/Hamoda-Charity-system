@@ -18,7 +18,7 @@ export default function Projects() {
   const [error,    setError]    = useState(null);
   const [search,   setSearch]   = useState("");
   const [category, setCategory] = useState("الكل");
-  const [status,   setStatus]   = useState("الكل");
+  const [status,   setStatus]   = useState("all");
 
   const loadProjects = async () => {
     try {
@@ -49,8 +49,8 @@ export default function Projects() {
 
   const computedStats = stats || {
     total:         projects.length,
-    active:        projects.filter((p) => p.status === "نشط").length,
-    done:          projects.filter((p) => p.status === "مكتمل").length,
+    active:        projects.filter((p) => p.status === "active").length,
+    done:          projects.filter((p) => p.status === "completed").length,
     beneficiaries: projects.reduce((s, p) => s + (p.beneficiaries || 0), 0),
   };
 
@@ -61,7 +61,7 @@ export default function Projects() {
       p.title?.toLowerCase().includes(q) ||
       p.description?.toLowerCase().includes(q);
     const matchCat    = category === "الكل" || p.category === category;
-    const matchStatus = status   === "الكل" || p.status   === status;
+    const matchStatus = status   === "all"   || p.status   === status;
     return matchSearch && matchCat && matchStatus;
   });
 

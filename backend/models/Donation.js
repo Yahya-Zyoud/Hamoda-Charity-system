@@ -5,25 +5,25 @@ const donationSchema = new mongoose.Schema(
     // Hamza's core fields
     donationType: {
       type: String,
-      required: [true, "نوع التبرع مطلوب"],
-      enum: ["صدقة", "زكاة", "إغاثة", "إسكان", "علاج", "تعليم"],
+      required: [true, "Donation type is required"],
+      enum: ["sadaqah", "zakat", "relief", "housing", "medical", "education"],
     },
     amount: {
       type: Number,
-      required: [true, "المبلغ مطلوب"],
-      min: [1, "المبلغ يجب أن يكون أكبر من صفر"],
+      required: [true, "Amount is required"],
+      min: [1, "Amount must be greater than zero"],
     },
     donorName: {
       type: String,
-      required: [true, "اسم المتبرع مطلوب"],
+      required: [true, "Donor name is required"],
       trim: true,
     },
     donorEmail: {
       type: String,
-      required: [true, "البريد الإلكتروني مطلوب"],
+      required: [true, "Email is required"],
       trim: true,
       lowercase: true,
-      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "البريد الإلكتروني غير صحيح"],
+      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email address"],
     },
     donorPhone: {
       type: String,
@@ -37,7 +37,7 @@ const donationSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      required: [true, "طريقة الدفع مطلوبة"],
+      required: [true, "Payment method is required"],
       enum: ["stripe", "paypal", "cash"],
     },
     status: {

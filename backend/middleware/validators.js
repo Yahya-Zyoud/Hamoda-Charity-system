@@ -46,7 +46,7 @@ const checkProfileUpdate = (request, response, next) => {
   if (name && !checkName(name)) {
     return response.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
-      message: "الاسم يجب أن يكون بين 2 و 100 حرف",
+      message: `Name must be between ${VALIDATION.MIN_NAME_LENGTH} and ${VALIDATION.MAX_NAME_LENGTH} characters`,
     });
   }
 
@@ -60,14 +60,14 @@ const checkProfileUpdate = (request, response, next) => {
   if (phone && !checkPhone(phone)) {
     return response.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
-      message: "رقم الهاتف غير صحيح",
+      message: "Invalid phone number",
     });
   }
 
   if (bio && bio.trim().length > VALIDATION.MAX_BIO_LENGTH) {
     return response.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
-      message: `النبذة يجب أن تكون أقل من ${VALIDATION.MAX_BIO_LENGTH} حرف`,
+      message: `Bio must be less than ${VALIDATION.MAX_BIO_LENGTH} characters`,
     });
   }
 

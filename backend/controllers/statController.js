@@ -1,14 +1,40 @@
-const statsService = require("../services/statsService");
+const Donation    = require("../models/Donation");
+const Project     = require("../models/Project");
+const HelpRequest = require("../models/HelpRequest");
+const Team        = require("../models/Team");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
-const logger = require("../utils/logger");
 
-exports.getStats = async (req, res) => {
+exports.getStats = async (req, res, next) => {
   try {
-    const stats = await statsService.getLiveStats();
-    logger.info("Live stats served", stats);
-    return res.sendSuccess(stats);
+    const [
+      uniqueDonorEmails,
+      projectCount,
+      beneficiariesAgg,
+      servedRequestsCount,
+      teamCount,
+      donationAgg,
+    ] = await Promise.all([
+      Donation.distinct("donorEmail", { status: { $ne: "failed" } }),
+      Project.countDocuments(),
+      Project.aggregate([
+        { $group: { _id: null, total: { $sum: { $ifNull: ["$beneficiaries", 0] } } } },
+      ]),
+      HelpRequest.countDocuments({ status: "accepted" }),
+      Team.countDocuments(),
+      Donation.aggregate([
+        { $match: { status: { $ne: "failed" } } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+    ]);
+
+    return res.sendSuccess({
+      donors:        uniqueDonorEmails.length,
+      projects:      projectCount,
+      beneficiaries: (beneficiariesAgg[0]?.total ?? 0) + servedRequestsCount,
+      team:          teamCount,
+      totalAmount:   donationAgg[0]?.total ?? 0,
+    });
   } catch (error) {
-    logger.error("Error computing live stats", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };

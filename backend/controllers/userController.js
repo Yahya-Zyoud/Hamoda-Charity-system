@@ -1,79 +1,113 @@
-const userService = require("../services/userService");
+const User        = require("../models/User");
+const HelpRequest = require("../models/HelpRequest");
+const Donation    = require("../models/Donation");
+const { getFileUrl, deleteFile } = require("../utils/fileHandler");
 const { HTTP_STATUS, MESSAGES } = require("../config/constants");
-const logger = require("../utils/logger");
 
-exports.getUsers = async (req, res) => {
+exports.getUsers = async (req, res, next) => {
   try {
-    const users = await userService.getUsers();
+    const users = await User.find().sort({ createdAt: -1 });
     return res.sendSuccess(users);
   } catch (error) {
-    logger.error("Error fetching users", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.updateUserRole = async (req, res) => {
+exports.updateUserRole = async (req, res, next) => {
   try {
-    const user = await userService.updateUserRole(req.params.id, req.body.role);
+    const user = await User.findByIdAndUpdate(req.params.id, { role: req.body.role }, { new: true });
     if (!user) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
     return res.sendSuccess(user);
   } catch (error) {
-    logger.error("Error updating user role", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.updateUserStatus = async (req, res) => {
+exports.updateUserStatus = async (req, res, next) => {
   try {
-    const user = await userService.updateUserStatus(req.params.id, req.body.status);
+    const user = await User.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
     if (!user) return res.sendError(MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
     return res.sendSuccess(user);
   } catch (error) {
-    logger.error("Error updating user status", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.getProfile = async (req, res) => {
+exports.getProfile = async (req, res, next) => {
   try {
-    const user = await userService.getProfile(req.userId);
-    logger.info("User profile retrieved", { clerkId: req.userId });
+    let user = await User.findOne({ clerkId: req.userId });
+    if (!user) user = await User.create({ clerkId: req.userId });
     return res.sendSuccess(user);
   } catch (error) {
-    logger.error("Error fetching user profile", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.updateProfile = async (req, res) => {
+exports.updateProfile = async (req, res, next) => {
   try {
-    const user = await userService.updateProfile(req.userId, req.body);
-    logger.info("User profile updated", { clerkId: req.userId });
+    const user = await User.findOneAndUpdate(
+      { clerkId: req.userId },
+      { $set: req.body },
+      { new: true, upsert: true }
+    );
     return res.sendSuccess(user);
   } catch (error) {
-    logger.error("Error updating user profile", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.getUserActivity = async (req, res) => {
+exports.getUserActivity = async (req, res, next) => {
   try {
-    const activity = await userService.getUserActivity(req.userId);
-    return res.sendSuccess(activity);
+    const userProfile = await User.findOne({ clerkId: req.userId }).select("phone").lean();
+    const userPhone   = userProfile?.phone?.trim() || null;
+
+    const donationFilter = userPhone
+      ? { $or: [{ userId: req.userId }, { donorPhone: userPhone }] }
+      : { userId: req.userId };
+
+    const donationStatsFilter = userPhone
+      ? { $or: [{ userId: req.userId }, { donorPhone: userPhone }], status: { $ne: "failed" } }
+      : { userId: req.userId, status: { $ne: "failed" } };
+
+    const [helpRequests, donations, totalRequests, donationAgg, uniqueProjectIds] = await Promise.all([
+      HelpRequest.find({ clerkId: req.userId }).sort({ createdAt: -1 }).limit(10).lean(),
+      Donation.find(donationFilter).populate("projectId", "title").sort({ createdAt: -1 }).limit(10).lean(),
+      HelpRequest.countDocuments({ clerkId: req.userId }),
+      Donation.aggregate([
+        { $match: donationStatsFilter },
+        { $group: { _id: null, count: { $sum: 1 }, total: { $sum: "$amount" } } },
+      ]),
+      Donation.distinct("donationType", donationFilter),
+    ]);
+
+    const agg = donationAgg[0] || { count: 0, total: 0 };
+    return res.sendSuccess({
+      helpRequests,
+      donations,
+      stats: {
+        totalRequests:  totalRequests,
+        totalDonations: agg.count,
+        totalProjects:  uniqueProjectIds.length,
+        donationAmount: agg.total,
+      },
+    });
   } catch (error) {
-    logger.error("Error fetching user activity", { error: error.message });
-    return res.sendError(MESSAGES.ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };
 
-exports.uploadImage = async (req, res) => {
+exports.uploadImage = async (req, res, next) => {
   try {
-    const result = await userService.uploadImage(req.userId, req.file, req.body.type);
-    logger.info("User image uploaded", { clerkId: req.userId, type: req.body.type });
-    return res.status(HTTP_STATUS.CREATED).sendSuccess(result, MESSAGES.FILE_UPLOAD_SUCCESS);
+    if (!req.file) return res.sendError("No file selected", HTTP_STATUS.BAD_REQUEST);
+    const url      = getFileUrl(req.file.filename);
+    const type     = req.body.type || "avatar";
+    const existing = await User.findOne({ clerkId: req.userId });
+    if (existing && existing[type]) {
+      deleteFile(existing[type].split("/").pop());
+    }
+    await User.findOneAndUpdate({ clerkId: req.userId }, { $set: { [type]: url } }, { upsert: true });
+    return res.status(HTTP_STATUS.CREATED).sendSuccess({ url }, MESSAGES.FILE_UPLOAD_SUCCESS);
   } catch (error) {
-    logger.error("Error uploading user image", { error: error.message });
-    return res.sendError(error.status === 400 ? error.message : MESSAGES.FILE_UPLOAD_ERROR,
-      error.status || HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    next(error);
   }
 };

@@ -56,9 +56,9 @@ async function _isAdminUser(userId) {
 
 // ── Response helpers ───────────────────────────────────────────────────────
 const unauth = (res) =>
-  res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, message: "غير مصرح" });
+  res.status(HTTP_STATUS.UNAUTHORIZED).json({ success: false, message: "Unauthorized" });
 const forbidden = (res) =>
-  res.status(HTTP_STATUS.FORBIDDEN).json({ success: false, message: "ممنوع" });
+  res.status(HTTP_STATUS.FORBIDDEN).json({ success: false, message: "Forbidden" });
 
 // ── Middleware exports ─────────────────────────────────────────────────────
 

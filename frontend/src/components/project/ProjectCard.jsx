@@ -21,9 +21,9 @@ const CATEGORY_COLORS = {
 };
 
 const STATUS_CONFIG = {
-  "نشط":         { label: "نشط",         Icon: Timer,        bg: "#22c55e", dot: true  },
-  "مكتمل":       { label: "مكتمل",       Icon: CheckCircle2, bg: "#3b82f6", dot: false },
-  "قيد التخطيط": { label: "قيد التخطيط", Icon: Clock,        bg: "#f59e0b", dot: false },
+  active:    { label: "نشط",         Icon: Timer,        bg: "#22c55e", dot: true  },
+  completed: { label: "مكتمل",       Icon: CheckCircle2, bg: "#3b82f6", dot: false },
+  on_hold:   { label: "قيد التخطيط", Icon: Clock,        bg: "#f59e0b", dot: false },
 };
 
 const PROGRESS_GRADIENTS = [
@@ -47,7 +47,7 @@ function formatCurrency(n) {
 // ── Modal Overlay ──────────────────────────────────────────────────────────────
 function ProjectModal({ project, gradient, progress, onClose }) {
   const cat    = CATEGORY_COLORS[project.category] || CATEGORY_COLORS["أخرى"];
-  const status = STATUS_CONFIG[project.status]     || STATUS_CONFIG["قيد التخطيط"];
+  const status = STATUS_CONFIG[project.status] || STATUS_CONFIG.on_hold;
 
   // Lock body scroll while open
   useEffect(() => {
@@ -288,7 +288,7 @@ export default function ProjectCard({ project, index = 0, expandedId, setExpande
   const isExpanded = expandedId === (project._id || index);
 
   const cat      = CATEGORY_COLORS[project.category] || CATEGORY_COLORS["أخرى"];
-  const status   = STATUS_CONFIG[project.status]     || STATUS_CONFIG["قيد التخطيط"];
+  const status   = STATUS_CONFIG[project.status] || STATUS_CONFIG.on_hold;
   const progress = project.goal
     ? Math.min(Math.round(((project.raised || 0) / project.goal) * 100), 100)
     : 0;

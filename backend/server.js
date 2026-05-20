@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 const { clerkSetup } = require("./middleware/auth");
 const express = require("express");
@@ -42,16 +43,15 @@ const subscribeLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, message: "عدد محاولات الاشتراك كبير، حاول لاحقاً." },
+  message: { success: false, message: "Too many subscription attempts. Please try again later." },
 });
 app.use(`${config.API_PREFIX}/subscribe`, subscribeLimiter);
 
 app.use(config.API_PREFIX, apiRoutes);
 
 app.get("/health", (req, res) => {
-  const mongoose = require("mongoose");
-  const dbState  = ["disconnected", "connected", "connecting", "disconnecting"][mongoose.connection.readyState] || "unknown";
-  const healthy  = dbState === "connected";
+  const dbState = ["disconnected", "connected", "connecting", "disconnecting"][mongoose.connection.readyState] || "unknown";
+  const healthy = dbState === "connected";
   res.status(healthy ? 200 : 503).json({
     status:    healthy ? "OK" : "DEGRADED",
     db:        dbState,
@@ -84,7 +84,6 @@ const gracefulShutdown = (signal) => {
   logger.info(`${signal} received - shutting down gracefully`);
   server.close(() => {
     logger.info("HTTP server closed");
-    const mongoose = require("mongoose");
     mongoose.connection.close(false).then(() => {
       logger.info("MongoDB connection closed");
       process.exit(0);

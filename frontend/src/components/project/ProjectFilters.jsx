@@ -3,7 +3,12 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const CATEGORIES = ["الكل", "صحة", "تعليم", "إغاثة", "بنية تحتية", "دعم نفسي", "تدريب", "رعاية", "إسكان", "أخرى"];
-const STATUSES   = ["الكل", "نشط", "مكتمل", "قيد التخطيط"];
+const STATUSES   = [
+  { value: "all",       label: "الكل" },
+  { value: "active",    label: "نشط" },
+  { value: "completed", label: "مكتمل" },
+  { value: "on_hold",   label: "قيد التخطيط" },
+];
 
 export default function ProjectFilters({ search, setSearch, category, setCategory, status, setStatus, total, filtered }) {
   const [showFilters, setShowFilters] = useState(false);
@@ -95,15 +100,15 @@ export default function ProjectFilters({ search, setSearch, category, setCategor
                 <div className="flex flex-wrap gap-2">
                   {STATUSES.map((s) => (
                     <button
-                      key={s}
-                      onClick={() => setStatus(s)}
+                      key={s.value}
+                      onClick={() => setStatus(s.value)}
                       className="text-xs px-3 py-1.5 rounded-full font-semibold transition-all"
                       style={{
-                        background: status === s ? "#07CA6B" : "rgba(7,202,107,0.08)",
-                        color: status === s ? "white" : "#07CA6B",
+                        background: status === s.value ? "#07CA6B" : "rgba(7,202,107,0.08)",
+                        color: status === s.value ? "white" : "#07CA6B",
                       }}
                     >
-                      {s}
+                      {s.label}
                     </button>
                   ))}
                 </div>

@@ -25,7 +25,7 @@ const upload = multer({
   fileFilter: (request, file, cb) => {
     const types = ["image/jpeg", "image/png", "image/webp"];
     if (types.includes(file.mimetype)) cb(null, true);
-    else cb(new Error("نوع الملف غير مدعوم"));
+    else cb(new Error("Unsupported file type"));
   },
 });
 
